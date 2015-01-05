@@ -1,0 +1,17 @@
+<div class="inputs">
+  <div class="form-group">
+    <label for="amount">Montant</label> <br>
+    <input type="number" class="form-control" id="amount-nb" min="0" max="1000000000" ng-model="fund.amount">
+    <input type="range" class="form-control" id="amount" placeholder="Montant"  min="0" max="1000000000" ng-model="fund.amount">
+  </div>
+  <div class="form-group">
+    <br><label for="rate">taux</label><br>
+    <input type="number" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.1" ng-model="fund.rate">
+    <input type="range" class="form-control" id="rate" placeholder="Rate"  min="-10.0" max="10.0" step ="0.1" ng-model="fund.rate">
+  </div>
+  <div class="form-group">
+    <br><label for="duration">Durée</label><br>
+    <input type="number" class="form-control" id="duration-nb" min="12" max="360" ng-model="fund.duration">
+    <input type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="fund.duration">
+  </div>
+</div>
