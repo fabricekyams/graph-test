@@ -14,7 +14,11 @@ angular.module('graphTestApp', [
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch'
+    'ngTouch', 
+    'highcharts-ng',
+    "ui.bootstrap",
+    'ui.bootstrap.datepicker'
+
   ]).config(function ($routeProvider) {
     $routeProvider
       .when('/', {

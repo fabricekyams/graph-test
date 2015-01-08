@@ -1,17 +1,46 @@
+<div class="row">
+<div class="col-md-3">
+<div class="row">
+            <div class="col-md-12">
+            <label for="dateFirstPayement">Date premier versement</label>
+               <input ng-model='dt' id="datetimepicker" class="datepicker" type="text" date-picker >
+        </div>
+<div class="col-md-12">
 <div class="inputs">
   <div class="form-group">
-    <label for="amount">Montant</label> <br>
-    <input type="number" class="form-control" id="amount-nb" min="0" max="1000000000" ng-model="fund.amount">
-    <input type="range" class="form-control" id="amount" placeholder="Montant"  min="0" max="1000000000" ng-model="fund.amount">
+    <label for="amount">Montant</label> 
+     <input  auto-numeric type="text" class="form-control" id="amount-nb" ng-model="fund.amount" step="10000"> 
+    <input type="range" class="form-control" id="amount" placeholder="Montant"  min="0" max="500000" ng-model="fund.amountInt" step="10000">
   </div>
   <div class="form-group">
-    <br><label for="rate">taux</label><br>
-    <input type="number" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.1" ng-model="fund.rate">
-    <input type="range" class="form-control" id="rate" placeholder="Rate"  min="-10.0" max="10.0" step ="0.1" ng-model="fund.rate">
+    <label for="rate">taux</label>
+    <input  type="number" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.1" ng-model="fund.rate">
+    <input  type="range" class="form-control" id="rate" placeholder="Rate"  min="-10.0" max="10.0" step ="0.1" ng-model="fund.rate">
   </div>
   <div class="form-group">
-    <br><label for="duration">Durée</label><br>
-    <input type="number" class="form-control" id="duration-nb" min="12" max="360" ng-model="fund.duration">
-    <input type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="fund.duration">
+    <label for="duration">Durée</label>
+    <input type="number" class="form-control" id="duration-nb" min="12" max="360" ng-model="fund.duration" step='12'>
+    <input  type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="fund.duration" step='12'>
   </div>
+  </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- <highchart id="chart1" config="chartConfig" ></highchart>-->
+<div class="col-md-9">
+<div class="row">
+  <div class="col-md-6">
+    <gh-visualization val="InterestChart" grouped="grouped" type="column" field="field"></gh-visualization> 
+  </div>
+  <div class="col-md-6">
+    <gh-visualization val="srdChart" grouped="grouped" type="column" field="field"></gh-visualization> 
+  </div>
+    <div class="col-md-6">
+   ...
+  </div>
+</div>
+</div>
 </div>
