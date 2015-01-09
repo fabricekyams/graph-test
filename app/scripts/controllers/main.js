@@ -14,14 +14,19 @@ graphTestApp.controller('MainCtrl',
 
   	function ($scope) {
 
+        /**
+         * in
+         * @param  {[type]}
+         * @return {[type]}
+         */
         $scope.init = function (argument) {
-            $scope.fund={};
-            $scope.fund.amount = '250,000.00';
+           $scope.fund={};
+/*          $scope.fund.amount = '250,000.00';
             $scope.fund.amountInt = 250000;
             $scope.fund.rate = 4.5;
             $scope.fund.duration = 36;
             var date = new Date();
-            $scope.dt = date.toLocaleDateString(); 
+            $scope.dt = date.toLocaleDateString(); */
 
              $scope.getAmortization();
              
@@ -58,7 +63,7 @@ graphTestApp.controller('MainCtrl',
             $scope.InterestChart =  $scope.formatData(result, 'interest');
             $scope.srdChart =  $scope.formatData(result, 'srd');
             $scope.field = field;
-            //console.log(result );
+            console.log(result );
 
         }
 
@@ -94,7 +99,7 @@ graphTestApp.controller('MainCtrl',
                         name: 'Remboursement',
                         data: principle
                     }];
-                    type = 'line';
+                    type = 'column';
                     graphTitle = 'Interêts';
                     to = $scope.idChart = 'InterestChart';
 
@@ -153,23 +158,19 @@ graphTestApp.controller('MainCtrl',
         $scope.init();
 
 }).directive('autoNumeric', function(){
-    // Runs during compile
     return {
-        //name: 'autoNumeric',
-        // priority: 1,
-        // terminal: true,
-        // scope: {}, // {} = isolate, true = child, false/undefined = no change
-        // controller: function($scope, $element, $attrs, $transclude) {},
-        // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
-         restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
-        // template: '',
-        // templateUrl: '',
-        // replace: true,
-        // transclude: true,
-        // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
+        restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
         link: function($scope, iElm, iAttrs, controller) {
             console.log(iElm.attr('id'));
             iElm.autoNumeric('init');
+            iElm.keypress(function  (argument) {
+                console.log($scope.fund.amount);
+               if(typeof($scope.fund.amount)=='string'){
+                   $scope.fund.amountInt = parseFloat($scope.fund.amount.replace(/[,]/gim, ""));
+               }else{
+                   iElm.autoNumeric('update');
+               }
+            })
             $scope.$watch('fund.amount', function(newVal){
                //iElm.autoNumeric('update');
                if(typeof($scope.fund.amount)=='string'){
@@ -177,28 +178,13 @@ graphTestApp.controller('MainCtrl',
                }else{
                    iElm.autoNumeric('update');
                }
-
-               //$scope.updateAmortization();
              });
-
 
         }
     };
 }).directive('datePicker', function(){
-    // Runs during compile
     return {
-        // name: '',
-        // priority: 1,
-        // terminal: true,
-        // scope: {}, // {} = isolate, true = child, false/undefined = no change
-        // controller: function($scope, $element, $attrs, $transclude) {},
-        // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
         restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
-        // template: '',
-        // templateUrl: '',
-        // replace: true,
-        // transclude: true,
-        // compile: function(tElement, tAttrs, function transclude(function(scope, cloneLinkingFn){ return function linking(scope, elm, attrs){}})),
         link: function($scope, iElm, iAttrs, controller) {
             iElm.datetimepicker({
                format:'d/m/Y',
@@ -210,7 +196,7 @@ graphTestApp.controller('MainCtrl',
               });
         }
     };
-});;
+});
 
 
 

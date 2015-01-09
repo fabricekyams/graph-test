@@ -35,23 +35,12 @@ angular.module('graphTestApp').directive('ghVisualization', function(){
 		link: function(scope, element, attrs, controller) {
 			    var a = 0;
     			var b = 1;
+    			var chart ='';
 			element.append('<div id="'+attrs.val+'" style="width:100%; height:400px;"></div>');
 			//$canvas.attr('id', 'lol');
 			//console.log(canvas);
-			var chart = new Highcharts.Chart(scope.val);
-			scope.redraw = function (argument) {
-				setTimeout(function(){
-					//for (var i = 0; i < chart.series.length; i++) {
-						//chart.redraw();
-					//};
-					scope.redraw();
-                },1000);
-			}
-			scope.redraw();
-
-			
+					var chart = new Highcharts.Chart(scope.val);
 			scope.$watch('val', function (newVal) {
-
 					a+=1;
                 setTimeout(function(){
 						if( a===b){

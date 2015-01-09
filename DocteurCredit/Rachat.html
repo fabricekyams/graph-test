@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Calcul de rachat de crédit</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=10; IE=EDGE" /> <!-- nécessaire pour les tests en interne avec IE -->
+    <script type="text/javascript" src="Scripts/require.js" ></script>
+    <script type="text/javascript">
+        /// <reference path="Scripts/DocteurCreditJS.js" />
+        ///<var type="DocteurCreditJS"></var>
+        //var DocteurCredit;
+        require.config({
+            paths: {
+                'jquery': 'Scripts/jquery-2.1.1.min',
+                "shim": "Scripts/es5-shim.min",
+                "ss": "Scripts/ss.min",
+                "DocteurCreditJS": "Scripts/DocteurCreditJS.min",
+            }
+        });
+        require(['DocteurCreditJS', 'shim', 'jquery','Scripts/app'], function (DocteurCreditJS,shim,jquery,app){
+            return console.log('launched');
+        });
+
+        
+    </script>
+</head>
+<body>
+    <div id="boxInput">
+        <label>
+            Mensualité actuelle :
+            <input type="text" value="853" id="Mensualite" /></label><br />
+        <label>
+            Date de début de crédit :
+            <input type="text" value="2012/03/01" id="DateDeDebut" />(format yyyy/mm/dd)</label><br />
+        <label>
+            Durée initiale :
+            <input type="text" value="360" id="DureeInitialeMois" /></label><br />
+        <label>
+            Montant initial :
+            <input type="text" value="150000" id="montantInital" />%</label><br />
+    </div>
+    <button id="calcbt" type="button">Calculer</button>
+    <div id="boxOutput"></div>
+</body>
+</html>
