@@ -9,73 +9,88 @@
 define([
     'scripts/app',
     '../vendors/finance/finance.js',
-    'datetimepicker',
+    'DocteurCreditJS',
+    '../vendors/DocteurCredit/taux.js',
     '../vendors/autonumeric/autoNumeric.js',
-    'http://code.highcharts.com/highcharts.js',
+    'scripts/models/Financement.js',
+    'datetimepicker',
     'scripts/directives/chart.js'
     ],
 
-    function (app,finance) {
+    function (app,finance,DC) {
     'use strict';
-
     app.controller('MainCtrl',
 
-      	function ($scope) {
-            console.log("okok");
+      	function ($scope, Financement) {
+            console.log('TAUX:                 ',Math.pow(1 + 0.0228, 1 / 12) - 1);
+            console.log('Indemnité remploie:   ',196580.68 * 0.0018804294971668245 * 3);
+            console.log('mensualité 1€:        ',DC.CreditUtil.calculMensualite( 0.0018804294971668245, 72));
+            console.log('mensualité   :        ',DC.CreditUtil.calculMensualite( 0.0018804294971668245, 72)*198326.06);
+            console.log('Capital total payé:   ',DC.CreditUtil.calculMensualite( 0.0018804294971668245, 72)*198326.06*72);
+            console.log(DC.CreditUtil.calculMensualite( 0.0018804294971668245, 72));
+            console.log('SRD:                   ',DC.CreditUtil.calculCapitalWithMensualite( 0.0018804294971668245, 72, 12, 0.014863347794026729)*198326.06);
+            console.log('SRD:                   ',DC.CreditUtil.calculCapital( 0.0018804294971668245, 72, 12)*198326.06);
+            $scope.financement = new Financement(198326.06, 2.28, 72,new Date(), new Date('1/13/2016'));
+            $scope.financement.init();
+            console.log('durationLeft: ', $scope.financement);
+
             /**
              * in
              * @param  {[type]}
              * @return {[type]}
              */
             $scope.init = function (argument) {
-               $scope.fund={};
-    /*          $scope.fund.amount = '250,000.00';
-                $scope.fund.amountInt = 250000;
-                $scope.fund.rate = 4.5;
-                $scope.fund.duration = 36;
-                var date = new Date();
-                $scope.dt = date.toLocaleDateString(); */
+                $scope.inputs={};
+                $scope.inputs.amount = 250000.00;
+                $scope.inputs.amountInt = 250000.00;
+                $scope.inputs.rate = 4.5;
+                $scope.inputs.rateM = Math.pow(1 + 0.045, 1 / 12) - 1;
+                $scope.inputs.duration = 120;
 
+                var date = new Date();
+                $scope.dt = date.toLocaleDateString();
+                
                  $scope.getAmortization();
                  
-                 $scope.$watch('fund.amountInt', function(newVal){
-                    $scope.fund.amount = $scope.fund.amountInt;
+                $scope.$watch('inputs.amount', function(newVal){
+                    console.log("ok");
                     $scope.updateAmortization();
                  });
 
-                  $scope.$watch('fund.rate', function(newVal){
-                    $scope.fund.rate = parseFloat(newVal);
+                  $scope.$watch('inputs.rate', function(newVal){
+                    $scope.inputs.rate = parseFloat(newVal);
                     $scope.updateAmortization();
                     //$scope.updateAmortization();
 
                  });
 
-                   $scope.$watch('fund.duration', function(newVal){
-                    $scope.fund.duration = parseInt(newVal);
+                   $scope.$watch('inputs.duration', function(newVal){
+                    $scope.inputs.duration = parseInt(newVal);
                    $scope.updateAmortization();
 
                  });
             }
             
+            $scope.getSRD = function (argument) {
+                
+                // body...
+            }
             $scope.getAmortization = function () {
-                var result = finance.calculateAmortization($scope.fund.amountInt, $scope.fund.duration, $scope.fund.rate, new Date($scope.dt) );
+                var result = finance.calculateAmortization($scope.inputs.amount, $scope.inputs.duration, $scope.inputs.rate, new Date($scope.dt) );
                 $scope.InterestChart =  $scope.formatData(result, 'interest');
                 $scope.srdChart =  $scope.formatData(result, 'srd');
                 $scope.field = 'null';
             }
 
             $scope.updateAmortization = function (field, data) {
-                var result = finance.calculateAmortization($scope.fund.amountInt, $scope.fund.duration, $scope.fund.rate, new Date($scope.dt) );
+                var result = finance.calculateAmortization($scope.inputs.amount, $scope.inputs.duration, $scope.inputs.rate, new Date($scope.dt) );
                   $scope.formatData(result, 'interest');
                   $scope.formatData(result, 'srd');
                 $scope.InterestChart =  $scope.formatData(result, 'interest');
                 $scope.srdChart =  $scope.formatData(result, 'srd');
                 $scope.field = field;
+                //console.log(result);
 
-            }
-
-            $scope.formatAmount = function (amount, destination) {
-                
             }
 
             $scope.formatData = function (data, title) {
@@ -171,21 +186,15 @@ define([
             link: function($scope, iElm, iAttrs, controller) {
                 console.log(iElm.attr('id'));
                 iElm.autoNumeric('init');
-                iElm.keypress(function  (argument) {
-                    console.log($scope.fund.amount);
-                   if(typeof($scope.fund.amount)=='string'){
-                       $scope.fund.amountInt = parseFloat($scope.fund.amount.replace(/[,]/gim, ""));
-                   }else{
-                       iElm.autoNumeric('update');
+                $scope.$watch('inputs.amount', function(newVal){
+                   if(typeof($scope.inputs.amount)=='string'){
+                       $scope.inputs.amount = parseFloat($scope.inputs.amount.replace(/[,]/gim, ""));
+                       console.log('je teste le string');
                    }
-                })
-                $scope.$watch('fund.amount', function(newVal){
-                   //iElm.autoNumeric('update');
-                   if(typeof($scope.fund.amount)=='string'){
-                       $scope.fund.amountInt = parseFloat($scope.fund.amount.replace(/[,]/gim, ""));
-                   }else{
-                       iElm.autoNumeric('update');
-                   }
+                       console.log('j update');
+
+                    iElm.autoNumeric('update');
+                   
                  });
 
             }

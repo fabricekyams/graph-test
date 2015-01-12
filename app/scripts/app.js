@@ -16,7 +16,9 @@ define([
   'angular-resource',
   'angular-sanitize',
   'angular-touch',
-  'jquery'
+  'jquery',
+  'ss',
+  'shim'
    ], function (angularAMD) {
   var app = angular.module('graphTestApp', [
       'ngCookies',

@@ -859,7 +859,6 @@ define('DocteurCreditJS', ['ss'], function (ss) {
   };
   var DocteurCreditJS$Input$ = {
     calcul: function(taux) {
-      console.log(taux);
       var fraisCredit = PHCalculCredit$FraisCreditFactory.getFraisCredit(1);
       var res = new DocteurCreditJS$Output();
       res.ancienMensualite = this.mensualite;
@@ -867,10 +866,7 @@ define('DocteurCreditJS', ['ss'], function (ss) {
       var tauxMois = PHCalculCredit$CreditUtil.calculTauxC(this.mensualite / this.montantInital, this.dureeInitialeMois);
       res.ancienTauxAn = Math.pow(1 + tauxMois, 12) - 1;
       res.srd = this.mensualite / PHCalculCredit$CreditUtil.calculMensualite(tauxMois, res.ancienDureeRestanteMois);
-      console.log(res.srd);
-      console.log(tauxMois);
       res.fraisIndemnite = res.srd * tauxMois * 3;
-      console.log(res.fraisIndemnite);
       res.fraisMainLevee = PHCalculCredit$FraisMainLevee.getFraisMainLevee(res.srd);
       var capitalNet = res.srd + res.fraisIndemnite + res.fraisMainLevee;
       res.capital = fraisCredit.getMontantBrut(capitalNet);

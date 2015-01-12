@@ -7,12 +7,14 @@
 */
 define([
     'scripts/app',
+    'highcharts'
     ],
 
-    function (app) {
+    function (app,Highcharts) {
     'use strict';
 
 	app.directive('ghVisualization', function(){
+    	console.log(Highcharts);
 		// Runs during compile
 		var margin = 20,
 	    width = 960,
@@ -44,7 +46,7 @@ define([
 				element.append('<div id="'+attrs.val+'" style="width:100%; height:400px;"></div>');
 				//$canvas.attr('id', 'lol');
 				//console.log(canvas);
-						var chart = new Highcharts.Chart(scope.val);
+				/*var chart = new Highcharts.Chart(scope.val);
 				scope.$watch('val', function (newVal) {
 						a+=1;
 	                setTimeout(function(){
@@ -60,7 +62,7 @@ define([
 							}
 	                },100);
 
-				});
+				});*/
 		
 			}
 		};

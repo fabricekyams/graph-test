@@ -11,8 +11,11 @@ require.config({
    		'bootstrap' : 			"../bower_components/bootstrap/dist/js/bootstrap",
    		'datetimepicker': 		"../vendors/datepicker/jquery.datetimepicker",
     	'autoNumeric': 			"../vendors/autonumeric/autoNumeric",
-    	'highchart': 			"http://code.highcharts.com/highcharts",
-        'angularAMD': 			'../vendors/angularAmd/angularAMD'
+    	'highcharts': 			"http://code.highcharts.com/highcharts",
+        'angularAMD': 			'../vendors/angularAmd/angularAMD',
+        'shim':                 "../vendors/shim/es5-shim.min",
+        'ss':                   "../vendors/ss/ss.min",
+        'DocteurCreditJS':        "../vendors/DocteurCredit/DocteurCreditJS.min", 
     },
     shim: {
     	'angularAMD': ['angular'],
