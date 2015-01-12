@@ -18,7 +18,8 @@ define([
   'angular-touch',
   'jquery',
   'ss',
-  'shim'
+  'shim',
+  'highcharts'
    ], function (angularAMD) {
   var app = angular.module('graphTestApp', [
       'ngCookies',

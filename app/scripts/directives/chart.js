@@ -7,10 +7,10 @@
 */
 define([
     'scripts/app',
-    'highcharts'
+    
     ],
 
-    function (app,Highcharts) {
+    function (app) {
     'use strict';
 
 	app.directive('ghVisualization', function(){
@@ -46,8 +46,8 @@ define([
 				element.append('<div id="'+attrs.val+'" style="width:100%; height:400px;"></div>');
 				//$canvas.attr('id', 'lol');
 				//console.log(canvas);
-				/*var chart = new Highcharts.Chart(scope.val);
-				scope.$watch('val', function (newVal) {
+				var chart = new Highcharts.Chart(scope.val);
+				/*scope.$watch('val', function (newVal) {
 						a+=1;
 	                setTimeout(function(){
 							if( a===b){

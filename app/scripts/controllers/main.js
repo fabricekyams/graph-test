@@ -30,7 +30,7 @@ define([
             console.log(DC.CreditUtil.calculMensualite( 0.0018804294971668245, 72));
             console.log('SRD:                   ',DC.CreditUtil.calculCapitalWithMensualite( 0.0018804294971668245, 72, 12, 0.014863347794026729)*198326.06);
             console.log('SRD:                   ',DC.CreditUtil.calculCapital( 0.0018804294971668245, 72, 12)*198326.06);
-            $scope.financement = new Financement(198326.06, 2.28, 72,new Date(), new Date('1/13/2016'));
+            $scope.financement = new Financement(198326.06, 2.28, 72,new Date());
             $scope.financement.init();
             console.log('durationLeft: ', $scope.financement);
 
@@ -60,7 +60,7 @@ define([
                   $scope.$watch('inputs.rate', function(newVal){
                     $scope.inputs.rate = parseFloat(newVal);
                     $scope.updateAmortization();
-                    //$scope.updateAmortization();
+                    $scope.updateAmortization();
 
                  });
 
@@ -70,11 +70,7 @@ define([
 
                  });
             }
-            
-            $scope.getSRD = function (argument) {
-                
-                // body...
-            }
+
             $scope.getAmortization = function () {
                 var result = finance.calculateAmortization($scope.inputs.amount, $scope.inputs.duration, $scope.inputs.rate, new Date($scope.dt) );
                 $scope.InterestChart =  $scope.formatData(result, 'interest');

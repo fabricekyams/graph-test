@@ -4,7 +4,7 @@ define([
 	], function (app,DC) {
 	app.factory('Financement', function(){
 
-		function Financement(capital, rate, duration, date, newDate){
+		function Financement(capital, rate, duration, date, newDate =  new Date()){
 			
 			this.capital = capital;
 			this.rate = Math.pow(1 + (rate/100), 1 / 12) - 1;
@@ -25,6 +25,7 @@ define([
 				this.setDurationLeft();
 				this.setSRD();
 				this.setMonthlyPayment();
+				this.setAmortization();
 				console.log('ok');// body...
 			},
 
@@ -37,7 +38,19 @@ define([
 			},
 
 			setAmortization : function () {
-				console.log('ok');// body...
+				for (var i = 0; i < this.durationLeft; i++) {
+					this.amortization[i]={};
+					this.amortization[i].month=5;
+					this.amortization[i].interest=5;
+					this.amortization[i].capital=5;
+					this.amortization[i].srd=5;
+					this.amortization[i].monthlyPayment=5;
+					this.amortization[i].payment=5;
+
+				};
+			},
+			getYearsAmortization : function(){
+				return 'ok';
 			},
 			setDurationLeft : function () {
 				var month = (this.newDate.getFullYear() - this.date.getFullYear())*12;
