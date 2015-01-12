@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="styles/jquery.datetimepicker.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="graphTestApp">
+  <body >
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -62,7 +62,10 @@
     <!-- bower:js -->
     
     <script src="scripts/vendors/require/require.js" data-main="scripts/main"></script>
-    <script src="../bower_components/jquery/dist/jquery.js"></script>
+    <!--
+     <script src="../bower_components/jquery/dist/jquery.js"></script>
+    <script src="scripts/vendors/datepicker/jquery.datetimepicker.js"></script>
+     <script src="http://code.highcharts.com/highcharts.js"></script>
     <script src="../bower_components/angular/angular.js"></script>
     <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="../bower_components/angular-animate/angular-animate.js"></script>
@@ -73,20 +76,19 @@
     <script src="../bower_components/angular-touch/angular-touch.js"></script>
     <script src="scripts/vendors/finance/finance.js"></script>
     <script src="scripts/vendors/chart/chart.min.js"></script>
-    <script src="scripts/vendors/datepicker/jquery.datetimepicker.js"></script>
     <script src="scripts/vendors/angular-bootstrap/angular-bootstrap.js"></script>
     <script src="scripts/vendors/autonumeric/autoNumeric.js"></script>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>-->
 
     <!-- endbower -->
     <!-- endbuild -->
 
-        <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <!-- build:js({.tmp,app}) scripts/scripts.js
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/datePicker.js"></script>
         <script src="scripts/directives/chart.js"></script>
-        <script src="scripts/controllers/about.js"></script>
+        <script src="scripts/controllers/about.js"></script> -->
         <!-- endbuild -->
 </body>
 </html>

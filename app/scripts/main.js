@@ -1,10 +1,30 @@
 require.config({
-    baseUrl: "js",    
+    baseUrl: "",    
     paths: {
-        'angular': '../bower_components/angular/angular',
-        'angular-route': '../bower_components/angular-route/angular-route',
-        'angularAMD': 'vendors/angularAmd/angularAMD'
+        'angular': 				'../bower_components/angular/angular',
+        'jquery': 				"../bower_components/jquery/dist/jquery",
+        'angular-route': 		'../bower_components/angular-route/angular-route',
+   		'angular-cookies' : 	"../bower_components/angular-cookies/angular-cookies",
+    	'angular-resource': 	"../bower_components/angular-resource/angular-resource",
+   		'angular-sanitize' : 	"../bower_components/angular-sanitize/angular-sanitize",
+   		'angular-touch' : 		"../bower_components/angular-touch/angular-touch",
+   		'bootstrap' : 			"../bower_components/bootstrap/dist/js/bootstrap",
+   		'datetimepicker': 		"../vendors/datepicker/jquery.datetimepicker",
+    	'autoNumeric': 			"../vendors/autonumeric/autoNumeric",
+    	'highchart': 			"http://code.highcharts.com/highcharts",
+        'angularAMD': 			'../vendors/angularAmd/angularAMD'
     },
-    shim: { 'angularAMD': ['angular'], 'angular-route': ['angular'] },
-    deps: ['app']
+    shim: {
+    	'angularAMD': ['angular'],
+    	'angular-route': ['angular'],
+    	'angular-cookies': ['angular'],
+    	'angular-resource': ['angular'],
+    	'angular-sanitize': ['angular'],
+    	'angular-touch': ['angular'],
+    	'bootstrap' : ['jquery'],
+    	'datetimepicker' : ['jquery'],
+    	'autonumeric' : ['jquery'],
+    	'highcharts' : ['jquery']
+    },
+    deps: ['scripts/app']
 });

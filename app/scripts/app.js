@@ -8,26 +8,40 @@
  *
  * Main module of the application.
  */
-angular.module('graphTestApp', [
-    'ngAnimate',
-    'ngCookies',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch', 
-    "ui.bootstrap"
 
-  ]).config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-  });
+define([
+  'angularAMD',
+  'angular-route',
+  'angular-cookies',
+  'angular-resource',
+  'angular-sanitize',
+  'angular-touch',
+  'jquery'
+   ], function (angularAMD) {
+  var app = angular.module('graphTestApp', [
+      'ngCookies',
+      'ngResource',
+      'ngRoute',
+      'ngSanitize',
+      'ngTouch' 
+
+    ]);
+  app.config(function ($routeProvider) {
+      $routeProvider
+        .when('/main', angularAMD.route( {
+          templateUrl: 'views/main.html',
+          controller: 'MainCtrl',
+          controllerUrl: 'scripts/controllers/main'
+        }))
+        .when('/about', angularAMD.route( {
+          templateUrl: 'views/about.html',
+          controller: 'AboutCtrl',
+          controllerUrl: 'scripts/controllers/about'
+        }))
+        .otherwise( {
+          redirectTo: '/main'
+        });
+    });
+
+    return angularAMD.bootstrap(app);
+});
