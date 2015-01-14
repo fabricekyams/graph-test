@@ -1,49 +1,80 @@
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-12 refInputs" >
     <div class="row">
-    <!-- directive: to-numeric -->
+      <!-- directive: to-numeric -->
 
-      <div class="col-md-4">
+      <div class="col-md-6">
         <h3>Credit Actuel</h3>
-          <div class="form-group">
-            <label for="dateFirstPayement">Date premier versement</label>
-            <input  ng-model='financement.dateString' ng-change="update()" id="datetimepicker" class="datepicker" type="text" date-picker >
-           </div>
+        <div class="form-group">
+          <label for="dateFirstPayement">Date premier versement</label>
+          <input  ng-model='financement.dateString' ng-change="update()" id="datetimepicker" class="datepicker" type="text" date-picker >
+        </div>
         <div class="inputs">
-          
           <div class="form-group">
-            <label for="rate">Taux Annuel</label>
-            <input ng-model="financement.inputRate" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
-            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="financement.inputRate">
+          <label for="finType">Type</label>
+          <select ng-change="update()" class="form-control" id="finType" ng-model="financement.type" ng-options="option for option  in financementOptions">
+          </select>
           </div>
           <div class="form-group">
+            <label for="rate">Taux Annuel</label>
+            <input ng-model="financement.initRate " ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+            <input  ng-model="financement.initRate" ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" >
+          </div>
+
+          <div class="form-group" ng-show="financement.type !='fixe'">
+            <label for="rate">Indice de reference</label>
+            <input ng-model="financement.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="financement.refInd">
+          </div>
+          <div class="form-group" ng-show="financement.type !='fixe'">
+            <label for="rate">Variation</label>
+            <input ng-model="financement.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="financement.refInd">
+          </div>
+
+          <div class="form-group">
             <label for="amount">Montant</label> 
-            <input  ng-model="financement.capital" auto-numeric-fabrice ng-change="update()"  type="text"  class="form-control" id="amount-nb"  > 
-            <input  ng-model="financement.capital"  ng-change="update()" type="range" class="form-control" id="amount"  placeholder="Montant"  min="0" max="500000"  step="10000">
+            <input  ng-model="financement.initCapital" auto-numeric-fabrice ng-change="update()"  type="text"  class="form-control" id="amount-nb"  > 
+            <input  ng-model="financement.initCapital"  ng-change="update()" type="range" class="form-control" id="amount"  placeholder="Montant"  min="0" max="500000"  step="10000">
           </div>
           
           <div class="form-group">
             <label for="duration">Durée (mois)</label>
-            <input ng-model="financement.inputDuration" ng-change="update()" ype="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360"  step='12'>
-            <input  ng-change="update()" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="financement.inputDuration" step='12'>
+            <input ng-model="financement.initDuration" ng-change="update()" ype="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360"  step='12'>
+            <input  ng-change="update()" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="financement.initDuration" step='12'>
           </div>
         </div>
 
       </div>
 
-        <div class="col-md-4">
+      <div class="col-md-6">
         <h3>Refinancement</h3>
 
-          <div class="form-group">
-            <label  for="dateFirstPayement">Date premier versement</label>
-            <input ng-change="update()" ng-model='financement.newDateString' id="datetimepicker" class="datepicker" type="text" date-picker >
-           </div>
+        <div class="form-group">
+          <label  for="dateFirstPayement">Date premier versement</label>
+          <input ng-change="update()" ng-model='financement.newDateString' id="datetimepicker" class="datepicker" type="text" date-picker >
+        </div>
         <div class="inputs">
-          
+          <div class="form-group">
+          <label for="finType">Type</label>
+          <select ng-change="update()" class="form-control" id="finType" ng-model="financement.refType" ng-options="option for option  in financementOptions">
+
+          </select>
+          </div>
           <div class="form-group">
             <label for="rate">Nouveau Taux Annuel</label>
-            <input  ng-change="update()" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" ng-model="financement.inputNewRate">
-            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10.0" max="10.0" step ="0.001" ng-model="financement.inputNewRate">
+            <input  ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" ng-model="financement.initNewRate">
+            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10.0" max="10.0" step ="0.001" ng-model="financement.initNewRate">
+          </div>
+          <div class="form-group" ng-show="financement.refType !='fixe'">
+            <label for="rate">Indice de reference</label>
+            <input ng-model="financement.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="financement.refInd">
+          </div>
+          <div class="form-group" ng-show="financement.refType !='fixe'">
+            <label for="rate">Variation</label>
+            <input ng-model="financement.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="financement.refInd">
           </div>
           <div class="form-group">
             <label for="amount">Solde Restant Du</label> 
@@ -70,9 +101,34 @@
       <div class="col-md-6">
         <gh-visualization val="srdChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
       </div>
-      <div class="col-md-6">
-       ...
-     </div>
-   </div>
+
+     <TABLE class="table table-bordered"> 
+      <CAPTION> Tableau Amortissement </CAPTION> 
+      <TR> 
+       <TH>Mois</TH> 
+       <TH>Echéance</TH> 
+       <TH>Capital</TH> 
+       <TH>Interet</TH> 
+       <TH>Tot. capital</TH> 
+       <TH>Tot. interet</TH> 
+       <TH>Solde Restant Du</TH> 
+       <TH>Mensualité</TH> 
+     </TR> 
+     <TR ng-repeat="amort in financement.refMortgage.amortization"> 
+       
+       <TD> {{ amort.month }}</TD> 
+       <TD> {{ amort.dateTerme }}</TD> 
+       <TD> {{ amort.capital | number:2 }}</TD> 
+       <TD> {{ amort.interest | number:2 }}</TD> 
+       <TD> {{ amort.totalPayment | number:2 }}</TD> 
+       <TD> {{ amort.totalInterest | number:2 }}</TD> 
+       <TD> {{ amort.SRD | number:2 }}</TD> 
+       <TD> {{ amort.monthlyPayment | number:2 }}</TD> 
+
+     </TR> 
+   </TABLE> 
+
+
  </div>
+</div>
 </div>

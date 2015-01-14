@@ -3,7 +3,7 @@
 /**
 *  Module
 *
-* Description
+* Render Graphics
 */
 define([
     'scripts/app',

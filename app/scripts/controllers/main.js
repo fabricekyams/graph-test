@@ -12,7 +12,8 @@ define([
     'DocteurCreditJS',
     '../vendors/DocteurCredit/taux.js',
     'scripts/directives/autoNumericFabrice.js',
-    'scripts/models/Financement.js',
+    'scripts/models/Refinancing.js',
+    'scripts/models/Financementbeta.js',
     'datetimepicker',
     'scripts/directives/chartDir.js',
     'scripts/directives/jQueryLibraryDir.js',
@@ -23,16 +24,16 @@ define([
     'use strict';
     app.controller('MainCtrl',
 
-      	function ($scope, Financement) {
+      	function ($scope, Refinancing) {
             /**
              * in
              * @param  {[type]}
              * @return {[type]}
              */
             $scope.init = function (argument) {
-                $scope.financement= new Financement(310000.00, 2.918 , 120 , new Date('01/31/2011'), new Date(), 2.28);
+                $scope.financementOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
+                $scope.financement= new Refinancing(310000.00, 2.918 , 120 , new Date('01/31/2011'), new Date('01/31/2015'),2.28);
                 console.log($scope.financement);
-
 
                 //$scope.getAmortization();
                  
@@ -41,7 +42,7 @@ define([
 
             $scope.update = function  (argument) {
                 $scope.financement.update();
-                console.log($scope.financement);
+                //console.log($scope.financement);
             }
 
             $scope.getAmortization = function () {
@@ -149,6 +150,12 @@ define([
             $scope.init();
 
     });
+
+    app.filter('mul', function() {
+        return function(input) {
+        return input *2;
+  };
+});
     
     
 });

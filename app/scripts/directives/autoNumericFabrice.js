@@ -2,7 +2,7 @@
 /**
 *  Module
 *
-* Description
+* Format input amount value into normalize representation format for money value
 */
 define([
     'scripts/app',

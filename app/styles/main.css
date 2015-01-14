@@ -47,7 +47,16 @@ form {
 }
 
 .container {
-  min-width: 90%;
+  min-width: 70%;
+}
+
+input.form-control {
+  border:none;
+  border-radius: 0px;
+}
+
+.refInputs{
+  background-color: #C0C0C0;
 }
 .datepicker{
   width: 100%;
