@@ -14,7 +14,7 @@ define([
 			this.duration = duration;
 			
 			this.date = date;
-			this.dateString = date.toLocaleDateString();;
+			this.dateString = date.toLocaleDateString();
 			
 			this.monthlyPayment = 0;
 			this.amortization = [];
@@ -25,11 +25,23 @@ define([
 		Financement.prototype = {
 			/* body... */
 
-			update: function () {
+			update: function (monthlyPayment) {
+				console.log('wat agais');
 				this.date = new Date(this.formatDate(this.dateString));
-				this.rate = Math.pow(1 + (this.initRate/100), 1 / 12) - 1;
-				this.setMonthlyPayment();
+				this.rate = Math.round((Math.pow(1 + (this.initRate/100), 1 / 12) - 1)*1000000)/1000000;
+				if(monthlyPayment){
+					this.monthlyPayment = monthlyPayment
+					this.setDuration();
+				}else{
+					this.setMonthlyPayment();
+				}
 				this.setAmortization();
+
+			},
+			setDuration : function (argument) {
+				console.log(this.duration);
+				this.duration = Math.floor(DC.CreditUtil.calculDuree(this.rate, this.monthlyPayment/this.capital));
+				this.setMonthlyPayment();
 			},
 			setMonthlyPayment : function(){
 				this.monthlyPayment = DC.CreditUtil.calculMensualite(this.rate, this.duration)*this.capital;
@@ -43,18 +55,20 @@ define([
 					this.amortization[i].dateTerme=this.getDateTerme(i+1);
 					this.amortization[i].interest=this.getInterest(i);
 					this.amortization[i].capital=this.getCapital(i);
-					this.amortization[i].SRD=DC.CreditUtil.calculCapital(this.rate, this.duration, i+1)*this.capital;;
+					this.amortization[i].SRD=DC.CreditUtil.calculCapitalWithMensualite(this.rate, this.duration, i+1,(this.monthlyPayment/this.capital))*this.capital;;
 					this.amortization[i].monthlyPayment=this.monthlyPayment;
 					this.amortization[i].totalPayment=this.monthlyPayment*(i+1);
 					this.amortization[i].totalInterest=this.getTotalInterest(i);
 
 				};
+				this.totalPayement = this.amortization[this.duration-1].totalPayment;
+				this.totalInterest = this.amortization[this.duration-1].totalInterest;
 			},
 			getYearsAmortization : function(){
 				return 'ok';
 			},
 			getInterest : function (periode) {
-					return this.rate*(DC.CreditUtil.calculCapital(this.rate, this.duration, periode)*this.capital);
+					return this.rate*(DC.CreditUtil.calculCapital(this.rate, this.duration, periode,(this.monthlyPayment/this.capital))*this.capital);
 
 			},
 			getCapital : function (periode) {
@@ -87,6 +101,30 @@ define([
 				return datetab.join("/");
 
 			},
+			getTotalInterestFromPeriode : function (duration) {
+				var periode = this.duration - duration;
+				var total;
+				for(var i=periode; i<this.amortization ; i++){
+					total += this.amortization[i].interest;
+				}
+				return total;
+			},
+			getTotalCapitalFromPeriode : function (duration) {
+				var periode = this.duration - duration;
+				var total;
+				for(var i=periode; i<this.amortization ; i++){
+					total += this.amortization[i].capital;
+				}
+				return total;
+			},
+			getTotalFromPeriode : function  (duration) {
+				var periode = this.duration - duration;
+				var total;
+				for(var i=periode; i<this.amortization ; i++){
+					total += this.amortization[i].interest+this.amortization[i].capital;
+				}
+				return total;
+			}
 
 
 		};

@@ -29,7 +29,7 @@ define([
 				    var a = 0;
 	    			var b = 1;
 	    			var chart ='';
-				/*element.append('<div id="'+attrs.val+'" style="width:100%; height:400px;"></div>');
+				element.append('<div id="'+attrs.val+'" style="width:100%; height:400px;"></div>');
 				var chart = new Highcharts.Chart(scope.val);
 				scope.$watch('val', function (newVal) {
 						a+=1;
@@ -44,9 +44,9 @@ define([
 							}else{
 								b+=1;
 							}
-	                },100);
+	                },500);
 
-				});*/
+				});
 		
 			}
 		};

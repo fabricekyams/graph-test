@@ -13,16 +13,19 @@ define([
    	return {
    		 restrict: 'M', // E = Element, A = Attribute, C = Class, M = Comment
    		link: function($scope, iElm, iAttrs, controller) {
-   			$scope.$watch('financement.inputRate', function(newVal){
-                $scope.financement.inputRate = parseFloat(newVal);
+   			$scope.$watch('refinancing.initMortgage.initRate', function(newVal){
+                $scope.refinancing.initMortgage.initRate = parseFloat(newVal);
             });
 
-            $scope.$watch('financement.inputDuration', function(newVal){
-            	$scope.financement.inputDuration = parseInt(newVal);
+            $scope.$watch('refinancing.initMortgage.duration', function(newVal){
+            	$scope.refinancing.initMortgage.duration = parseInt(newVal);
         	});
+            $scope.$watch('refinancing.refMortgage.duration', function(newVal){
+              $scope.refinancing.refMortgage.duration = parseInt(newVal);
+          });
 
-        	$scope.$watch('financement.inputNewRate', function(newVal){
-            	$scope.financement.inputNewRate= parseFloat(newVal);
+        	$scope.$watch('refinancing.refMortgage.initRate', function(newVal){
+            	$scope.refinancing.refMortgage.initRate= parseFloat(newVal);
         	});
    		}
    	};
