@@ -13,7 +13,6 @@ define([
     function (app) {
     'use strict';
 	app.directive('ghVisualization', function(){
-    	console.log(Highcharts);
 		var margin = 20,
 	    width = 960,
 	    height = 500 - .5 - margin
@@ -29,7 +28,7 @@ define([
 				    var a = 0;
 	    			var b = 1;
 	    			var chart ='';
-				element.append('<div id="'+attrs.val+'" style="width:100%; height:400px;"></div>');
+				element.append('<div id="'+attrs.val+'" style="width:100%;"></div>');
 				var chart = new Highcharts.Chart(scope.val);
 				scope.$watch('val', function (newVal) {
 						a+=1;

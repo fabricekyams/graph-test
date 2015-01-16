@@ -62,7 +62,8 @@ input.form-control {
 }
 
 .refInputs{
-  background-color: #C0C0C0;
+  background-color: #3366FF;
+  color: white;
 }
 .datepicker{
   width: 100%;

@@ -41,7 +41,6 @@ define([
 				this.setCapital();
 				this.setMonthlyPayment();
 				this.setAmortization();
-				console.log(this);
 			},
 			setCapital : function () {
 

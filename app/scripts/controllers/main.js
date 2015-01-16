@@ -34,6 +34,7 @@ define([
                 $scope.refinancingOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
                 $scope.refinancing= new Refinancing(310000.00, 2.918 , 120 , new Date('01/31/2011'), new Date('01/31/2015'),2.28);
                 $scope.update();
+                console.log($scope.refinancing);
                // $scope.refinancing.update(true);
 
                 //$scope.getAmortization();
@@ -48,16 +49,17 @@ define([
                 $scope.isTotalBeneficial = $scope.calculIsTotalBeneficial() ? "D'avantage" : "De désavantage";
                 $scope.ismonthlyBeneficial = $scope.calculIsMonthlyBeneficial() ? "D'avantage" : "De désavantage";
                 $scope.isBeneficial = $scope.calculIsTotalBeneficial() ? "Avantageux" : "Désavantageux";
+                
                 $scope.formatDataGraph();
-                console.log($scope.refinancing);
+
+
+                
             }
             $scope.calculMonthDiff = function () {
                 return $scope.refinancing.initMortgage.monthlyPayment - $scope.refinancing.refMortgage.monthlyPayment;
             }
             $scope.calculTotalDiff = function () {
-                console.log($scope.refinancing.initMortgage.totalPayement);
-                console.log($scope.refinancing.refMortgage.totalPayement);
-                return ($scope.refinancing.initMortgage.monthlyPayment *  $scope.refinancing.durationLeft) - $scope.refinancing.refMortgage.totalPayement;
+                return ($scope.refinancing.initMortgage.monthlyPayment *  $scope.refinancing.durationLeft) - $scope.refinancing.refMortgage.totalPayment;
             }
             $scope.calculIsMonthlyBeneficial = function () {
                 var benef = ($scope.monthDiff > 0);
@@ -98,44 +100,49 @@ define([
                 return chart;
 
             }
-            $scope.formatdiff = function (argument) {
+            $scope.formatcomp = function (argument) {
                 var type= 'column';
                 var title = 'difference ';  
                 var xtitle = 'Financement';
                 var ytitle = 'Montant';
                 var payment = [
-                    $scope.refinancing.initMortgage.getTotalCapitalFromPeriode($scope.refinancing.durationLeft),
-                    $scope.refinancing.initMortgage.
+                    $scope.refinancing.initMortgage.totalCapitalIfRef,
+                    $scope.refinancing.refMortgage.totalCapital
                 ];
-                var interet = [];
-                var indem = [];
-                var charges = [];
+                var interest = [
+                    $scope.refinancing.initMortgage.totalInterestIfRef,
+                    $scope.refinancing.refMortgage.totalInterest
+                ];
+                var indem = [0, $scope.refinancing.indem ];
+                var charges = [0, $scope.refinancing.fileCharges];
 
-
-                
-                for(var i in  $scope.refinancing.refMortgage.amortization ){
-                    interest[i] = $scope.refinancing.refMortgage.amortization[i].interest;
-                    capitalleft[i] = $scope.refinancing.refMortgage.amortization[i].capital;
-                }
-                var series= [{
-                    name: 'Interet',
-                    data: interest
-                }, {
-                    name: 'Remboursement',
-                    data: capitalleft
-                },{
-                    name: 'indemnité de main levé',
-                    data: interest
-                }, {
+                var series= [
+                {
                     name: 'frais de dossier',
-                    data: capitalleft
-                }];
-                var to = $scope.idChart = 'InterestChart';
+                    data: charges
+                },
+                {
+                    name: 'indemnité de main levé',
+                    data: indem
+                }, 
+                {
+                    name: 'interest',
+                    data: interest,
+                    color: '#FF0000'
+                },
+                {
+                    name: 'Remboursement',
+                    data: payment,
+                    color: '#0099FF'
+                } 
+                ];
+                var to = $scope.idChart = 'compChart';
                 var chart = $scope.chart(to, type, title, series, xtitle, ytitle);
                 chart.plotOptions = {
                     column: {
                         stacking: 'normal'}
                 };
+
                 chart.xAxis.categories=['prêt actuel' , 'rachat']
                 return chart;
 
@@ -187,13 +194,13 @@ define([
                     },
                     series: series
                 }
-                console.log(results);
                 return results;
             }
 
             $scope.formatDataGraph = function (data, title) {
                 $scope.InterestChart = $scope.formatInterest()
                 $scope.srdChart = $scope.formatSRD()
+                $scope.compChart = $scope.formatcomp()
                 
                 /*var results = {};
                 var categories = [];

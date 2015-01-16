@@ -26,7 +26,6 @@ define([
 			/* body... */
 
 			update: function (monthlyPayment) {
-				console.log('wat agais');
 				this.date = new Date(this.formatDate(this.dateString));
 				this.rate = Math.round((Math.pow(1 + (this.initRate/100), 1 / 12) - 1)*1000000)/1000000;
 				if(monthlyPayment){
@@ -39,7 +38,6 @@ define([
 
 			},
 			setDuration : function (argument) {
-				console.log(this.duration);
 				this.duration = Math.floor(DC.CreditUtil.calculDuree(this.rate, this.monthlyPayment/this.capital));
 				this.setMonthlyPayment();
 			},
@@ -61,8 +59,9 @@ define([
 					this.amortization[i].totalInterest=this.getTotalInterest(i);
 
 				};
-				this.totalPayement = this.amortization[this.duration-1].totalPayment;
+				this.totalPayment = this.amortization[this.duration-1].totalPayment;
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
+				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
 			getYearsAmortization : function(){
 				return 'ok';
@@ -103,24 +102,25 @@ define([
 			},
 			getTotalInterestFromPeriode : function (duration) {
 				var periode = this.duration - duration;
-				var total;
-				for(var i=periode; i<this.amortization ; i++){
+				var total=0;
+				for(var i=periode; i<this.amortization.length ; i++){
 					total += this.amortization[i].interest;
 				}
+
 				return total;
 			},
 			getTotalCapitalFromPeriode : function (duration) {
 				var periode = this.duration - duration;
-				var total;
-				for(var i=periode; i<this.amortization ; i++){
+				var total=0;
+				for(var i=periode; i<this.amortization.length ; i++){
 					total += this.amortization[i].capital;
 				}
 				return total;
 			},
 			getTotalFromPeriode : function  (duration) {
 				var periode = this.duration - duration;
-				var total;
-				for(var i=periode; i<this.amortization ; i++){
+				var total=0;
+				for(var i=periode; i<this.amortization.length ; i++){
 					total += this.amortization[i].interest+this.amortization[i].capital;
 				}
 				return total;

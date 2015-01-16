@@ -14,6 +14,9 @@ define([
 			this.init();
 			this.fileCharges = 330;
 			this.refMortgage = new Financement(this.capital, newRate, this.durationLeft, newDate);
+			this.initMortgage.totalPaymentIfRef = this.initMortgage.getTotalFromPeriode(this.durationLeft);
+			this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
+			this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);
 			this.update();
 			
 
@@ -44,10 +47,12 @@ define([
 				this.SRD = this.getSRD();
 				this.indem = this.getIndem(this.rate);
 				this.capital = this.getNewCapital();
+				this.initMortgage.totalPaymentIfRef = this.initMortgage.getTotalFromPeriode(this.durationLeft);
+				this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
+				this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);
 			},
 
 			getDurationLeft : function (date, newDate) {
-				console.log(newDate);
 				var month = (newDate.getFullYear() - date.getFullYear())*12;
 				month-= (date.getMonth() - newDate.getMonth());
 				return this.initMortgage.duration-month;

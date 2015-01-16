@@ -11,154 +11,248 @@
         </div>
         <div class="inputs">
           <div class="form-group">
-          <label for="finType">Type</label>
-          <select ng-change="update()" class="form-control" id="finType" ng-model="refinancing.initMortgage.type" ng-options="option for option  in refinancingOptions">
-          </select>
+            <label for="finType">Type</label>
+            <select ng-change="update()" class="form-control" id="finType" ng-model="refinancing.initMortgage.type" ng-options="option for option  in refinancingOptions">
+            </select>
           </div>
           <div class="form-group">
             <label for="rate">Taux Annuel</label>
-            <input ng-model="refinancing.initMortgage.initRate " ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
-            <input  ng-model="refinancing.initMortgage.initRate" ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" >
+            <div class="row">
+              <div class="col-md-6">
+                <input ng-model="refinancing.initMortgage.initRate " ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="0.0" max="10.0"  step ="0.001" >
+              </div>
+              <div class="col-md-6">
+                <input  ng-model="refinancing.initMortgage.initRate" ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="0" max="10" step ="0.001" >
+              </div>
+            </div>
           </div>
           <div ng-show="refinancing.initMortgage.type !='fixe'">
-          <div class="form-group">
-            <label for="rate">Indice de reference</label>
-            <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
-            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refInd">
-          </div>
-          <div class="form-group" ng-show="refinancing.type !='fixe'">
-            <label for="rate">Variation</label>
-            <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
-            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refInd">
-          </div>
+            <div class="form-group">
+              <label for="rate">Indice de reference</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+                </div>
+                <div class="col-md-6">
+                  <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refInd">
+                </div>
+              </div>
+            </div>
+            <div class="form-group" ng-show="refinancing.type !='fixe'">
+              <label for="rate">Variation</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+                </div>
+                <div class="col-md-6">
+                  <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refInd">
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
             <label for="amount">Montant</label> 
-            <input  ng-model="refinancing.initMortgage.capital" auto-numeric-fabrice ng-change="update()"  type="text"  class="form-control" id="amount-nb"  > 
-            <input  ng-model="refinancing.initMortgage.capital"  ng-change="update()" type="range" class="form-control" id="amount"  placeholder="Montant"  min="0" max="500000"  step="10000">
+            <div class="row">
+              <div class="col-md-6">
+                <input  ng-model="refinancing.initMortgage.capital" auto-numeric-fabrice ng-change="update()"  type="text"  class="form-control" id="amount-nb"  > 
+              </div>
+              <div class="col-md-6">
+                <input  ng-model="refinancing.initMortgage.capital"  ng-change="update()" type="range" class="form-control" id="amount"  placeholder="Montant"  min="0" max="500000"  step="10000">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="duration">Durée (mois)</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <input ng-model="refinancing.initMortgage.duration" ng-change="update()" ype="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360"  step='12'>
+                </div>
+                <div class="col-md-6">
+                  <input  ng-change="update()" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.initMortgage.duration" step='12'>
+                </div>
+              </div>
+            </div>
+
           </div>
-          
-          <div class="form-group">
-            <label for="duration">Durée (mois)</label>
-            <input ng-model="refinancing.initMortgage.duration" ng-change="update()" ype="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360"  step='12'>
-            <input  ng-change="update()" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.initMortgage.duration" step='12'>
+
+          <div class="col-md-12">
+            <h3>Rachat</h3>
+
+            <div class="form-group">
+              <label  for="dateFirstPayement">Date premier versement</label>
+              <input ng-change="update()" ng-model='refinancing.refMortgage.dateString' id="datetimepicker" class="datepicker" type="text" after-today >
+            </div>
+            <div class="inputs">
+              <div class="form-group">
+                <label for="finType">Type</label>
+                <select ng-change="update()" class="form-control" id="finType" ng-model="refinancing.refMortgage.type" ng-options="option for option  in refinancingOptions">
+
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="rate">Nouveau Taux Annuel</label>
+                <div class="row">
+                  <div class="col-md-6">
+                    <input  ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="0.0" max="10.0"  step ="0.001" ng-model="refinancing.refMortgage.initRate">
+                  </div>
+                  <div class="col-md-6">
+                    <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="0.0" max="10.0" step ="0.001" ng-model="refinancing.refMortgage.initRate">
+                  </div>
+                </div>
+              </div>
+              <div ng-show="refinancing.refMortgage.type !='fixe'">
+                <div class="form-group" >
+                  <label for="rate">Indice de reference</label>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+                    </div>
+                    <div class="col-md-6">
+                      <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refInd">
+                    </div>
+                  </div>
+                  <div class="form-group" ng-show="refinancing.refType !='fixe'">
+                    <label for="rate">Variation</label>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+                      </div>
+                      <div class="col-md-6">
+                        <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refInd">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+                <div class="form-group" ng-show = "!sameMonthlyPayement">
+                  <label for="duration">Durée (mois)</label>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <input ng-change="update(true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
+                    </div>
+                    <div class="col-md-6">
+                      <input  ng-change="update(true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
+                    </div>
+                  </div>
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" ng-model="sameMonthlyPayement"  ng-change="update()"> Même mensualité
+                  </label>
+                </div>
+
+
+
+            </div>
+
+
           </div>
         </div>
-
       </div>
-
-      <div class="col-md-12">
-        <h3>Rachat</h3>
-
-        <div class="form-group">
-          <label  for="dateFirstPayement">Date premier versement</label>
-          <input ng-change="update()" ng-model='refinancing.refMortgage.dateString' id="datetimepicker" class="datepicker" type="text" after-today >
-        </div>
-        <div class="inputs">
-          <div class="form-group">
-          <label for="finType">Type</label>
-          <select ng-change="update()" class="form-control" id="finType" ng-model="refinancing.refMortgage.type" ng-options="option for option  in refinancingOptions">
-
-          </select>
-          </div>
-          <div class="form-group">
-            <label for="rate">Nouveau Taux Annuel</label>
-            <input  ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" ng-model="refinancing.refMortgage.initRate">
-            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10.0" max="10.0" step ="0.001" ng-model="refinancing.refMortgage.initRate">
-          </div>
-          <div ng-show="refinancing.refMortgage.type !='fixe'">
-          <div class="form-group" >
-            <label for="rate">Indice de reference</label>
-            <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
-            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refInd">
-          </div>
-          <div class="form-group" ng-show="refinancing.refType !='fixe'">
-            <label for="rate">Variation</label>
-            <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
-            <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refInd">
-          </div>
-          </div>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" ng-model="sameMonthlyPayement"  ng-change="update()"> Même mensualité
-            </label>
-          </div>
-          
-          
-          <div class="form-group" ng-show = "!sameMonthlyPayement">
-            <label for="duration">Durée (mois)</label>
-            <input ng-change="update(true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
-            <input  ng-change="update(true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
-          </div>
-        </div>
-
-      </div>
-     
-
     </div>
   </div>
   <div class="col-md-9">
-    <div class="row">
-       <div class="col-md-12">
-         <table class="table">
-         <CAPTION> <h1 ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}">{{ isBeneficial }}</h1></CAPTION> 
-         <TR> 
-         <TH>Solde Restant Du à la date de rachat:</TH> 
-         <TH>Indemnité de remploie</TH> 
-         <TH>frais de dossier</TH> 
-         <TH>Capital dû après rachat:</TH> 
-         <TH>difference par mois:</TH> 
-         <TH>difference Total:</TH> 
- 
-
-       </TR>  
-        <td> {{ refinancing.SRD | number:2 }}€</td>
-        <td> {{ refinancing.indem | number:2 }}€</td>
-        <td> {{ refinancing.fileCharges | number:2 }}€</td>
-        <td> {{ refinancing.refMortgage.capital | number:2 }}€</td>
-        <td ng-class = "{isBenef: refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: !refinancing.refMortgage.isMonthlyBeneficial }"><h4>{{ monthDiff | number:2 | abs }}€ {{ ismonthlyBeneficial }}</h4></td>
-        <td ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}"><h4>{{ TotalDiff | number:2 | abs }}€ {{ isTotalBeneficial }}</h4></td>
-        </TR>
-
-         </table >
-      </div>
-
-      <div class="col-md-6">
-        <gh-visualization val="InterestChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
-      </div>
-      <div class="col-md-6">
-         <gh-visualization val="srdChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
-      </div>
-    <div class="col-md-12">
-     <TABLE class="table table-bordered"> 
-      <CAPTION> <h3>Tableau Amortissement </h3></CAPTION> 
-      <TR> 
-       <TH>Mois</TH> 
-       <TH>Echéance</TH> 
-       <TH>Capital</TH> 
-       <TH>Interet</TH> 
-       <TH>Tot. capital</TH> 
-       <TH>Tot. interet</TH> 
-       <TH>Solde Restant Du</TH> 
-       <TH>Mensualité</TH> 
-     </TR> 
-     <TR ng-repeat="amort in refinancing.refMortgage.amortization"> 
-       
-       <TD> {{ amort.month }}</TD> 
-       <TD> {{ amort.dateTerme }}</TD> 
-       <TD> {{ amort.capital | number:2 }}</TD> 
-       <TD> {{ amort.interest | number:2 }}</TD> 
-       <TD> {{ amort.totalPayment | number:2 }}</TD> 
-       <TD> {{ amort.totalInterest | number:2 }}</TD> 
-       <TD> {{ amort.SRD | number:2 }}</TD> 
-       <TD> {{ amort.monthlyPayment | number:2 }}</TD> 
-
-     </TR> 
-   </TABLE> 
+    <div class ="row">
+      <div class="col-md-12">
+        <CAPTION> <h1 ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}">{{ isBeneficial }}</h1>
+          <span ><h4 >Mois: <strong ng-class = "{isBenef: refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: !refinancing.refMortgage.isMonthlyBeneficial }">{{ monthDiff | number:2 | abs }}€ {{ ismonthlyBeneficial }}</strong></h4></span>
+          <span ><h4>Total: <strong  ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}">{{ TotalDiff | number:2 | abs }}€ {{ isTotalBeneficial }}</strong></h4></span>
     </div>
+      <div class="col-md-6"  style="margin-bottom: 0px; bottom: -47px;">
+        </CAPTION> 
+       <table class="table">
+        <TR> 
+         <th></th>
+         <th>Pret Actuel</th>
+         <th>Rachat</th>
+       </TR>
+       <tr>
+         <TH>Solde Restant Du:</TH> 
+         <td> {{ refinancing.SRD | number:2 }}€</td>
+         <td> {{ refinancing.SRD | number:2 }}€</td>
+       </tr> 
+       <tr>
+         <TH>Indemnité de remploie</TH> 
+         <td> 0€</td>
+         <td> {{ refinancing.indem | number:2 }}€</td>
+       </tr>
+       <tr>
+         <TH>frais de dossier</TH> 
+         <td> 0€</td>
+         <td> {{ refinancing.fileCharges | number:2 }}€</td>
+       </tr>  
+       <tr>
+         <TH>Capital dû après rachat:</TH> 
+         <td> {{ refinancing.SRD | number:2 }}€</td>
+         <td> {{ refinancing.refMortgage.capital | number:2 }}€</td>
+       </tr>   
+       <tr>
+         <tr>
+          <th>Total Interet</th>
+          <td> {{ refinancing.initMortgage.totalInterestIfRef | number:2 }}€</td>
+          <td> {{ refinancing.refMortgage.totalInterest | number:2 }}€</td>
+        </tr>  
+        <tr>
+         <TH>Mensualité:</TH> 
+         <td ng-class = "{isBenef: !refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: refinancing.refMortgage.isMonthlyBeneficial }"> {{ refinancing.initMortgage.monthlyPayment | number:2 }}€</td>
+         <td ng-class = "{isBenef: refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: !refinancing.refMortgage.isMonthlyBeneficial }"> {{ refinancing.refMortgage.monthlyPayment | number:2 }}€</td>
+       </tr>   
+       <tr>
+         <th>Total</th>
+         <td ng-class = "{isBenef: !refinancing.refMortgage.isTotalBeneficial , isNotBenef: refinancing.refMortgage.isTotalBeneficial}"> {{ refinancing.initMortgage.totalPaymentIfRef | number:2 }}€</td>
+         <td ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}"> {{ refinancing.refMortgage.totalPayment | number:2 }}€</td>
+       </tr>  
+     </TR>
+   </table >
+ </div>
 
+ <div class="col-md-6">
+  <gh-visualization val="compChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
+</div>
+</div>
+<div class ="row">
 
+  <div class="col-md-6">
+    <gh-visualization val="InterestChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
+  </div>
+  <div class="col-md-6">
+   <gh-visualization val="srdChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
  </div>
 </div>
+
+<div class="row">
+  <div class="col-md-12">
+   <TABLE class="table table-bordered"> 
+    <CAPTION> <h3>Tableau Amortissement </h3></CAPTION> 
+    <TR> 
+     <TH>Mois</TH> 
+     <TH>Echéance</TH> 
+     <TH>Capital</TH> 
+     <TH>Interet</TH> 
+     <TH>Tot. capital</TH> 
+     <TH>Tot. interet</TH> 
+     <TH>Solde Restant Du</TH> 
+     <TH>Mensualité</TH> 
+   </TR> 
+   <TR ng-repeat="amort in refinancing.refMortgage.amortization"> 
+
+     <TD> {{ amort.month }}</TD> 
+     <TD> {{ amort.dateTerme }}</TD> 
+     <TD> {{ amort.capital | number:2 }}</TD> 
+     <TD> {{ amort.interest | number:2 }}</TD> 
+     <TD> {{ amort.totalPayment | number:2 }}</TD> 
+     <TD> {{ amort.totalInterest | number:2 }}</TD> 
+     <TD> {{ amort.SRD | number:2 }}</TD> 
+     <TD> {{ amort.monthlyPayment | number:2 }}</TD> 
+
+   </TR> 
+ </TABLE>
 </div>
+
+</div>
+</div>
+</div>
+
+
