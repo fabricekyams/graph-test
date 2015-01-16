@@ -124,6 +124,10 @@ define([
 					total += this.amortization[i].interest+this.amortization[i].capital;
 				}
 				return total;
+			},
+			setVariation: function (argument) {
+				var temp = this.type.split("/");
+				this.variation = { 'fixe':temp[0], 'reval':temp[1]};
 			}
 
 

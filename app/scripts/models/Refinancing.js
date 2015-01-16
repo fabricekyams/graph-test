@@ -18,6 +18,7 @@ define([
 			this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
 			this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);
 			this.update();
+
 			
 
 		}
@@ -69,6 +70,9 @@ define([
 			},
 			getNewCapital : function(){
 				return this.indem+this.SRD+this.fileCharges;
+			},
+			generateRateTable : function () {
+				// body...
 			}
 
 

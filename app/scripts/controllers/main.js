@@ -198,87 +198,9 @@ define([
             }
 
             $scope.formatDataGraph = function (data, title) {
-                $scope.InterestChart = $scope.formatInterest()
-                $scope.srdChart = $scope.formatSRD()
-                $scope.compChart = $scope.formatcomp()
-                
-                /*var results = {};
-                var categories = [];
-                var series = [];
-                var type = '';
-                var graphTitle = '';
-                var to = '';
-
-                for (var i = 0; i < data.length; i++) {
-                    categories[categories.length] = i;
-                };
-                switch(title){
-                    case 'interest':
-                        var interest = [];
-                        var principle = [];
-                        for (var i = 0; i < data.length; i++) {
-                            interest[i] = data[i].paymentToInterest;
-                            principle[i] = data[i].paymentToPrinciple;
-                        };
-                        series= [{
-                            name: 'Interet',
-                            data: interest,
-                            color: '#FF0000'
-                        }, {
-                            name: 'Remboursement',
-                            data: principle
-                        }];
-                        type = 'column';
-                        graphTitle = 'Interêts';
-                        to = $scope.idChart = 'InterestChart';
-
-                        break;
-                    case 'srd':
-                        var srd = [];
-                        for (var i = 0; i < data.length; i++) {
-                            srd[i] = data[i].principle;
-                        };
-                        series= [{
-                            name: 'Solde Restant Dû',
-                            data: srd
-                        }];
-                        type = 'line';
-                        graphTitle = 'Solde Restant Dû';
-                        to = $scope.idChart = 'srdChart';
-
-                        break;
-                    default:
-                        console.log('nothing');
-                        break;
-                }
-                
-
-                results = {
-                    chart: {
-                        renderTo: to,
-                        type: type,
-                        animation: {
-                            duration: 1000
-                        }
-                    },
-                    title: {
-                        text: graphTitle
-                    },
-                    xAxis: {
-                        //categories: categories,
-                        title: {
-                            text: 'Mois'
-                        }
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Montant'
-                        }
-                    },
-                    series: series
-                }
-                return results;*/
-
+                $scope.InterestChart = $scope.formatInterest();
+                $scope.srdChart = $scope.formatSRD();
+                $scope.compChart = $scope.formatcomp();
 
             }
 

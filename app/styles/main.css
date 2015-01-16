@@ -62,11 +62,21 @@ input.form-control {
 }
 
 .refInputs{
-  background-color: #3366FF;
+  background: #1e5799; /* Old browsers */
+background: -moz-linear-gradient(top,  #1e5799 0%, #217fc6 99%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1e5799), color-stop(99%,#217fc6)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #1e5799 0%,#217fc6 99%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #1e5799 0%,#217fc6 99%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #1e5799 0%,#217fc6 99%); /* IE10+ */
+background: linear-gradient(to bottom,  #1e5799 0%,#217fc6 99%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#217fc6',GradientType=0 ); /* IE6-9 */
+
+
   color: white;
 }
-.datepicker{
+input.datepicker{
   width: 100%;
+  color: black;
 }
 /* Customize container */
 @media (min-width: 768px) {
