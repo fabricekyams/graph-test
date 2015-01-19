@@ -110,24 +110,22 @@
                   <label for="rate">Indice de reference</label>
                   <div class="row">
                     <div class="col-md-6">
-                      <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+                      <input ng-model="refinancing.refMortgage.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
                     </div>
                     <div class="col-md-6">
-                      <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refInd">
+                      <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refMortgage.refInd">
                     </div>
                   </div>
-                  <div class="form-group" ng-show="refinancing.refType !='fixe'">
                     <label for="rate">Variation</label>
                     <div class="row">
                       <div class="col-md-6">
-                        <input ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+                        <input ng-model="refinancing.refMortgage.cap.pos" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
                       </div>
                       <div class="col-md-6">
-                        <input  ng-model="refinancing.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001">  
+                        <input  ng-model="refinancing.refMortgage.cap.neg" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001">  
                       </div>
                     </div>
                   </div>
-                </div>
               </div>
 
               <div class="form-group" ng-show = "!sameMonthlyPayement">

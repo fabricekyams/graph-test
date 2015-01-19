@@ -17,6 +17,8 @@ define([
 			this.dateString = date.toLocaleDateString();
 			
 			this.monthlyPayment = 0;
+			this.variation = {};
+			this.cap = {};
 			this.amortization = [];
 			this.type = 'fixe';
 			this.update();
@@ -34,7 +36,18 @@ define([
 				}else{
 					this.setMonthlyPayment();
 				}
-				this.setAmortization();
+
+				if(this.type.localeCompare('fixe') == 0 ){
+					this.variation = {};
+					this.setAmortization();
+				}else{
+					this.setVariation();
+					if(this.variation.fixe>= this.duration){
+						this.setAmortization();
+					}else{
+						this.setAmortizationWithVariation();
+					}
+				}
 
 			},
 			setDuration : function (argument) {
@@ -47,27 +60,52 @@ define([
 
 			setAmortization : function () {
 				this.amortization=[];
-				for (var i = 0; i < this.duration; i++) {
-					this.amortization[i]={};
-					this.amortization[i].month='mois: '+(i+1);
-					this.amortization[i].dateTerme=this.getDateTerme(i+1);
-					this.amortization[i].interest=this.getInterest(i);
-					this.amortization[i].capital=this.getCapital(i);
-					this.amortization[i].SRD=DC.CreditUtil.calculCapitalWithMensualite(this.rate, this.duration, i+1,(this.monthlyPayment/this.capital))*this.capital;;
-					this.amortization[i].monthlyPayment=this.monthlyPayment;
-					this.amortization[i].totalPayment=this.monthlyPayment*(i+1);
-					this.amortization[i].totalInterest=this.getTotalInterest(i);
-
-				};
+				this.initArmortizationVal(0,this.duration, this.duration, this.capital);
 				this.totalPayment = this.amortization[this.duration-1].totalPayment;
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
 				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
+			setAmortizationWithVariation : function () {
+				console.log('lol');
+				this.amortization=[];
+				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital);
+				//this.setIndexationRate();
+				for (var i = this.variation.fixe; i < this.duration; i=i+this.variation.reval) {
+					console.log(i);
+					this.rate += Math.round((Math.pow(1 + (2.61/100), 1 / 12) - 1)*1000000)/1000000;
+					var durationLeft = this.duration - i;
+					if(this.duration - i == this.duration%this.variation.reval){
+						this.initArmortizationVal(i,this.duration, durationLeft, this.amortization[i-1].SRD);
+					}else{
+						this.initArmortizationVal(i,this.variation.reval+i,durationLeft, this.amortization[i-1].SRD);
+					}
+				};
+				/*this.totalPayment = this.amortization[this.duration-1].totalPayment;
+				this.totalInterest = this.amortization[this.duration-1].totalInterest;
+				this.totalCapital = this.totalPayment - this.totalInterest;*/
+			},
+			initArmortizationVal : function (position, len, durationLeft, capital){
+				var period = 1;
+				for (var i = position; i < len; i++) {
+					this.amortization[i]={};
+					this.amortization[i].month='mois: '+(i+1);
+					this.amortization[i].dateTerme=this.getDateTerme(i+1);
+					this.amortization[i].monthlyPayment=DC.CreditUtil.calculMensualite(this.rate, durationLeft)*capital;
+					this.amortization[i].SRD=DC.CreditUtil.calculCapital(this.rate, durationLeft, period)*capital;
+					this.amortization[i].interest=this.getInterest(period,durationLeft,this.amortization[i].monthlyPayment,capital);
+					this.amortization[i].capital=this.amortization[i].monthlyPayment - this.amortization[i].interest;
+					this.amortization[i].totalPayment=this.monthlyPayment*(i+1);
+					this.amortization[i].totalInterest=this.getTotalInterest(i);
+					period++;
+
+				};
+				//console.log(this.amortization);
+			},
 			getYearsAmortization : function(){
 				return 'ok';
 			},
-			getInterest : function (periode) {
-					return this.rate*(DC.CreditUtil.calculCapital(this.rate, this.duration, periode,(this.monthlyPayment/this.capital))*this.capital);
+			getInterest : function (periode, duration, monthlyPayment, capital) {
+					return this.rate*(DC.CreditUtil.calculCapital(this.rate, duration, periode-1)*capital);
 
 			},
 			getCapital : function (periode) {
@@ -82,9 +120,9 @@ define([
 			getTotalInterest: function (periode) {
 				var totInterest;
 				if(periode>0){
-					totInterest = this.amortization[periode-1].totalInterest+this.getInterest(periode);
+					totInterest = this.amortization[periode-1].totalInterest+this.amortization[periode].interest;
 				}else{
-					totInterest = this.getInterest(periode)
+					totInterest = this.amortization[0].interest
 				}
 				return totInterest;
 			},
@@ -127,8 +165,11 @@ define([
 			},
 			setVariation: function (argument) {
 				var temp = this.type.split("/");
-				this.variation = { 'fixe':temp[0], 'reval':temp[1]};
-			}
+				this.variation = { 'fixe':temp[0]*12, 'reval':temp[1]*12};
+			},
+			calculIndexation : function (argument) {
+				// body...
+			} 
 
 
 		};
