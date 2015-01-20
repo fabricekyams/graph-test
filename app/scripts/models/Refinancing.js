@@ -26,12 +26,15 @@ define([
 		Refinancing.prototype = {
 
 
-			update: function (sameMonthlyPayement = false, duration) {
-				this.initMortgage.update();
+			update: function (ref,  duration, sameMonthlyPayement = false) {
+				if (!ref) {
+					this.initMortgage.update();
+				};
 				this.date = this.initMortgage.date;
 				this.newDate = new Date(this.refMortgage.formatDate(this.refMortgage.dateString));
 				this.init();
 				this.refMortgage.capital = this.capital;
+				this.refMortgage.newRefInd = this.refMortgage.refInd;
 				if(!duration){
 					this.refMortgage.duration = this.durationLeft;
 				}

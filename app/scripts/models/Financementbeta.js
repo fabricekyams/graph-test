@@ -18,8 +18,10 @@ define([
 			
 			this.monthlyPayment = 0;
 			this.variation = {};
-			this.cap = {};
+			this.cap = {pos:3,neg:3};
+			this.refInd = this.newRefInd = 2.9;
 			this.amortization = [];
+			this.story = 'max';
 			this.type = 'fixe';
 			this.update();
 		}
@@ -66,13 +68,29 @@ define([
 				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
 			setAmortizationWithVariation : function () {
-				console.log('lol');
 				this.amortization=[];
+				this.setMax();
 				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital);
 				//this.setIndexationRate();
+				switch(this.story){
+					case 'max':
+						this.calculIndexationMax();
+						break;
+					case 'min':
+						this.calculIndexationMin();
+						break;
+					case 'same':
+						this.calculIndexationSame();
+						break;
+					case 'limit':
+						this.calculIndexationMax();
+						break;
+					default:
+						this.calculIndexationMax();
+						break;
+				}
+				
 				for (var i = this.variation.fixe; i < this.duration; i=i+this.variation.reval) {
-					console.log(i);
-					this.rate += Math.round((Math.pow(1 + (2.61/100), 1 / 12) - 1)*1000000)/1000000;
 					var durationLeft = this.duration - i;
 					if(this.duration - i == this.duration%this.variation.reval){
 						this.initArmortizationVal(i,this.duration, durationLeft, this.amortization[i-1].SRD);
@@ -80,9 +98,9 @@ define([
 						this.initArmortizationVal(i,this.variation.reval+i,durationLeft, this.amortization[i-1].SRD);
 					}
 				};
-				/*this.totalPayment = this.amortization[this.duration-1].totalPayment;
+				this.totalPayment = this.amortization[this.duration-1].totalPayment;
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
-				this.totalCapital = this.totalPayment - this.totalInterest;*/
+				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
 			initArmortizationVal : function (position, len, durationLeft, capital){
 				var period = 1;
@@ -90,11 +108,12 @@ define([
 					this.amortization[i]={};
 					this.amortization[i].month='mois: '+(i+1);
 					this.amortization[i].dateTerme=this.getDateTerme(i+1);
+					this.amortization[i].rate=DC.CreditUtil.tauxPeriodiqueToAn(this.rate,1)*100;
 					this.amortization[i].monthlyPayment=DC.CreditUtil.calculMensualite(this.rate, durationLeft)*capital;
 					this.amortization[i].SRD=DC.CreditUtil.calculCapital(this.rate, durationLeft, period)*capital;
 					this.amortization[i].interest=this.getInterest(period,durationLeft,this.amortization[i].monthlyPayment,capital);
 					this.amortization[i].capital=this.amortization[i].monthlyPayment - this.amortization[i].interest;
-					this.amortization[i].totalPayment=this.monthlyPayment*(i+1);
+					this.amortization[i].totalPayment=this.getTotalPayment(i);
 					this.amortization[i].totalInterest=this.getTotalInterest(i);
 					period++;
 
@@ -125,6 +144,15 @@ define([
 					totInterest = this.amortization[0].interest
 				}
 				return totInterest;
+			},
+			getTotalPayment: function (periode) {
+				var totPayment;
+				if(periode>0){
+					totPayment = this.amortization[periode-1].totalPayment+this.amortization[periode].interest+this.amortization[periode].capital;
+				}else{
+					totPayment = this.amortization[0].interest+this.amortization[0].capital;
+				}
+				return totPayment;
 			},
 			round : function (argument) {
 				// round à la 5eme decimal
@@ -167,9 +195,37 @@ define([
 				var temp = this.type.split("/");
 				this.variation = { 'fixe':temp[0]*12, 'reval':temp[1]*12};
 			},
-			calculIndexation : function (argument) {
-				// body...
-			} 
+			calculIndexationMax : function (argument) {
+				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+this.maxInd;
+				 
+			},
+			calculIndexationMin : function (argument) {
+				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)-this.minInd;
+			},
+			calculIndexationSame : function (){
+				var tmp =  DC.CreditUtil.tauxAnToPeriodique(this.newRefInd/100,1) - DC.CreditUtil.tauxAnToPeriodique(this.refInd/100,1);
+				var ind;
+				if (tmp<0) {
+					ind = this.max(Math.abs(tmp),this.minInd);
+					ind = 0-ind;
+				}else{
+					ind = this.max(Math.abs(tmp),this.maxInd);
+					ind = ind;
+				};
+				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + ind; 
+
+			},
+			calculIndexionLimite : function (){
+
+			},
+			setMax : function (argument) {
+				this.maxInd = this.max(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.pos/100,1));
+				this.minInd = this.max(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.neg/100,1));
+			},
+			max : function (a,b) {
+				return a<b ? a : b;
+			}
+
 
 
 		};

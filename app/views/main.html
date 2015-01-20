@@ -48,8 +48,21 @@
                 </div>
               </div>
             </div>
+            <div class="form-group">
+              <label for="rate">Hausse des taux (scenarios possibles):</label>
+            <div><label class="radio-inline">
+                    <input ng-model="refinancing.initMortgage.story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum
+                  </label>
+                  <label class="radio-inline">
+                    <input ng-model="refinancing.initMortgage.story" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="min"> Minimum
+                  </label>
+                  <label class="radio-inline">
+                    <input ng-model="refinancing.initMortgage.story" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="same"> identique
+                  </label>
 
           </div>
+          </div>
+        </div>
           <div class="form-group">
             <label for="amount">Montant</label> 
             <div class="row">
@@ -85,23 +98,23 @@
             </div>
               <div class="form-group">
                 <label for="finType">Type</label>
-                <select ng-change="update()" class="form-control" id="finType" ng-model="refinancing.refMortgage.type" ng-options="option for option  in refinancingOptions">
+                <select ng-change="update(true,true)" class="form-control" id="finType" ng-model="refinancing.refMortgage.type" ng-options="option for option  in refinancingOptions">
 
                 </select>
               </div>
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" ng-model="sameMonthlyPayement"  ng-change="update()"> Même mensualité
+                  <input type="checkbox" ng-model="sameMonthlyPayement"  ng-change="update(true)"> Même mensualité
                 </label>
               </div>
               <div class="form-group">
                 <label for="rate">Nouveau Taux Annuel</label>
                 <div class="row">
                   <div class="col-md-6">
-                    <input  ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="0.0" max="10.0"  step ="0.001" ng-model="refinancing.refMortgage.initRate">
+                    <input  ng-change="update(true,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="0.0" max="10.0"  step ="0.001" ng-model="refinancing.refMortgage.initRate">
                   </div>
                   <div class="col-md-6">
-                    <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="0.0" max="10.0" step ="0.001" ng-model="refinancing.refMortgage.initRate">
+                    <input  ng-change="update(true,true)" type="range" class="form-control" id="rate" placeholder="Rate"  min="0.0" max="10.0" step ="0.001" ng-model="refinancing.refMortgage.initRate">
                   </div>
                 </div>
               </div>
@@ -110,32 +123,48 @@
                   <label for="rate">Indice de reference</label>
                   <div class="row">
                     <div class="col-md-6">
-                      <input ng-model="refinancing.refMortgage.refInd" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+                      <input ng-model="refinancing.refMortgage.refInd" ng-change="update(true,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
                     </div>
                     <div class="col-md-6">
-                      <input  ng-change="update()" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refMortgage.refInd">
+                      <input  ng-change="update(true,true)" type="range" class="form-control" id="rate" placeholder="Rate"  min="-10" max="10" step ="0.001" ng-model="refinancing.refMortgage.refInd">
                     </div>
                   </div>
                     <label for="rate">Variation</label>
                     <div class="row">
                       <div class="col-md-6">
-                        <input ng-model="refinancing.refMortgage.cap.pos" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+                        <input ng-model="refinancing.refMortgage.cap.pos" ng-change="update(true,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
                       </div>
                       <div class="col-md-6">
-                        <input  ng-model="refinancing.refMortgage.cap.neg" ng-change="update()" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001">  
+                        <input  ng-model="refinancing.refMortgage.cap.neg" ng-change="update(true,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001">  
                       </div>
                     </div>
                   </div>
+              <div class="form-group">
+                  <label for="rate">Hausse des taux (scenarios possibles):</label>
+                  <div><label class="radio-inline">
+                    <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio1" ng-model="refinancing.refMortgage.story" value="max"> Maximum
+                  </label>
+                  <label class="radio-inline">
+                    <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio2" ng-model="refinancing.refMortgage.story" value="min"> Minimum
+                  </label>
+                  <label class="radio-inline">
+                    <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio3" ng-model="refinancing.refMortgage.story" value="same"> identique
+                  </label>
+                  <label class="radio-inline">
+                    <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio3" ng-model="refinancing.refMortgage.story" value="limit"> Limite
+                  </label>
+              </div>
+              </div>
               </div>
 
               <div class="form-group" ng-show = "!sameMonthlyPayement">
                 <label for="duration">Durée (mois)</label>
                 <div class="row">
                   <div class="col-md-6">
-                    <input ng-change="update(true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
+                    <input ng-change="update(true,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
                   </div>
                   <div class="col-md-6">
-                    <input  ng-change="update(true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
+                    <input  ng-change="update(true,true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
                   </div>
                 </div>
               </div>
@@ -219,9 +248,10 @@
     <TR> 
      <TH>Mois</TH> 
      <TH>Echéance</TH> 
+     <TH>Taux</TH> 
      <TH>Capital</TH> 
      <TH>Interet</TH> 
-     <TH>Tot. capital</TH> 
+     <TH>Tot. payementl</TH> 
      <TH>Tot. interet</TH> 
      <TH>Solde Restant Du</TH> 
      <TH>Mensualité</TH> 
@@ -230,6 +260,7 @@
 
      <TD> {{ amort.month }}</TD> 
      <TD> {{ amort.dateTerme }}</TD> 
+     <TD> {{ amort.rate | number:2}}</TD> 
      <TD> {{ amort.capital | number:2 }}</TD> 
      <TD> {{ amort.interest | number:2 }}</TD> 
      <TD> {{ amort.totalPayment | number:2 }}</TD> 
