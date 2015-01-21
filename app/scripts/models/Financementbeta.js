@@ -18,7 +18,7 @@ define([
 			
 			this.monthlyPayment = 0;
 			this.variation = {};
-			this.cap = {pos:3,neg:3};
+			this.cap = {pos:6,neg:6};
 			this.refInd = this.newRefInd = 2.9;
 			this.amortization = [];
 			this.story = 'max';
@@ -62,7 +62,7 @@ define([
 
 			setAmortization : function () {
 				this.amortization=[];
-				this.initArmortizationVal(0,this.duration, this.duration, this.capital);
+				this.initArmortizationVal(0,this.duration, this.duration, this.capital, this.rate);
 				this.totalPayment = this.amortization[this.duration-1].totalPayment;
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
 				this.totalCapital = this.totalPayment - this.totalInterest;
@@ -70,7 +70,7 @@ define([
 			setAmortizationWithVariation : function () {
 				this.amortization=[];
 				this.setMax();
-				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital);
+				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital, this.rate);
 				//this.setIndexationRate();
 				switch(this.story){
 					case 'max':
@@ -89,29 +89,48 @@ define([
 						this.calculIndexationMax();
 						break;
 				}
+				var rate;
 				
 				for (var i = this.variation.fixe; i < this.duration; i=i+this.variation.reval) {
 					var durationLeft = this.duration - i;
-					if(this.duration - i == this.duration%this.variation.reval){
-						this.initArmortizationVal(i,this.duration, durationLeft, this.amortization[i-1].SRD);
+					if (this.variation.fixe == 12  && i<= this.variation.fixe+24 && this.rate > DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)) {
+						switch(i){
+							case this.variation.fixe:
+								var one =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(1/100,1));
+								rate = one < this.rate ? (one): this.rate;
+								console.log(rate*(DC.CreditUtil.calculCapital(rate, durationLeft, i-1)*this.amortization[i-1].SRD));
+								break;
+							case this.variation.fixe+12:
+								var two =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(2/100,1));
+								rate = two < this.rate ? (two) : this.rate;
+								break;
+							case this.variation.fixe+24:
+								var three =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(3/100,1));
+								rate = three < this.rate ? (three) : this.rate;
+						}
 					}else{
-						this.initArmortizationVal(i,this.variation.reval+i,durationLeft, this.amortization[i-1].SRD);
+						rate = this.rate;
+					};
+					if(this.duration - i == this.duration%this.variation.reval){
+						this.initArmortizationVal(i,this.duration, durationLeft, this.amortization[i-1].SRD, rate);
+					}else{
+						this.initArmortizationVal(i,this.variation.reval+i,durationLeft, this.amortization[i-1].SRD, rate);
 					}
 				};
 				this.totalPayment = this.amortization[this.duration-1].totalPayment;
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
 				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
-			initArmortizationVal : function (position, len, durationLeft, capital){
+			initArmortizationVal : function (position, len, durationLeft, capital, rate){
 				var period = 1;
 				for (var i = position; i < len; i++) {
 					this.amortization[i]={};
 					this.amortization[i].month='mois: '+(i+1);
 					this.amortization[i].dateTerme=this.getDateTerme(i+1);
-					this.amortization[i].rate=DC.CreditUtil.tauxPeriodiqueToAn(this.rate,1)*100;
-					this.amortization[i].monthlyPayment=DC.CreditUtil.calculMensualite(this.rate, durationLeft)*capital;
-					this.amortization[i].SRD=DC.CreditUtil.calculCapital(this.rate, durationLeft, period)*capital;
-					this.amortization[i].interest=this.getInterest(period,durationLeft,this.amortization[i].monthlyPayment,capital);
+					this.amortization[i].rate=DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100;
+					this.amortization[i].monthlyPayment=DC.CreditUtil.calculMensualite(rate, durationLeft)*capital;
+					this.amortization[i].SRD=DC.CreditUtil.calculCapital(rate, durationLeft, period)*capital;
+					this.amortization[i].interest=this.getInterest(period,durationLeft,capital,rate);
 					this.amortization[i].capital=this.amortization[i].monthlyPayment - this.amortization[i].interest;
 					this.amortization[i].totalPayment=this.getTotalPayment(i);
 					this.amortization[i].totalInterest=this.getTotalInterest(i);
@@ -123,8 +142,9 @@ define([
 			getYearsAmortization : function(){
 				return 'ok';
 			},
-			getInterest : function (periode, duration, monthlyPayment, capital) {
-					return this.rate*(DC.CreditUtil.calculCapital(this.rate, duration, periode-1)*capital);
+			getInterest : function (periode, duration, capital,rate) {
+
+					return rate*(DC.CreditUtil.calculCapital(rate, duration, periode-1)*capital);
 
 			},
 			getCapital : function (periode) {
@@ -217,6 +237,9 @@ define([
 			},
 			calculIndexionLimite : function (){
 
+			},
+			calculIndexionAdd : function (rateToAdd) {
+				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+rateToAdd;
 			},
 			setMax : function (argument) {
 				this.maxInd = this.max(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.pos/100,1));

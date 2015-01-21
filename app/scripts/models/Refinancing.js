@@ -11,6 +11,8 @@ define([
 			this.rate = rate;
 			this.date = date;
 			this.newDate = newDate;
+			this.knowSRD = 'yes';
+			
 			this.init();
 			this.fileCharges = 330;
 			this.refMortgage = new Financement(this.capital, newRate, this.durationLeft, newDate);

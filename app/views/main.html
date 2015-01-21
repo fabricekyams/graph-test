@@ -9,7 +9,52 @@
           <label for="dateFirstPayement">Date premier versement</label>
           <input  ng-model='refinancing.initMortgage.dateString' ng-change="update()" id="datetimepicker" class="datepicker" type="text" before-today  >
         </div>
-          <div class="form-group">
+    
+                    <div class="form-group">
+            <div style="display:none;">
+              <label for="amount">Connaissez-vous votre Solde Restant Dû (SRD) à la date d'aujourd'hui ?</label> 
+           
+            <label class="radio-inline">
+                    <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio1" ng-model="refinancing.knowSRD" value="yes"> Oui
+                  </label>
+                  <label class="radio-inline">
+                    <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio2" ng-model="refinancing.knowSRD" value="no"> Non
+                  </label>
+            </div>
+            <div class="capital" ng-show="refinancing.knowSRD =='no'"><label for="amount">Montant Initial</label> 
+            <div class="row">
+              <div class="col-md-6">
+                <input  ng-model="refinancing.initMortgage.capital" auto-numeric-fabrice ng-change="update()"  type="text"  class="form-control" id="amount-nb"  > 
+              </div>
+              <div class="col-md-6">
+                <input  ng-model="refinancing.initMortgage.capital"  ng-change="update()" type="range" class="form-control" id="amount"  placeholder="Montant"  min="0" max="500000"  step="10000">
+              </div>
+            </div>
+            </div>
+            <div class="capital" ng-show="refinancing.knowSRD =='yes'"><label for="amount">Solde restant dû</label> 
+            <div class="row">
+              <div class="col-md-6">
+                <input  ng-model="refinancing.initMortgage.capital" auto-numeric-fabrice ng-change="update()"  type="text"  class="form-control" id="amount-nb"  > 
+              </div>
+              <div class="col-md-6">
+                <input  ng-model="refinancing.initMortgage.capital"  ng-change="update()" type="range" class="form-control" id="amount"  placeholder="Montant"  min="0" max="500000"  step="10000">
+              </div>
+            </div>
+            </div>
+          </div>
+
+            <div class="form-group">
+              <label for="duration">Durée (mois)</label>
+              <div class="row">
+                <div class="col-md-6">
+                  <input ng-model="refinancing.initMortgage.duration" ng-change="update()" ype="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360"  step='12'>
+                </div>
+                <div class="col-md-6">
+                  <input  ng-change="update()" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.initMortgage.duration" step='12'>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
             <label for="finType">Type</label>
             <select ng-change="update()" class="form-control" id="finType" ng-model="refinancing.initMortgage.type" ng-options="option for option  in refinancingOptions">
             </select>
@@ -63,29 +108,7 @@
           </div>
           </div>
         </div>
-          <div class="form-group">
-            <label for="amount">Montant</label> 
-            <div class="row">
-              <div class="col-md-6">
-                <input  ng-model="refinancing.initMortgage.capital" auto-numeric-fabrice ng-change="update()"  type="text"  class="form-control" id="amount-nb"  > 
-              </div>
-              <div class="col-md-6">
-                <input  ng-model="refinancing.initMortgage.capital"  ng-change="update()" type="range" class="form-control" id="amount"  placeholder="Montant"  min="0" max="500000"  step="10000">
-              </div>
-            </div>
-          </div>
 
-            <div class="form-group">
-              <label for="duration">Durée (mois)</label>
-              <div class="row">
-                <div class="col-md-6">
-                  <input ng-model="refinancing.initMortgage.duration" ng-change="update()" ype="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360"  step='12'>
-                </div>
-                <div class="col-md-6">
-                  <input  ng-change="update()" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.initMortgage.duration" step='12'>
-                </div>
-              </div>
-            </div>
             </div>
 
 
