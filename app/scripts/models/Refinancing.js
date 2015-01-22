@@ -5,14 +5,14 @@ define([
 	], function (app,DC) {
 	app.factory('Refinancing', function (Financement){
 
-		function Refinancing(capital, rate, duration, date, newDate =  new Date(), newRate=0){
+		function Refinancing(capital, rate, duration, date, newDate, newRate){
 			//console.log(new Financement(capital, rate, duration, date));
 			this.initMortgage = new Financement(capital, rate, duration, date);
 			this.rate = rate;
 			this.date = date;
 			this.newDate = newDate;
-			this.knowSRD = 'yes';
-			
+			this.knowSRD = 'no';
+			this.duration = duration;
 			this.init();
 			this.fileCharges = 330;
 			this.refMortgage = new Financement(this.capital, newRate, this.durationLeft, newDate);
@@ -28,7 +28,7 @@ define([
 		Refinancing.prototype = {
 
 
-			update: function (ref,  duration, sameMonthlyPayement = false) {
+			update: function (ref,  duration, sameMonthlyPayement) {
 				if (!ref) {
 					this.initMortgage.update();
 				};

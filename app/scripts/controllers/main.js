@@ -22,15 +22,28 @@ define([
 
     function (app,finance,DC) {
     'use strict';
+
+    
+    app.filter('abs', function() {
+        return function(input) {
+        return (input.replace('-', ''));
+  };
+});
     app.controller('MainCtrl',
 
-      	function ($scope, Refinancing) {
+      	function ($scope, $http, Refinancing) {
             /**
              * in
              * @param  {[type]}
              * @return {[type]}
              */
             $scope.init = function (argument) {
+                $http.get('php/gets.php')
+                .success(function(response) {
+                    $scope.names = response;
+                    console.log($scope.names);
+                });
+
                 $scope.story='max';
                 $scope.refinancingOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
                 $scope.refinancing= new Refinancing(310000.00, 2.918 , 120 , new Date('01/31/2011'), new Date('01/31/2015'),2.28);
@@ -43,9 +56,15 @@ define([
                 
             }
 
-            $scope.update = function (ref=false,duration=false) {
+            $scope.update = function (ref , duration) {
                 $scope.refinancing.update(ref,duration,$scope.sameMonthlyPayement);
-                 $scope.updateUi();    
+                $scope.updateUi();    
+            }
+            $scope.updateWithIndPers = function (ref,duration) {
+                $scope.refinancing.initMortgage.story = 'costum'; 
+                $scope.refinancing.refMortgage.story = 'costum';
+                $scope.refinancing.update(ref,duration,$scope.sameMonthlyPayement);
+                $scope.updateUi(); 
             }
             $scope.updateUi = function(){
                 $scope.monthDiff = $scope.calculMonthDiff() ;
@@ -59,7 +78,7 @@ define([
                 return $scope.refinancing.initMortgage.monthlyPayment - $scope.refinancing.refMortgage.monthlyPayment;
             }
             $scope.calculTotalDiff = function () {
-                return ($scope.refinancing.initMortgage.monthlyPayment *  $scope.refinancing.durationLeft) - $scope.refinancing.refMortgage.totalPayment;
+                return ($scope.refinancing.initMortgage.totalPaymentIfRef) - $scope.refinancing.refMortgage.totalPayment;
             }
             $scope.calculIsMonthlyBeneficial = function () {
                 var benef = ($scope.monthDiff > 0);
@@ -210,11 +229,6 @@ define([
 
     });
 
-    app.filter('abs', function() {
-        return function(input) {
-        return (input.replace('-', ''));
-  };
-});
     
     
 });
