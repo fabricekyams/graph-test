@@ -56,6 +56,12 @@ define([
 				this.initMortgage.totalPaymentIfRef = this.initMortgage.getTotalFromPeriode(this.durationLeft);
 				this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
 				this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);
+				this.validateData();
+			},
+			validateData : function (argument) {
+					// se dplacer dans la ligne du tableau en fonction des donnee.
+					// une fois deplacer, verifier chaque donnée, si une est different, on lui donne la valeur par defaut de cette ligne
+					// ne pas changer de colone
 			},
 
 			getDurationLeft : function (date, newDate) {
