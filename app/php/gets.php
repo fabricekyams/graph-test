@@ -8,4 +8,16 @@ try {
 	echo $e->getMessage();
 	die();
 }
-echo 'hello i am working';
+
+if (isset($_GET['data'])) {
+	if ($_GET['data'] == 'all') {
+		$slect = $db->query("
+		SELECT *
+		FROM rates
+		");
+		$rates = $slect->fetchAll();
+
+		echo json_encode($rates);
+		# code...
+	}
+}

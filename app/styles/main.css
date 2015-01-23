@@ -3,6 +3,9 @@ body {
   padding-top: 20px;
   padding-bottom: 20px;
 }
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}  
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,

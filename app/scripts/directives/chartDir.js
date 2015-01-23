@@ -27,23 +27,32 @@ define([
 			link: function(scope, element, attrs, controller) {
 				    var a = 0;
 	    			var b = 1;
-	    			var chart ='';
+	    			var chart;
 				element.append('<div id="'+attrs.val+'" style="width:100%;"></div>');
-				var chart = new Highcharts.Chart(scope.val);
+
 				scope.$watch('val', function (newVal) {
-						a+=1;
-	                setTimeout(function(){
-							if( a===b){
-								for (var i = 0; i < chart.series.length; i++) {
-									chart.series[i].setData(scope.val.series[i].data,false);
-								};
-								chart.redraw();
-								a=0;
-								b=1;
-							}else{
-								b+=1;
-							}
-	                },500);
+
+					if(newVal!== undefined && chart === undefined){
+						chart = new Highcharts.Chart(scope.val);
+						console.log('okok');
+					}
+					if(chart !== undefined){
+
+							a+=1;
+		                setTimeout(function(){
+								if( a===b){
+									for (var i = 0; i < chart.series.length; i++) {
+										chart.series[i].setData(scope.val.series[i].data,false);
+									};
+									chart.redraw();
+									a=0;
+									b=1;
+								}else{
+									b+=1;
+								}
+		                },500);
+					}
+
 
 				});
 		

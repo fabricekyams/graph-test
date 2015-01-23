@@ -1,10 +1,13 @@
 define([
 	'scripts/app',
 	'DocteurCreditJS',
+	'scripts/models/DBRead.js'
 	], function (app,DC) {
-	app.factory('Financement', function(){
+	app.factory('Financement', function (DBRead , $http){
 
-		function Financement(capital, rate, duration, date){
+		function Financement(capital, rate, duration, date, rateTable){
+
+			this.generateRateTable(rateTable);
 			
 			this.capital = capital;
 
@@ -27,8 +30,8 @@ define([
 			this.amortization = [];
 			this.story = 'max';
 			this.type = 'fixe';
+			//this.generateRateTable();
 			this.update();
-			this.setIndRefList();
 		}
 
 		Financement.prototype = {
@@ -68,6 +71,7 @@ define([
 
 			setAmortization : function () {
 				this.amortization=[];
+				this.setRefIndData(0,this.rate);
 				this.initArmortizationVal(0,this.duration, this.duration, this.capital, this.rate);
 				this.totalPayment = this.amortization[this.duration-1].totalPayment;
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
@@ -78,6 +82,7 @@ define([
 				this.amortization=[];
 				this.setMax();
 				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital, this.rate);
+				this.setRefIndData(0,this.rate);
 				//this.refInd = this.refInd.slice(0,1);
 				//this.setIndexationRate();
 				switch(this.story){
@@ -117,7 +122,7 @@ define([
 								rate = one < this.rate ? (one): this.rate;
 								console.log(i/12);
 									if (this.story.localeCompare('costum')!=0) {
-									this.refInd[i/12].val = this.calculInRef(rate); 
+										this.refInd[i/12].val = this.calculInRef(rate); 
 									};
 								break;
 							case this.variation.fixe+12:
@@ -125,7 +130,7 @@ define([
 								var two =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(2/100,1));
 								rate = two < this.rate ? (two) : this.rate;
 									if (this.story.localeCompare('costum')!=0) {
-									this.refInd[i/12].val = this.calculInRef(rate);
+										this.refInd[i/12].val = this.calculInRef(rate);
 									};
 								break;
 							case this.variation.fixe+24:
@@ -133,7 +138,7 @@ define([
 								var three =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(3/100,1));
 								rate = three < this.rate ? (three) : this.rate;
 									if (this.story.localeCompare('costum')!=0) {
-									this.refInd[i/12].val = this.calculInRef(rate);
+										this.refInd[i/12].val = this.calculInRef(rate);
 									};
 							default:
 								rate = this.rate;
@@ -142,6 +147,7 @@ define([
 					}else{
 						rate = this.rate;
 					};
+					this.setRefIndData(j,rate);
 					if(this.duration - i == this.duration%this.variation.reval){
 						this.initArmortizationVal(i,this.duration, durationLeft, this.amortization[i-1].SRD, rate);
 					}else{
@@ -287,14 +293,24 @@ define([
 				}else{
 					var deb = this.refInd.length;
 					for (var i = deb; i < len+1 ; i++) {
-						console.log(rate);
+						//console.log(rate);
 						this.refInd[i] = {};
 						this.refInd[i].val = this.calculInRef(rate);
-						console.log(this.variation.fixe+(this.variation.reval*(i-1)));
-						this.refInd[i].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(i-1)));
+						//console.log(this.variation.fixe+(this.variation.reval*(i-1)));
+						//this.refInd[i].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(i-1)));
 					};
 				}
 
+
+			},
+			setRefIndData : function (period,rate) {
+				if (period==0) {
+					this.refInd[period].date = this.date.toLocaleDateString();
+				}else{
+					this.refInd[period].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(period-1)));
+				}
+				console.log(rate);
+				 this.refInd[period].rate = DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100;
 			},
 			calculIndexionAdd : function (rateToAdd) {
 				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+rateToAdd;
@@ -311,7 +327,7 @@ define([
 			},
 			calculInRef : function (rate) {
 				var indRef = rate - DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + DC.CreditUtil.tauxAnToPeriodique(this.refInd[0].val/100,1);
-				console.log(DC.CreditUtil.tauxPeriodiqueToAn(indRef,1)*100);
+				//console.log(DC.CreditUtil.tauxPeriodiqueToAn(indRef,1)*100);
 				return DC.CreditUtil.tauxPeriodiqueToAn(indRef,1)*100;
 			},
 			indexation : function  (refInd) {
@@ -324,6 +340,25 @@ define([
 				};
 				//console.log('indexation2:', DC.CreditUtil.tauxPeriodiqueToAn(indexation,1)*100);
 				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + indexation;
+			},
+			generateRateTable : function (rateTable) {
+				var quot = {};
+				this.rateTable = rateTable;
+				for (var i = 0; i < rateTable.length; i++) {
+					this.rateTable[i].quotPlus = {};		
+					this.rateTable[i].quotLess = {};
+					this.rateTable[i].quotLess.homeSafeOne = [rateTable[i].rate - 0.95,rateTable[i].rate - 1.45 ,rateTable[i].rate -  1.65];	
+					this.rateTable[i].quotLess.homeSafeTwo = [rateTable[i].rate - 1.25,rateTable[i].rate - 1.75,rateTable[i].rate - 1.95];
+					this.rateTable[i].quotLess.homeSafeThree = [rateTable[i].rate - 1.50 ,rateTable[i].rate - 2,rateTable[i].rate - 2.20];
+					this.rateTable[i].quotPlus.homeSafeOne = [rateTable[i].rate - 0.6,rateTable[i].rate - 1.10 , rateTable[i].rate - 1.30];	
+					this.rateTable[i].quotPlus.homeSafeTwo = [rateTable[i].rate - 1 ,rateTable[i].rate - 1.50 ,rateTable[i].rate - 2];
+					this.rateTable[i].quotPlus.homeSafeThree = [rateTable[i].rate - 1.25 ,rateTable[i].rate  - 1.75,rateTable[i].rate - 1.95];
+				};
+				console.log(this.rateTable);
+
+
+
+                //console.log(rates);
 			}
 
 

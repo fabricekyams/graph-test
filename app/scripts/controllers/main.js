@@ -31,24 +31,25 @@ define([
 });
     app.controller('MainCtrl',
 
-      	function ($scope, $http, Refinancing) {
+      	function ($scope, $http, $q, Refinancing) {
             /**
              * in
              * @param  {[type]}
              * @return {[type]}
              */
             $scope.init = function (argument) {
-                $http.get('php/gets.php')
+              /*   $scope.InterestChart=2;
+                $scope.srdChart=3 ;
+                $scope.compChart=4 ;*/
+                $http.get('php/gets.php/?data=all')
                 .success(function(response) {
-                    $scope.names = response;
-                    console.log($scope.names);
+                    $scope.story='max';
+                    $scope.refinancingOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
+                    $scope.refinancing= new Refinancing(310000.00, 2.918 , 120 , new Date('01/31/2011'), new Date('01/31/2015'),2.28,response);
+                    $scope.update();
+                    console.log($scope.refinancing);
                 });
 
-                $scope.story='max';
-                $scope.refinancingOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
-                $scope.refinancing= new Refinancing(310000.00, 2.918 , 120 , new Date('01/31/2011'), new Date('01/31/2015'),2.28);
-                $scope.update();
-                console.log($scope.refinancing);
                // $scope.refinancing.update(true);
 
                 //$scope.getAmortization();

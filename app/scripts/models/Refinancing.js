@@ -5,9 +5,9 @@ define([
 	], function (app,DC) {
 	app.factory('Refinancing', function (Financement){
 
-		function Refinancing(capital, rate, duration, date, newDate, newRate){
+		function Refinancing(capital, rate, duration, date, newDate, newRate, rateTable){
 			//console.log(new Financement(capital, rate, duration, date));
-			this.initMortgage = new Financement(capital, rate, duration, date);
+			this.initMortgage = new Financement(capital, rate, duration, date, rateTable);
 			this.rate = rate;
 			this.date = date;
 			this.newDate = newDate;
@@ -15,7 +15,7 @@ define([
 			this.duration = duration;
 			this.init();
 			this.fileCharges = 330;
-			this.refMortgage = new Financement(this.capital, newRate, this.durationLeft, newDate);
+			this.refMortgage = new Financement(this.capital, newRate, this.durationLeft, newDate, rateTable);
 			this.initMortgage.totalPaymentIfRef = this.initMortgage.getTotalFromPeriode(this.durationLeft);
 			this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
 			this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);

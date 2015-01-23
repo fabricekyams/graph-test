@@ -44,6 +44,7 @@ define([
         .otherwise( {
           redirectTo: '/main'
         });
+      
     });
 
     return angularAMD.bootstrap(app);
