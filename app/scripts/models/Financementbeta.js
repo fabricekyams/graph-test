@@ -5,9 +5,8 @@ define([
 	], function (app,DC) {
 	app.factory('Financement', function (DBRead , $http){
 
-		function Financement(capital, rate, duration, date, rateTable){
+		function Financement(capital, rate, duration, date){
 
-			this.generateRateTable(rateTable);
 			
 			this.capital = capital;
 
@@ -78,7 +77,7 @@ define([
 				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
 			setAmortizationWithVariation : function () {
-				console.log(this.story);
+				//console.log(this.story);
 				this.amortization=[];
 				this.setMax();
 				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital, this.rate);
@@ -96,7 +95,7 @@ define([
 						this.calculIndexationSame();
 						break;
 					case 'limit':
-						this.calculIndexationMax();
+							this.calculIndexionLimite();
 						break;
 					case 'costum':
 						this.calculIndexionCostum(this.rate);
@@ -120,13 +119,13 @@ define([
 							case this.variation.fixe:
 								var one =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(1/100,1));
 								rate = one < this.rate ? (one): this.rate;
-								console.log(i/12);
+								//console.log(i/12);
 									if (this.story.localeCompare('costum')!=0) {
 										this.refInd[i/12].val = this.calculInRef(rate); 
 									};
 								break;
 							case this.variation.fixe+12:
-								console.log(i/12);
+								//console.log(i/12);
 								var two =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(2/100,1));
 								rate = two < this.rate ? (two) : this.rate;
 									if (this.story.localeCompare('costum')!=0) {
@@ -134,7 +133,7 @@ define([
 									};
 								break;
 							case this.variation.fixe+24:
-								console.log(i/12);
+								//console.log(i/12);
 								var three =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(3/100,1));
 								rate = three < this.rate ? (three) : this.rate;
 									if (this.story.localeCompare('costum')!=0) {
@@ -282,9 +281,46 @@ define([
 
 			},
 			calculIndexionLimite : function (){
-				this.refInd = this.refInd.slice(0,1);
+				console.log('a ton avis?');
+				this.story = 'costum';
+				this.calculIndexationSame();
+				var ind = Math.floor(this.refInd[0].val - this.refInd[0].rate);
+				var rank = 1;
+				this.findLimite(ind, rank);
+				this.story = 'limit';
 
 			},
+			findLimite : function (indice , rank) {
+				console.log(indice);
+				console.log(rank);
+				if (this.indiceAdvantageous(indice+rank)  && indice+rank < this.maxIndice) {
+					this.findLimite(indice+rank, rank);
+				}else{
+					console.log('indice: ',indice);
+					if (rank>0.001) {
+						this.findLimite(indice,rank/10);
+					}else{
+						for (var i = 1; i < this.refInd.length; i++) {
+							this.refInd[i].val=indice;
+						}	
+					}
+				}
+				this.update();
+			},
+			indiceAdvantageous : function (indice) {
+				var advantageous = false;
+				for (var i = 1; i < this.refInd.length; i++) {
+					this.refInd[i].val=indice;
+				};
+				this.update();
+				if (this.totalPaymentInitMortgage>this.totalPayment) {
+					console.log(this.totalPaymentInitMortgage+' est plus grand que '+this.totalPayment+'?');
+					advantageous = true;
+				};
+				console.log(advantageous);
+				return advantageous;
+			},
+
 			calculIndexionCostum : function (rate){
 				var rest = this.duration - this.variation.fixe;
 				var len = Math.ceil(rest/this.variation.reval)
@@ -309,7 +345,7 @@ define([
 				}else{
 					this.refInd[period].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(period-1)));
 				}
-				console.log(rate);
+				//console.log(rate);
 				 this.refInd[period].rate = DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100;
 			},
 			calculIndexionAdd : function (rateToAdd) {
@@ -318,6 +354,7 @@ define([
 			setMax : function (argument) {
 				this.maxInd = this.max(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.pos/100,1));
 				this.minInd = this.max(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.neg/100,1));
+				this.maxIndice =  this.calculInRef(this.maxInd + DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1));
 			},
 			max : function (a,b) {
 				return a<b ? a : b;
@@ -340,27 +377,7 @@ define([
 				};
 				//console.log('indexation2:', DC.CreditUtil.tauxPeriodiqueToAn(indexation,1)*100);
 				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + indexation;
-			},
-			generateRateTable : function (rateTable) {
-				var quot = {};
-				this.rateTable = rateTable;
-				for (var i = 0; i < rateTable.length; i++) {
-					this.rateTable[i].quotPlus = {};		
-					this.rateTable[i].quotLess = {};
-					this.rateTable[i].quotLess.homeSafeOne = [rateTable[i].rate - 0.95,rateTable[i].rate - 1.45 ,rateTable[i].rate -  1.65];	
-					this.rateTable[i].quotLess.homeSafeTwo = [rateTable[i].rate - 1.25,rateTable[i].rate - 1.75,rateTable[i].rate - 1.95];
-					this.rateTable[i].quotLess.homeSafeThree = [rateTable[i].rate - 1.50 ,rateTable[i].rate - 2,rateTable[i].rate - 2.20];
-					this.rateTable[i].quotPlus.homeSafeOne = [rateTable[i].rate - 0.6,rateTable[i].rate - 1.10 , rateTable[i].rate - 1.30];	
-					this.rateTable[i].quotPlus.homeSafeTwo = [rateTable[i].rate - 1 ,rateTable[i].rate - 1.50 ,rateTable[i].rate - 2];
-					this.rateTable[i].quotPlus.homeSafeThree = [rateTable[i].rate - 1.25 ,rateTable[i].rate  - 1.75,rateTable[i].rate - 1.95];
-				};
-				console.log(this.rateTable);
-
-
-
-                //console.log(rates);
 			}
-
 
 
 		};
