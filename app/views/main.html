@@ -151,32 +151,31 @@
       <label for="duration">Durée (mois)</label>
       <div class="row">
         <div class="col-md-6">
-          <input ng-disabled="sameMonthlyPayement" ng-change="update(true,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
+          <input ng-disabled="sameMonthlyPayement" ng-change="updateVarWithDurationFirst(true,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb"  ng-model="refinancing.refMortgage.duration" step='12'>
         </div>
         <div class="col-md-6">
-          <input  ng-change="update(true,true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
+          <input  ng-disabled="sameMonthlyPayement" ng-change="updateVarWithDurationFirst(true,true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
         </div>
       </div>
     </div>
       <div class="form-group">
         <label for="finType">Type</label>
-        <select ng-change="update(true,true)" class="form-control" id="finType" ng-model="refinancing.refMortgage.type" ng-options="option for option  in refinancingOptions">
+        <select ng-change="updateVarWithTypeFirst(true,true)" class="form-control" id="finType" ng-model="refinancing.refMortgage.type" ng-options="option for option  in refinancing.refMortgage.typeTable">
 
         </select>
       </div>
       <div class="checkbox">
         <label>
-          <input type="checkbox" ng-model="sameMonthlyPayement"  ng-change="update(true,false)"> Même mensualité
+          <input type="checkbox" ng-model="refinancing.refMortgage.sameMonthlyPayement"  ng-change="update(true,false)"> Même mensualité
         </label>
       </div>
       <div class="form-group">
         <label for="rate">Nouveau Taux Annuel</label>
         <div class="row">
           <div class="col-md-6">
-            <input  ng-change="update(true,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="0.0" max="10.0"  step ="0.001" ng-model="refinancing.refMortgage.initRate">
+            <select ng-change="update(true,true)" class="form-control"  id="rate-nb"  ng-model="refinancing.refMortgage.initRate " ng-options="option for option  in refinancing.refMortgage.rateTable"></select>
           </div>
           <div class="col-md-6">
-            <input  ng-change="update(true,true)" type="range" class="form-control" id="rate" placeholder="Rate"  min="0.0" max="10.0" step ="0.001" ng-model="refinancing.refMortgage.initRate">
           </div>
         </div>
       </div>

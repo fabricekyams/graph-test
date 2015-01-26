@@ -36,15 +36,10 @@ define([
 		Financement.prototype = {
 			/* body... */
 
-			update: function (monthlyPayment) {
+			update: function () {
 				this.date = new Date(this.formatDate(this.dateString));
 				this.rate = Math.round((Math.pow(1 + (this.initRate/100), 1 / 12) - 1)*1000000)/1000000;
-				if(monthlyPayment){
-					this.monthlyPayment = monthlyPayment
-					this.setDuration();
-				}else{
-					this.setMonthlyPayment();
-				}
+				this.setMonthlyPayment();
 
 				if(this.type.localeCompare('fixe') == 0 ){
 					this.variation = {};
@@ -62,7 +57,6 @@ define([
 			},
 			setDuration : function (argument) {
 				this.duration = Math.floor(DC.CreditUtil.calculDuree(this.rate, this.monthlyPayment/this.capital));
-				this.setMonthlyPayment();
 			},
 			setMonthlyPayment : function(){
 				this.monthlyPayment = DC.CreditUtil.calculMensualite(this.rate, this.duration)*this.capital;
@@ -377,6 +371,12 @@ define([
 				};
 				//console.log('indexation2:', DC.CreditUtil.tauxPeriodiqueToAn(indexation,1)*100);
 				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + indexation;
+			},
+			setCap : function (argument) {
+				var split = this.type.split(' ');
+				var splitCap= split[1].split('/');
+				this.cap.pos = parseInt(splitCap[0].replace(/[\(\)\+]/g, ''))
+				this.cap.neg = parseInt(splitCap[0].replace(/[\(\)\-]/g, ''))
 			}
 
 

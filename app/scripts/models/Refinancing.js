@@ -4,10 +4,10 @@ define([
 	'scripts/models/Financementbeta.js'
 	], function (app,DC) {
 	app.factory('Refinancing', function (Financement){
+		console.log();
 
 		function Refinancing(capital, rate, duration, date, newDate, newRate, rateTable){
 			//console.log(new Financement(capital, rate, duration, date));
-			this.generateRateTable(rateTable);
 			this.initMortgage = new Financement(capital, rate, duration, date);
 			this.rate = rate;
 			this.date = date;
@@ -17,6 +17,10 @@ define([
 			this.init();
 			this.fileCharges = 330;
 			this.refMortgage = new Financement(this.capital, newRate, this.durationLeft, newDate);
+			this.refMortgage.rateTable = [];
+			this.generateRateTable(rateTable);
+			this.generateTypeTable(rateTable);
+			this.refMortgage.rateTable[0]=newRate;
 			this.initMortgage.totalPaymentIfRef = this.initMortgage.getTotalFromPeriode(this.durationLeft);
 			this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
 			this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);
@@ -30,7 +34,7 @@ define([
 		Refinancing.prototype = {
 
 
-			update: function (ref,  duration, sameMonthlyPayement) {
+			update: function (ref,  duration, durationFirst) {
 				if (!ref) {
 					this.initMortgage.update();
 				};
@@ -43,12 +47,8 @@ define([
 					this.refMortgage.duration = this.durationLeft;
 				}
 
-				if(sameMonthlyPayement){
-					this.refMortgage.update(this.initMortgage.monthlyPayment);
-				}else{
-
-					this.refMortgage.update();
-				}
+				
+				this.validateData(durationFirst);
 				this.initMortgage.totalPaymentIfRef = this.initMortgage.getTotalFromPeriode(this.durationLeft);
 				this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
 				this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);
@@ -59,9 +59,109 @@ define([
 				this.SRD = this.getSRD();
 				this.indem = this.getIndem(this.rate);
 				this.capital = this.getNewCapital();
-				this.validateData();
 			},
-			validateData : function (argument) {
+			validateData : function (durationFirst) {
+				var found = false;
+				var linePosition;
+				if(this.refMortgage.sameMonthlyPayement){
+					this.refMortgage.monthlyPayment = this.initMortgage.monthlyPayment;
+					this.refMortgage.setDuration();
+				}
+
+				if(this.refMortgage.duration<72 ){
+					this.refMortgage.duration=72;
+				}else{
+					if(this.refMortgage.duration>360 ){
+						this.refMortgage.duration=360;
+					}
+				}
+
+
+				if (this.refMortgage.type.localeCompare('fixe')===0) {
+					var i =0;
+					while(!found && i<5) {
+						if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
+							found = true;
+							linePosition = i;
+						}
+						i++;
+					}
+
+				}else{
+					var tmpLine;
+					var i =5;
+					if(durationFirst){
+
+						while(!found && i<11) {
+							if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
+								console.log('i: ',i);
+								var tmpLine = i;
+								var split = this.refMortgage.type.split(' ');
+								if(split[0].localeCompare(this.rateTable[i].type)==0){
+									linePosition = i;
+									found = true;
+								}else{
+									linePosition = tmpLine;
+								}
+							}
+
+							i++;
+						};
+						if(!found){
+							this.refMortgage.type = this.rateTable[linePosition].type+" (+"+this.rateTable[linePosition].cap_pos+'/-'+this.rateTable[linePosition].cap_neg+') de '+Math.floor(rateTable[i].duration_min/12)+' à '+Math.floor(rateTable[i].duration_max/12)+' ans';
+							this.refMortgage.setCap();
+						}
+						console.log('line: ',linePosition);
+					}else{
+						this.refMortgage.setCap();
+						var split = this.refMortgage.type.split(' ');
+						var tmpline;
+						while(!found && i<11) {
+							if(split[0].localeCompare(this.rateTable[i].type)==0){
+								tmpline = i;
+								if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
+									linePosition = i;
+									found = true;
+								}else{
+									linePosition = tmpline;
+									console.log(linePosition);
+								}
+								
+							}
+							i++;
+						}
+
+						if(!found){
+							this.refMortgage.sameMonthlyPayement = false;
+							this.refMortgage.duration=this.rateTable[linePosition].duration_min;
+						}
+						console.log('line: ',linePosition);
+						
+					}
+				}
+				if(this.rateTable[linePosition].quotLess.homeSafeOne.indexOf(this.refMortgage.initRate)== -1 && 
+					this.rateTable[linePosition].quotLess.homeSafeTwo.indexOf(this.refMortgage.initRate)== -1 && 
+					this.rateTable[linePosition].quotLess.homeSafeThree.indexOf(this.refMortgage.initRate)== -1 && 
+					this.rateTable[linePosition].quotPlus.homeSafeOne.indexOf(this.refMortgage.initRate)== -1 && 
+					this.rateTable[linePosition].quotPlus.homeSafeTwo.indexOf(this.refMortgage.initRate)== -1 && 
+					this.rateTable[linePosition].quotPlus.homeSafeThree.indexOf(this.refMortgage.initRate)== -1 &&
+					this.refMortgage.initRate !== this.rateTable[linePosition].rate){
+						this.refMortgage.initRate = this.rateTable[linePosition].rate;
+						this.refMortgage.rateTable = [];
+						this.refMortgage.rateTable[0] = this.rateTable[linePosition].rate;
+						this.refMortgage.rateTable = this.refMortgage.rateTable.concat(
+							this.rateTable[linePosition].quotLess.homeSafeOne, 
+							this.rateTable[linePosition].quotLess.homeSafeTwo, 
+							this.rateTable[linePosition].quotLess.homeSafeThree, 
+							this.rateTable[linePosition].quotPlus.homeSafeOne, 
+							this.rateTable[linePosition].quotPlus.homeSafeTwo, 
+							this.rateTable[linePosition].quotPlus.homeSafeThree 
+							);
+						
+						
+				}  
+				this.refMortgage.update();
+				
 					// se dplacer dans la ligne du tableau en fonction des donnee.
 					// une fois deplacer, verifier chaque donnée, si une est different, on lui donne la valeur par defaut de cette ligne
 					// ne pas changer de colone
@@ -85,27 +185,43 @@ define([
 			getNewCapital : function(){
 				return this.indem+this.SRD+this.fileCharges;
 			},
-			generateRateTable : function () {
+			generateTypeTable : function (rateTable) {
 				// body...
+				this.refMortgage.typeTable = ['fixe'];
+				var j = 1;
+				for (var i = 5; i < rateTable.length; i++) {
+					this.refMortgage.typeTable[j] = rateTable[i].type+" (+"+rateTable[i].cap_pos+'/-'+rateTable[i].cap_neg+') de '+Math.floor(rateTable[i].duration_min/12)+'ans à '+Math.floor(rateTable[i].duration_max/12)+'ans';
+					j++;
+				};
 			},
 			generateRateTable : function (rateTable) {
 				var quot = {};
-				/*this.rateTable = rateTable;
+				this.rateTable = [];
+				//console.log(rateTable);
 				for (var i = 0; i < rateTable.length; i++) {
+					this.rateTable[i]= {};
+					this.rateTable[i].id = parseInt(rateTable[i].id);
+					this.rateTable[i].cap_neg = parseInt(rateTable[i].cap_neg);
+					this.rateTable[i].cap_pos = parseInt(rateTable[i].cap_pos);
+					this.rateTable[i].duration_max = parseInt(rateTable[i].duration_max);
+					this.rateTable[i].duration_min = parseInt(rateTable[i].duration_min);
+					this.rateTable[i].type = (rateTable[i].type);
+					rateTable[i].rate = parseInt(parseFloat(rateTable[i].rate)*100);
+					this.rateTable[i].rate = (rateTable[i].rate)/100;
 					this.rateTable[i].quotPlus = {};		
 					this.rateTable[i].quotLess = {};
-					this.rateTable[i].quotLess.homeSafeOne = [rateTable[i].rate - 0.95,rateTable[i].rate - 1.45 ,rateTable[i].rate -  1.65];	
-					this.rateTable[i].quotLess.homeSafeTwo = [rateTable[i].rate - 1.25,rateTable[i].rate - 1.75,rateTable[i].rate - 1.95];
-					this.rateTable[i].quotLess.homeSafeThree = [rateTable[i].rate - 1.50 ,rateTable[i].rate - 2,rateTable[i].rate - 2.20];
-					this.rateTable[i].quotPlus.homeSafeOne = [rateTable[i].rate - 0.6,rateTable[i].rate - 1.10 , rateTable[i].rate - 1.30];	
-					this.rateTable[i].quotPlus.homeSafeTwo = [rateTable[i].rate - 1 ,rateTable[i].rate - 1.50 ,rateTable[i].rate - 2];
-					this.rateTable[i].quotPlus.homeSafeThree = [rateTable[i].rate - 1.25 ,rateTable[i].rate  - 1.75,rateTable[i].rate - 1.95];
+					this.rateTable[i].quotLess.homeSafeOne = 	[(rateTable[i].rate - (095 ))/100,(rateTable[i].rate - (145 ))/100,(rateTable[i].rate - (165 ))/100];	
+					this.rateTable[i].quotLess.homeSafeTwo = 	[(rateTable[i].rate - (125 ))/100,(rateTable[i].rate - (175 ))/100,(rateTable[i].rate - (195 ))/100];
+					this.rateTable[i].quotLess.homeSafeThree = 	[(rateTable[i].rate - (150 ))/100,(rateTable[i].rate - (200 ))/100,(rateTable[i].rate - (220 ))/100];
+					this.rateTable[i].quotPlus.homeSafeOne = 	[(rateTable[i].rate - (060 ))/100,(rateTable[i].rate - (110 ))/100,(rateTable[i].rate - (130 ))/100];	
+					this.rateTable[i].quotPlus.homeSafeTwo = 	[(rateTable[i].rate - (100 ))/100,(rateTable[i].rate - (150 ))/100,(rateTable[i].rate - (200 ))/100];
+					this.rateTable[i].quotPlus.homeSafeThree = 	[(rateTable[i].rate - (125 ))/100,(rateTable[i].rate - (175 ))/100,(rateTable[i].rate - (195 ))/100];
 				};
-				console.log(this.rateTable);*/
+				console.log(rateTable);
+				console.log(this.rateTable);
 
 
 
-                //console.log(rates);
 			}
 
 
