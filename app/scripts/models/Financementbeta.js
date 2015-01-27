@@ -115,7 +115,7 @@ define([
 								rate = one < this.rate ? (one): this.rate;
 								//console.log(i/12);
 									if (this.story.localeCompare('costum')!=0) {
-										this.refInd[i/12].val = this.calculInRef(rate); 
+										this.refInd[i/12].val = this.round(this.calculInRef(rate)); 
 									};
 								break;
 							case this.variation.fixe+12:
@@ -123,7 +123,7 @@ define([
 								var two =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(2/100,1));
 								rate = two < this.rate ? (two) : this.rate;
 									if (this.story.localeCompare('costum')!=0) {
-										this.refInd[i/12].val = this.calculInRef(rate);
+										this.refInd[i/12].val = this.round(this.calculInRef(rate));
 									};
 								break;
 							case this.variation.fixe+24:
@@ -131,7 +131,7 @@ define([
 								var three =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(3/100,1));
 								rate = three < this.rate ? (three) : this.rate;
 									if (this.story.localeCompare('costum')!=0) {
-										this.refInd[i/12].val = this.calculInRef(rate);
+										this.refInd[i/12].val = this.round(this.calculInRef(rate));
 									};
 							default:
 								rate = this.rate;
@@ -340,7 +340,7 @@ define([
 					this.refInd[period].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(period-1)));
 				}
 				//console.log(rate);
-				 this.refInd[period].rate = DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100;
+				 this.refInd[period].rate = this.round(DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100);
 			},
 			calculIndexionAdd : function (rateToAdd) {
 				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+rateToAdd;
@@ -377,6 +377,9 @@ define([
 				var splitCap= split[1].split('/');
 				this.cap.pos = parseInt(splitCap[0].replace(/[\(\)\+]/g, ''))
 				this.cap.neg = parseInt(splitCap[0].replace(/[\(\)\-]/g, ''))
+			},
+			round : function (val) {
+				return Math.round(val*1000)/1000;
 			}
 
 
