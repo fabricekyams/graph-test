@@ -46,6 +46,7 @@ define([
 					this.setAmortization();
 				}else{
 					this.setVariation();
+					this.getRefTableStart();
 					if(this.variation.fixe>= this.duration){
 						this.setAmortization();
 						this.refInd = this.refInd.slice(0,1);
@@ -71,6 +72,7 @@ define([
 				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
 			setAmortizationWithVariation : function () {
+				this.initRefTable();
 				//console.log(this.story);
 				this.amortization=[];
 				this.setMax();
@@ -89,7 +91,7 @@ define([
 						this.calculIndexationSame();
 						break;
 					case 'limit':
-							this.calculIndexionLimite();
+						this.calculIndexionLimite();
 						break;
 					case 'costum':
 						this.calculIndexionCostum(this.rate);
@@ -245,6 +247,17 @@ define([
 			setVariation: function (argument) {
 				var temp = this.type.split("/");
 				this.variation = { 'fixe':temp[0]*12, 'reval':temp[1]*12};
+				switch(temp[1]){
+					case '1':
+						this.variation.type = 'A';
+						break;
+					case '3':
+						this.variation.type = 'C';
+						break;
+					case '5':
+						this.variation.type = 'E';
+						break;
+				}
 			},
 			calculIndexationMax : function (argument) {
 				this.refInd = this.refInd.slice(0,1);
@@ -316,16 +329,29 @@ define([
 			},
 
 			calculIndexionCostum : function (rate){
+				var offset = 0;
+
+				if(this.startDatePosition>0){
+					offset = this.refTab.length - this.startDatePosition;
+				}
+
 				var rest = this.duration - this.variation.fixe;
-				var len = Math.ceil(rest/this.variation.reval)
+				var len = Math.ceil(offset/this.variation.reval);
+				len += Math.ceil(rest/this.variation.reval);
+				
 				if(len+1 < this.refInd.length){
 					this.refInd = this.refInd.slice(0,len+1);
 				}else{
 					var deb = this.refInd.length;
 					for (var i = deb; i < len+1 ; i++) {
+
+						if (this.startDatePosition>0) {
+							this.refInd[i] = [];
+							this.refInd[i]
+						};
 						//console.log(rate);
-						this.refInd[i] = {};
-						this.refInd[i].val = this.calculInRef(rate);
+						this.refInd[i] = [];
+						this.refInd[i].val = this.round(this.calculInRef(rate));
 						//console.log(this.variation.fixe+(this.variation.reval*(i-1)));
 						//this.refInd[i].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(i-1)));
 					};
@@ -380,7 +406,58 @@ define([
 			},
 			round : function (val) {
 				return Math.round(val*1000)/1000;
+			},
+			setRefTab : function (tab) {
+				this.refTab = [];
+				for (var i = 0; i < tab.length; i++) {
+					this.refTab[i] = {};
+					this.refTab[i].date = new Date(tab[i].date);
+					this.refTab[i].A = this.round(parseFloat(tab[i].A));
+					this.refTab[i].C = this.round(parseFloat(tab[i].C));
+					this.refTab[i].E = this.round(parseFloat(tab[i].E));
+				};
+				console.log(this.refTab);
+			},
+			getRefTableStart : function (argument) {
+				var today = new Date();
+				var start = 0;
+				var offset = this.getMonthDifference(date, dateTwo);
+				var start = this.refTab.length - offset - 1;
+					this.refInd = [];
+					this.refInd[0] = [];
+				for (var i = 0; i < 3; i++) {
+					this.refInd[0][i] = {};
+					this.refInd[0][i].date = this.refTab[start].date.toLocaleDateString();
+					this.refInd[0][i].val = this.refTab[start][this.variation.type];
+					this.refInd[0][i].rate = this.initRate;
+					start--;
+				};
+				
+				offset = offset - this.variation.fixe;
+				if (offset>0) {
+					start = this.refTab.length - offset - 3;
+					var found = false;
+					while(!found){
+						if(this.date.getMonth()==this.refTab[start].date.getMonth()){
+							found == true;
+						}
+					start++;
+					}
+					if(found){
+						start +=11;
+					}
+				};
+				this.startDatePosition = start;
+			},
+			getMonthDifference : function (date, dateTwo){
+				var month = (dateTwo.getFullYear() - date.getFullYear())*12;
+				month-= (date.getMonth() - dateTwo.getMonth());
+				return month;
+			},
+			this.initRefTable : function (argument) {
+
 			}
+
 
 
 		};

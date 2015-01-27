@@ -48,7 +48,14 @@ define([
                     $scope.refinancing= new Refinancing(310000.00, 2.918 , 120 , new Date('01/31/2011'), new Date('01/31/2015'),2.30,response);
                     $scope.update();
                     console.log($scope.refinancing);
+                    $http.get('php/gets.php/?data=inds')
+                    .success(function(response) {
+                        $scope.refinancing.initMortgage.setRefTab(response);
+                        $scope.refinancing.refMortgage.setRefTab(response);
+                    });
                 });
+
+
 
                // $scope.refinancing.update(true);
 
@@ -58,21 +65,21 @@ define([
             }
 
             $scope.update = function (ref , duration) {
-                $scope.refinancing.update(ref,duration,$scope.sameMonthlyPayement,true);
+                $scope.refinancing.update(ref,duration,true);
                 $scope.updateUi();    
             }
             $scope.updateWithIndPers = function (ref,duration) {
                 $scope.refinancing.initMortgage.story = 'costum'; 
                 $scope.refinancing.refMortgage.story = 'costum';
-                $scope.refinancing.update(ref,duration,$scope.sameMonthlyPayement,true);
+                $scope.refinancing.update(ref,duration,true);
                 $scope.updateUi(); 
             }
             $scope.updateVarWithDurationFirst = function (ref,duration) {
-                $scope.refinancing.update(ref,duration,$scope.sameMonthlyPayement,true);
+                $scope.refinancing.update(ref,duration,true);
                 $scope.updateUi(); 
             }
             $scope.updateVarWithTypeFirst = function (ref,duration) {
-                $scope.refinancing.update(ref,duration,$scope.sameMonthlyPayement,false);
+                $scope.refinancing.update(ref,duration,false);
                 $scope.updateUi(); 
             }
             $scope.updateUi = function(){

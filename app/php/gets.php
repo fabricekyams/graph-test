@@ -20,4 +20,14 @@ if (isset($_GET['data'])) {
 		echo json_encode($rates);
 		# code...
 	}
+	if ($_GET['data'] == 'inds') {
+		$slect = $db->query("
+		SELECT *
+		FROM ref_inds
+		");
+		$rates = $slect->fetchAll();
+
+		echo json_encode($rates);
+		# code...
+	}
 }

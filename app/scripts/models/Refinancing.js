@@ -4,7 +4,6 @@ define([
 	'scripts/models/Financementbeta.js'
 	], function (app,DC) {
 	app.factory('Refinancing', function (Financement){
-		console.log();
 
 		function Refinancing(capital, rate, duration, date, newDate, newRate, rateTable){
 			//console.log(new Financement(capital, rate, duration, date));
@@ -91,10 +90,8 @@ define([
 					var tmpLine;
 					var i =5;
 					if(durationFirst){
-
 						while(!found && i<11) {
 							if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
-								console.log('i: ',i);
 								var tmpLine = i;
 								var split = this.refMortgage.type.split(' ');
 								if(split[0].localeCompare(this.rateTable[i].type)==0){
@@ -108,10 +105,9 @@ define([
 							i++;
 						};
 						if(!found){
-							this.refMortgage.type = this.rateTable[linePosition].type+" (+"+this.rateTable[linePosition].cap_pos+'/-'+this.rateTable[linePosition].cap_neg+') de '+Math.floor(rateTable[i].duration_min/12)+' à '+Math.floor(rateTable[i].duration_max/12)+' ans';
+							this.refMortgage.type = this.rateTable[linePosition].type+" (+"+this.rateTable[linePosition].cap_pos+'/-'+this.rateTable[linePosition].cap_neg+') de '+Math.floor(this.rateTable[linePosition].duration_min/12)+'ans à '+Math.floor(this.rateTable[linePosition].duration_max/12)+'ans';
 							this.refMortgage.setCap();
 						}
-						console.log('line: ',linePosition);
 					}else{
 						this.refMortgage.setCap();
 						var split = this.refMortgage.type.split(' ');
@@ -124,7 +120,6 @@ define([
 									found = true;
 								}else{
 									linePosition = tmpline;
-									console.log(linePosition);
 								}
 								
 							}
@@ -135,7 +130,6 @@ define([
 							this.refMortgage.sameMonthlyPayement = false;
 							this.refMortgage.duration=this.rateTable[linePosition].duration_min;
 						}
-						console.log('line: ',linePosition);
 						
 					}
 				}
@@ -217,8 +211,6 @@ define([
 					this.rateTable[i].quotPlus.homeSafeTwo = 	[(rateTable[i].rate - (100 ))/100,(rateTable[i].rate - (150 ))/100,(rateTable[i].rate - (200 ))/100];
 					this.rateTable[i].quotPlus.homeSafeThree = 	[(rateTable[i].rate - (125 ))/100,(rateTable[i].rate - (175 ))/100,(rateTable[i].rate - (195 ))/100];
 				};
-				console.log(rateTable);
-				console.log(this.rateTable);
 
 
 
