@@ -4,7 +4,16 @@ define([
 	'scripts/models/Financementbeta.js'
 	], function (app,DC) {
 	app.factory('Refinancing', function (Financement){
-
+		/**
+		 * [Refinancing description]
+		 * @param {[type]} capital   [description]
+		 * @param {[type]} rate      [description]
+		 * @param {[type]} duration  [description]
+		 * @param {[type]} date      [description]
+		 * @param {[type]} newDate   [description]
+		 * @param {[type]} newRate   [description]
+		 * @param {[type]} rateTable [description]
+		 */
 		function Refinancing(capital, rate, duration, date, newDate, newRate, rateTable){
 			//console.log(new Financement(capital, rate, duration, date));
 			this.initMortgage = new Financement(capital, rate, duration, date);
@@ -32,7 +41,13 @@ define([
 
 		Refinancing.prototype = {
 
-
+			/**
+			 * [update description]
+			 * @param  {[type]} ref           [description]
+			 * @param  {[type]} duration      [description]
+			 * @param  {[type]} durationFirst [description]
+			 * @return {[type]}               [description]
+			 */
 			update: function (ref,  duration, durationFirst) {
 				if (!ref) {
 					this.initMortgage.update();
@@ -53,12 +68,23 @@ define([
 				this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);
 				this.refMortgage.totalPaymentInitMortgage = this.initMortgage.totalPaymentIfRef;
 			},
+
+			/**
+			 * [init description]
+			 * @return {[type]} [description]
+			 */
 			init : function () {
 				this.durationLeft = this.getDurationLeft(this.date, this.newDate);
 				this.SRD = this.getSRD();
 				this.indem = this.getIndem(this.rate);
 				this.capital = this.getNewCapital();
 			},
+
+			/**
+			 * [validateData description]
+			 * @param  {[type]} durationFirst [description]
+			 * @return {[type]}               [description]
+			 */
 			validateData : function (durationFirst) {
 				var found = false;
 				var linePosition;
@@ -87,12 +113,12 @@ define([
 					}
 
 				}else{
-					var tmpLine;
+					var tmpLine = -1;
 					var i =5;
 					if(durationFirst){
 						while(!found && i<11) {
 							if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
-								var tmpLine = i;
+								 tmpLine = tmpLine<0 ? i : tmpLine;
 								var split = this.refMortgage.type.split(' ');
 								if(split[0].localeCompare(this.rateTable[i].type)==0){
 									linePosition = i;
@@ -111,10 +137,10 @@ define([
 					}else{
 						this.refMortgage.setCap();
 						var split = this.refMortgage.type.split(' ');
-						var tmpline;
+						var tmpline = -1;
 						while(!found && i<11) {
 							if(split[0].localeCompare(this.rateTable[i].type)==0){
-								tmpline = i;
+								tmpline = tmpline<0 ? i : tmpline;
 								if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
 									linePosition = i;
 									found = true;
@@ -161,24 +187,49 @@ define([
 					// ne pas changer de colone
 			},
 
+			/**
+			 * [getDurationLeft description]
+			 * @param  {[type]} date    [description]
+			 * @param  {[type]} newDate [description]
+			 * @return {[type]}         [description]
+			 */
 			getDurationLeft : function (date, newDate) {
 				var month = (newDate.getFullYear() - date.getFullYear())*12;
 				month-= (date.getMonth() - newDate.getMonth());
 				return this.initMortgage.duration-month;
 			},
 
+			/**
+			 * [getSRD description]
+			 * @return {[type]} [description]
+			 */
 			getSRD : function(){
 				var period = this.initMortgage.duration - this.durationLeft;
 				return this.initMortgage.amortization[period-1].SRD;
 			},
 
+			/**
+			 * [getIndem description]
+			 * @param  {[type]} rate [description]
+			 * @return {[type]}      [description]
+			 */
 			getIndem : function (rate){
 				rate = Math.round((Math.pow(1 + (rate/100), 1 / 12) - 1)*1000000)/1000000;
 				 return this.SRD*rate*3;
 			},
+			/**
+			 * [getNewCapital description]
+			 * @return {[type]} [description]
+			 */
 			getNewCapital : function(){
 				return this.indem+this.SRD+this.fileCharges;
 			},
+
+			/**
+			 * [generateTypeTable description]
+			 * @param  {[type]} rateTable [description]
+			 * @return {[type]}           [description]
+			 */
 			generateTypeTable : function (rateTable) {
 				// body...
 				this.refMortgage.typeTable = ['fixe'];
@@ -188,6 +239,12 @@ define([
 					j++;
 				};
 			},
+
+			/**
+			 * [generateRateTable description]
+			 * @param  {[type]} rateTable [description]
+			 * @return {[type]}           [description]
+			 */
 			generateRateTable : function (rateTable) {
 				var quot = {};
 				this.rateTable = [];

@@ -36,10 +36,10 @@ define([
           controller: 'MainCtrl',
           controllerUrl: 'scripts/controllers/main'
         }))
-        .when('/about', angularAMD.route( {
-          templateUrl: 'views/about.html',
-          controller: 'AboutCtrl',
-          controllerUrl: 'scripts/controllers/about'
+        .when('/admin', angularAMD.route( {
+          templateUrl: 'views/admin.html',
+          controller: 'AdminCtrl',
+          controllerUrl: 'scripts/controllers/admin'
         }))
         .otherwise( {
           redirectTo: '/main'

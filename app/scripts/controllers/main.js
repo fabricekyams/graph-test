@@ -45,7 +45,7 @@ define([
                 .success(function(response) {
                     $scope.story='max';
                     $scope.refinancingOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
-                    $scope.refinancing= new Refinancing(310000.00, 2.918 , 120 , new Date('01/31/2011'), new Date('01/31/2015'),2.30,response);
+                    $scope.refinancing= new Refinancing(310000.00, 2.918 , 120 , new Date('02/31/2011'), new Date('01/31/2015'),2.30,response);
                     $scope.update();
                     console.log($scope.refinancing);
                     $http.get('php/gets.php/?data=inds')
@@ -64,24 +64,69 @@ define([
                 
             }
 
+            /**
+             * [update description]
+             * @param  {[type]} ref      [description]
+             * @param  {[type]} duration [description]
+             * @return {[type]}          [description]
+             */
             $scope.update = function (ref , duration) {
                 $scope.refinancing.update(ref,duration,true);
                 $scope.updateUi();    
             }
+
+            /**
+             * [updateWithIndPers description]
+             * @param  {[type]} ref      [description]
+             * @param  {[type]} duration [description]
+             * @return {[type]}          [description]
+             */
             $scope.updateWithIndPers = function (ref,duration) {
                 $scope.refinancing.initMortgage.story = 'costum'; 
                 $scope.refinancing.refMortgage.story = 'costum';
                 $scope.refinancing.update(ref,duration,true);
                 $scope.updateUi(); 
             }
+
+            /**
+             * [updateVarWithDurationFirst description]
+             * @param  {[type]} ref      [description]
+             * @param  {[type]} duration [description]
+             * @return {[type]}          [description]
+             */
             $scope.updateVarWithDurationFirst = function (ref,duration) {
                 $scope.refinancing.update(ref,duration,true);
                 $scope.updateUi(); 
             }
+
+            /**
+             * [updateVarWithTypeFirst description]
+             * @param  {[type]} ref      [description]
+             * @param  {[type]} duration [description]
+             * @return {[type]}          [description]
+             */
             $scope.updateVarWithTypeFirst = function (ref,duration) {
                 $scope.refinancing.update(ref,duration,false);
                 $scope.updateUi(); 
             }
+
+            /**
+             * [updateStory description]
+             * @param  {[type]} ref      [description]
+             * @param  {[type]} duration [description]
+             * @return {[type]}          [description]
+             */
+            $scope.updateStory = function  (ref,duration) {
+                $scope.refinancing.initMortgage.story = $scope.story; 
+                $scope.refinancing.refMortgage.story = $scope.story;
+                $scope.refinancing.update(ref,duration,true);
+                $scope.updateUi();
+            }
+
+            /**
+             * [updateUi description]
+             * @return {[type]} [description]
+             */
             $scope.updateUi = function(){
                 $scope.monthDiff = $scope.calculMonthDiff() ;
                 $scope.TotalDiff = $scope.calculTotalDiff();
@@ -90,22 +135,48 @@ define([
                 $scope.isBeneficial = $scope.calculIsTotalBeneficial() ? "Avantageux" : "Désavantageux";
                 $scope.formatDataGraph(); 
             }
+
+            /**
+             * [calculMonthDiff description]
+             * @return {[type]} [description]
+             */
             $scope.calculMonthDiff = function () {
                 return $scope.refinancing.initMortgage.monthlyPayment - $scope.refinancing.refMortgage.monthlyPayment;
             }
+
+            /**
+             * [calculTotalDiff description]
+             * @return {[type]} [description]
+             */
             $scope.calculTotalDiff = function () {
                 return ($scope.refinancing.initMortgage.totalPaymentIfRef) - $scope.refinancing.refMortgage.totalPayment;
             }
+
+            /**
+             * [calculIsMonthlyBeneficial description]
+             * @return {[type]} [description]
+             */
             $scope.calculIsMonthlyBeneficial = function () {
                 var benef = ($scope.monthDiff > 0);
                 $scope.refinancing.refMortgage.isMonthlyBeneficial = benef;
                 return benef;
             }
+
+            /**
+             * [calculIsTotalBeneficial description]
+             * @return {[type]} [description]
+             */
             $scope.calculIsTotalBeneficial = function () {
                 var benef = ($scope.TotalDiff > 0);
                 $scope.refinancing.refMortgage.isTotalBeneficial = benef;
                 return benef;
             }
+
+            /**
+             * [formatInterest description]
+             * @param  {[type]} argument [description]
+             * @return {[type]}          [description]
+             */
             $scope.formatInterest = function (argument) {
                 var type= 'column';
                 var title = 'Interets et capital payé';  
@@ -135,6 +206,12 @@ define([
                 return chart;
 
             }
+
+            /**
+             * [formatcomp description]
+             * @param  {[type]} argument [description]
+             * @return {[type]}          [description]
+             */
             $scope.formatcomp = function (argument) {
                 var type= 'column';
                 var title = 'difference ';  
@@ -183,6 +260,10 @@ define([
 
             }
 
+            /**
+             * [formatSRD description]
+             * @return {[type]} [description]
+             */
             $scope.formatSRD = function(){
                 var type= 'line';
                 var title = 'Solde Restant Dû';  
@@ -203,7 +284,16 @@ define([
             }
 
 
-
+            /**
+             * [chart description]
+             * @param  {[type]} to     [description]
+             * @param  {[type]} type   [description]
+             * @param  {[type]} title  [description]
+             * @param  {[type]} series [description]
+             * @param  {[type]} xtitle [description]
+             * @param  {[type]} ytitle [description]
+             * @return {[type]}        [description]
+             */
             $scope.chart = function (to, type, title, series, xtitle, ytitle) {
                 var results = {
                     chart: {
@@ -232,6 +322,12 @@ define([
                 return results;
             }
 
+            /**
+             * [formatDataGraph description]
+             * @param  {[type]} data  [description]
+             * @param  {[type]} title [description]
+             * @return {[type]}       [description]
+             */
             $scope.formatDataGraph = function (data, title) {
                 $scope.InterestChart = $scope.formatInterest();
                 $scope.srdChart = $scope.formatSRD();

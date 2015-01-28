@@ -4,7 +4,13 @@ define([
 	'scripts/models/DBRead.js'
 	], function (app,DC) {
 	app.factory('Financement', function (DBRead , $http){
-
+		/**
+		 * [Financement description]
+		 * @param {[type]} capital  [description]
+		 * @param {[type]} rate     [description]
+		 * @param {[type]} duration [description]
+		 * @param {[type]} date     [description]
+		 */
 		function Financement(capital, rate, duration, date){
 
 			
@@ -26,6 +32,7 @@ define([
 			this.refInd[0].val =  2.9;
 			this.refInd[0].rate =  rate;
 			this.refInd[0].date =  date.toLocaleDateString();
+			this.refInd[0].dateList =  [];
 
 			this.amortization = [];
 			this.story = 'max';
@@ -36,7 +43,10 @@ define([
 
 		Financement.prototype = {
 			/* body... */
-
+			/**
+			 * [update description]
+			 * @return {[type]} [description]
+			 */
 			update: function () {
 				this.date = new Date(this.formatDate(this.dateString));
 				this.rate = Math.round((Math.pow(1 + (this.initRate/100), 1 / 12) - 1)*1000000)/1000000;
@@ -57,13 +67,25 @@ define([
 				}
 
 			},
+
+			/**
+			 * [setDuration description]
+			 * @param {[type]} argument [description]
+			 */
 			setDuration : function (argument) {
 				this.duration = Math.floor(DC.CreditUtil.calculDuree(this.rate, this.monthlyPayment/this.capital));
 			},
+
+			/**
+			 * [setMonthlyPayment description]
+			 */
 			setMonthlyPayment : function(){
 				this.monthlyPayment = DC.CreditUtil.calculMensualite(this.rate, this.duration)*this.capital;
 			},
 
+			/**
+			 * [setAmortization description]
+			 */
 			setAmortization : function () {
 				this.amortization=[];
 				//this.setRefIndData(0,this.rate);
@@ -72,10 +94,13 @@ define([
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
 				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
+
+			/**
+			 * [setAmortizationWithVariation description]
+			 */
 			setAmortizationWithVariation : function () {
 				//this.initRefTable();
 				//console.log(this.story);
-				console.log(this.refInd);
 				this.amortization=[];
 				this.setMax();
 				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital, this.rate);
@@ -102,30 +127,41 @@ define([
 						this.calculIndexationMax();
 						break;
 				}
+				var l = 0;
+				var founded = false
+				while(!founded){
+					if(this.refInd[0].dateList[l].date.localeCompare(this.refInd[0].date.date)==0){
+						founded = true;
+					}
+					l++;
+				}
+				this.refInd[0].val = this.refTab[this.refInd[0].dateList[l-1].position][this.variation.type];
 				var rate;
 				var j = 1;
 				for (var i = this.variation.fixe; i < this.duration; i=i+this.variation.reval) {
 					var durationLeft = this.duration - i;
 					//console.log(this.refInd);
 					if(this.story.localeCompare('costum')==0 || this.refInd[j].dateList.length>1){
-						//console.log(this.refInd[j].val);
 						if (this.refInd[j].dateList.length>1) {
 							var k = 0;
 							var found = false
 							while(!found){
-								if(this.refInd[j].dateList[k].date.localeCompare(this.refInd[j].date)==0){
+								if(this.refInd[j].dateList[k].date.localeCompare(this.refInd[j].date.date)==0){
 									found = true;
 								}
-								console.log(this.refInd[j].dateList[k].date);
-								console.log(this.refInd[j].date);
 								k++;
 							}
 							this.refInd[j].val = this.refTab[this.refInd[j].dateList[k-1].position][this.variation.type];
+							if (j==0) {
+								console.log('val: ', this.refTab[this.refInd[j].dateList[k-1].position][this.variation.type]);
+								console.log(this.refInd[j].val);
+								console.log(this.refInd[j]);
+							};
 						};
-						this.rate = this.indexation(this.refInd[j].val);
+						//j = j===0 ? 1 : j;
 						//console.log(DC.CreditUtil.tauxPeriodiqueToAn(this.rate,1)*100);
 					}
-				console.log(this.refInd);
+					this.rate = this.indexation(this.refInd[j].val);
 					if (this.variation.fixe == 12  && i<= this.variation.fixe+24 && this.rate > DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)) {
 						switch(i){
 							case this.variation.fixe:
@@ -170,6 +206,16 @@ define([
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
 				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
+
+			/**
+			 * [initArmortizationVal description]
+			 * @param  {[type]} position     [description]
+			 * @param  {[type]} len          [description]
+			 * @param  {[type]} durationLeft [description]
+			 * @param  {[type]} capital      [description]
+			 * @param  {[type]} rate         [description]
+			 * @return {[type]}              [description]
+			 */
 			initArmortizationVal : function (position, len, durationLeft, capital, rate){
 				var period = 1;
 				for (var i = position; i < len; i++) {
@@ -188,23 +234,55 @@ define([
 				};
 				//console.log(this.amortization);
 			},
+
+			/**
+			 * [getYearsAmortization description]
+			 * @return {[type]} [description]
+			 */
 			getYearsAmortization : function(){
 				return 'ok';
 			},
+
+			/**
+			 * [getInterest description]
+			 * @param  {[type]} periode  [description]
+			 * @param  {[type]} duration [description]
+			 * @param  {[type]} capital  [description]
+			 * @param  {[type]} rate     [description]
+			 * @return {[type]}          [description]
+			 */
 			getInterest : function (periode, duration, capital,rate) {
 
 					return rate*(DC.CreditUtil.calculCapital(rate, duration, periode-1)*capital);
 
 			},
+
+			/**
+			 * [getCapital description]
+			 * @param  {[type]} periode [description]
+			 * @return {[type]}         [description]
+			 */
 			getCapital : function (periode) {
 					return this.monthlyPayment - this.getInterest(periode);
 			},
+
+			/**
+			 * [getDateTerme description]
+			 * @param  {[type]} periode [description]
+			 * @return {[type]}         [description]
+			 */
 			getDateTerme : function (periode) {
 				var date = new Date(this.date.getTime());
 				date.setMonth(date.getMonth()+periode);
 				return date.toLocaleDateString();
 
 			},
+
+			/**
+			 * [getTotalInterest description]
+			 * @param  {[type]} periode [description]
+			 * @return {[type]}         [description]
+			 */
 			getTotalInterest: function (periode) {
 				var totInterest;
 				if(periode>0){
@@ -214,6 +292,12 @@ define([
 				}
 				return totInterest;
 			},
+
+			/**
+			 * [getTotalPayment description]
+			 * @param  {[type]} periode [description]
+			 * @return {[type]}         [description]
+			 */
 			getTotalPayment: function (periode) {
 				var totPayment;
 				if(periode>0){
@@ -223,9 +307,21 @@ define([
 				}
 				return totPayment;
 			},
+
+			/**
+			 * [round description]
+			 * @param  {[type]} argument [description]
+			 * @return {[type]}          [description]
+			 */
 			round : function (argument) {
 				// round à la 5eme decimal
 			},
+
+			/**
+			 * [formatDate description]
+			 * @param  {[type]} date [description]
+			 * @return {[type]}      [description]
+			 */
 			formatDate : function (date) {
 				date.replace('/[-]gi/', '/');
 				var datetab = date.split('/');
@@ -235,6 +331,11 @@ define([
 				return datetab.join("/");
 
 			},
+			/**
+			 * [getTotalInterestFromPeriode description]
+			 * @param  {[type]} duration [description]
+			 * @return {[type]}          [description]
+			 */
 			getTotalInterestFromPeriode : function (duration) {
 				var periode = this.duration - duration;
 				var total=0;
@@ -244,6 +345,12 @@ define([
 
 				return total;
 			},
+
+			/**
+			 * [getTotalCapitalFromPeriode description]
+			 * @param  {[type]} duration [description]
+			 * @return {[type]}          [description]
+			 */
 			getTotalCapitalFromPeriode : function (duration) {
 				var periode = this.duration - duration;
 				var total=0;
@@ -252,6 +359,12 @@ define([
 				}
 				return total;
 			},
+
+			/**
+			 * [getTotalFromPeriode description]
+			 * @param  {[type]} duration [description]
+			 * @return {[type]}          [description]
+			 */
 			getTotalFromPeriode : function  (duration) {
 				var periode = this.duration - duration;
 				var total=0;
@@ -260,6 +373,11 @@ define([
 				}
 				return total;
 			},
+
+			/**
+			 * [setVariation description]
+			 * @param {[type]} argument [description]
+			 */
 			setVariation: function (argument) {
 				var temp = this.type.split("/");
 				this.variation = { 'fixe':temp[0]*12, 'reval':temp[1]*12};
@@ -275,17 +393,34 @@ define([
 						break;
 				}
 			},
+
+			/**
+			 * [calculIndexationMax description]
+			 * @param  {[type]} argument [description]
+			 * @return {[type]}          [description]
+			 */
 			calculIndexationMax : function (argument) {
 				this.refInd = this.refInd.slice(0,1);
 				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+this.maxInd;
 				this.calculIndexionCostum(this.rate);
 				 
 			},
+
+			/**
+			 * [calculIndexationMin description]
+			 * @param  {[type]} argument [description]
+			 * @return {[type]}          [description]
+			 */
 			calculIndexationMin : function (argument) {
 				this.refInd = this.refInd.slice(0,1);
 				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)-this.minInd;
 				this.calculIndexionCostum(this.rate);
 			},
+
+			/**
+			 * [calculIndexationSame description]
+			 * @return {[type]} [description]
+			 */
 			calculIndexationSame : function (){
 				this.refInd = this.refInd.slice(0,1);
 				this.refInd[this.refInd.length] = {};
@@ -303,6 +438,11 @@ define([
 				this.calculIndexionCostum(this.rate);
 
 			},
+
+			/**
+			 * [calculIndexionLimite description]
+			 * @return {[type]} [description]
+			 */
 			calculIndexionLimite : function (){
 				console.log('a ton avis?');
 				this.story = 'costum';
@@ -313,6 +453,13 @@ define([
 				this.story = 'limit';
 
 			},
+
+			/**
+			 * [findLimite description]
+			 * @param  {[type]} indice [description]
+			 * @param  {[type]} rank   [description]
+			 * @return {[type]}        [description]
+			 */
 			findLimite : function (indice , rank) {
 				console.log(indice);
 				console.log(rank);
@@ -330,6 +477,12 @@ define([
 				}
 				this.update();
 			},
+
+			/**
+			 * [indiceAdvantageous description]
+			 * @param  {[type]} indice [description]
+			 * @return {[type]}        [description]
+			 */
 			indiceAdvantageous : function (indice) {
 				var advantageous = false;
 				for (var i = 1; i < this.refInd.length; i++) {
@@ -344,9 +497,19 @@ define([
 				return advantageous;
 			},
 
+
+			/**
+			 * [calculIndexionCostum description]
+			 * @param  {[type]} rate [description]
+			 * @return {[type]}      [description]
+			 */
 			calculIndexionCostum : function (rate){
 				var offset = 0;
 				var start;
+				if(this.refInd[0].type.localeCompare(this.variation.type)!==0){
+					this.refInd = this.refInd.slice(0,1);
+					this.refInd[0].type = this.variation.type ;
+				}
 				if(this.startDatePosition>0){
 					offset = this.refTab.length - this.startDatePosition;
 				}
@@ -365,7 +528,6 @@ define([
 						this.refInd[i] = {};
 						this.refInd[i].dateList = [];
 						if (position<this.refTab.length) {
-							console.log(this.refTab[position]);
 							this.refInd[i].val = this.refTab[position][this.variation.type];
 							for (var j = 0; j < 3; j++) {
 								//this.refInd[i][j] = {};
@@ -376,13 +538,13 @@ define([
 								//this.refInd[i][j].rate = this.initRate;
 								position--;
 							};
-							this.refInd[i].date = this.refInd[i].dateList[0].date;
+							this.refInd[i].date = this.refInd[i].dateList[0];
 							position = this.startDatePosition + (i)*this.variation.reval;
 						}else{
 								//this.refInd[i][0] = {};
 								this.refInd[i].dateList[0] = {};
 								this.refInd[i].dateList[0].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(i-1)));
-								this.refInd[i].date = this.refInd[i].dateList[0].date;
+								this.refInd[i].date = this.refInd[i].dateList[0];
 								this.refInd[i].dateList[0].position = -1;
 								this.refInd[i].val = this.round(this.calculInRef(rate));
 								//this.refInd[i][0].rate = this.initRate;
@@ -400,6 +562,12 @@ define([
 
 
 			},
+
+			/**
+			 * [setRefIndData description]
+			 * @param {[type]} period [description]
+			 * @param {[type]} rate   [description]
+			 */
 			setRefIndData : function (period,rate) {
 				//if (period==0) {
 				//	this.refInd[period].date = this.date.toLocaleDateString();
@@ -409,25 +577,59 @@ define([
 				//console.log(rate);
 				 this.refInd[period].rate = this.round(DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100);
 			},
+
+			/**
+			 * [calculIndexionAdd description]
+			 * @param  {[type]} rateToAdd [description]
+			 * @return {[type]}           [description]
+			 */
 			calculIndexionAdd : function (rateToAdd) {
 				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+rateToAdd;
 			},
+
+			/**
+			 * [setMax description]
+			 * @param {[type]} argument [description]
+			 */
 			setMax : function (argument) {
 				this.maxInd = this.max(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.pos/100,1));
 				this.minInd = this.max(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.neg/100,1));
 				this.maxIndice =  this.calculInRef(this.maxInd + DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1));
 			},
+
+			/**
+			 * [max description]
+			 * @param  {[type]} a [description]
+			 * @param  {[type]} b [description]
+			 * @return {[type]}   [description]
+			 */
 			max : function (a,b) {
 				return a<b ? a : b;
 			},
+
+			/**
+			 * [setIndRefList description]
+			 */
 			setIndRefList : function () {
 				
 			},
+
+			/**
+			 * [calculInRef description]
+			 * @param  {[type]} rate [description]
+			 * @return {[type]}      [description]
+			 */
 			calculInRef : function (rate) {
 				var indRef = rate - DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + DC.CreditUtil.tauxAnToPeriodique(this.refInd[0].val/100,1);
 				//console.log(DC.CreditUtil.tauxPeriodiqueToAn(indRef,1)*100);
 				return DC.CreditUtil.tauxPeriodiqueToAn(indRef,1)*100;
 			},
+
+			/**
+			 * [indexation description]
+			 * @param  {[type]} refInd [description]
+			 * @return {[type]}        [description]
+			 */
 			indexation : function  (refInd) {
 				var indexation = DC.CreditUtil.tauxAnToPeriodique(refInd/100,1) - DC.CreditUtil.tauxAnToPeriodique(this.refInd[0].val/100,1);
 				//console.log('indexation1:', DC.CreditUtil.tauxPeriodiqueToAn(indexation,1)*100);
@@ -439,15 +641,31 @@ define([
 				//console.log('indexation2:', DC.CreditUtil.tauxPeriodiqueToAn(indexation,1)*100);
 				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + indexation;
 			},
+
+			/**
+			 * [setCap description]
+			 * @param {[type]} argument [description]
+			 */
 			setCap : function (argument) {
 				var split = this.type.split(' ');
 				var splitCap= split[1].split('/');
 				this.cap.pos = parseInt(splitCap[0].replace(/[\(\)\+]/g, ''))
 				this.cap.neg = parseInt(splitCap[0].replace(/[\(\)\-]/g, ''))
 			},
+
+			/**
+			 * [round description]
+			 * @param  {[type]} val [description]
+			 * @return {[type]}     [description]
+			 */
 			round : function (val) {
 				return Math.round(val*1000)/1000;
 			},
+
+			/**
+			 * [setRefTab description]
+			 * @param {[type]} tab [description]
+			 */
 			setRefTab : function (tab) {
 				this.refTab = [];
 				for (var i = 0; i < tab.length; i++) {
@@ -459,39 +677,73 @@ define([
 				};
 				console.log(this.refTab);
 			},
+
+			/**
+			 * [getRefTableStart description]
+			 * @param  {[type]} argument [description]
+			 * @return {[type]}          [description]
+			 */
 			getRefTableStart : function (argument) {
 				var today = new Date();
 				var start = 0;
 				var offset = this.getMonthDifference(this.date, today);
-				offset += 1; 
-				var start = this.refTab.length - offset;
+				offset += 0; 
+				console.log(offset);
+				var start = offset>0 ? this.refTab.length - offset : this.refTab.length-1;
+				console.log(start);
+				var fisrtdate = {date:this.refTab[start].date.toLocaleDateString(), position:start}
 				//this.refInd = [];
-				this.refInd[0].dateList = [];
-				this.refInd[0].val = this.refTab[start][this.variation.type];
-				for (var i = 0; i < 3; i++) {
-					//this.refInd[0][i] = {};
-					this.refInd[0].dateList[i] ={};
-					this.refInd[0].dateList[i].date = this.refTab[start].date.toLocaleDateString();
-					this.refInd[0].dateList[i].position = start;
-					//this.refInd[0][i].val = this.refTab[start][this.variation.type];
-					//this.refInd[0][i].rate = this.initRate;
-					start--;
-				};
-				this.refInd[0].date = this.refInd[0].dateList[0].date;
-				
+				if(this.refInd[0].dateList.indexOf(this.refInd[0].date)<0 ||
+					JSON.stringify(this.refInd[0].dateList[0]) !== JSON.stringify(fisrtdate)||
+					this.refInd[0].rate !== this.initRate
+					){
+					this.refInd[0].dateList = [];
+					this.refInd[0].val = this.refTab[start][this.variation.type];
+					if (offset>0) {
+
+						for (var i = 0; i < 3; i++) {
+							//this.refInd[0][i] = {};
+							this.refInd[0].dateList[i] ={};
+							this.refInd[0].dateList[i].date = this.refTab[start].date.toLocaleDateString();
+							this.refInd[0].dateList[i].position = start;
+							//this.refInd[0][i].val = this.refTab[start][this.variation.type];
+							//this.refInd[0][i].rate = this.initRate;
+							start--;
+						};
+					}else{
+						this.refInd[0].dateList[0] ={};
+						this.refInd[0].dateList[0].date = this.refTab[start].date.toLocaleDateString();
+						this.refInd[0].dateList[0].position = start;
+					};
+
+					this.refInd[0].date = this.refInd[0].dateList[0];
+					this.refInd[0].rate = this.initRate;
+					this.refInd[0].type = this.variation.type;
+				}
 				start = this.refTab.length;
 				offset = offset - this.variation.fixe;
 				if (offset>0) {
 					start = this.refTab.length - offset;
 				};
 				this.startDatePosition = start;
-				console.log(this.refInd);
 			},
+			/**
+			 * [getMonthDifference description]
+			 * @param  {[type]} date    [description]
+			 * @param  {[type]} dateTwo [description]
+			 * @return {[type]}         [description]
+			 */
 			getMonthDifference : function (date, dateTwo){
 				var month = (dateTwo.getFullYear() - date.getFullYear())*12;
 				month-= (date.getMonth() - dateTwo.getMonth());
 				return month;
 			},
+
+			/**
+			 * [initRefTable description]
+			 * @param  {[type]} argument [description]
+			 * @return {[type]}          [description]
+			 */
 			initRefTable : function (argument) {
 
 			}

@@ -84,16 +84,13 @@
           <div class="form-group">
             <label for="rate">Hausse des taux (scenarios possibles):</label>
             <div><label class="radio-inline">
-              <input ng-change="update(false,true)" ng-model="refinancing.initMortgage.story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum
+              <input ng-change="updateStory(false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum
             </label>
             <label class="radio-inline">
-              <input ng-change="update(false,true)" ng-model="refinancing.initMortgage.story" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="min"> Minimum
-            </label>
-            <label class="radio-inline">
-              <input ng-change="update(false,true)" ng-model="refinancing.initMortgage.story" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="same"> identique
+              <input ng-change="updateStory(false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="min"> Minimum
             </label>
              <label class="radio-inline">
-            <input ng-change="update(false,true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="refinancing.initMortgage.story" value="costum"> personalisé
+            <input ng-change="updateStory(false,true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> personalisé
           </label>
 
           </div>
@@ -118,7 +115,7 @@
                 <input ng-model="indice.rate" ng-change="updateWithIndPers(false,true)" type="text" disabled ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
               </div>
               <div class="col-md-4">
-                <select ng-change="updateWithIndPers(false,true)" class="form-control" id="finType" ng-model="indice.date" ng-options="option.date for option.date  in indice.dateList"></select>
+                <select ng-change="updateWithIndPers(false,true)" class="form-control" id="finType" ng-model="indice.date" ng-options="option.date for option  in indice.dateList"></select>
               </div>
             </div>
           </div>
@@ -194,19 +191,17 @@
         <div class="form-group">
           <label for="rate">Hausse des taux (scenarios possibles):</label>
           <div><label class="radio-inline">
-            <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio1" ng-model="refinancing.refMortgage.story" value="max"> Maximum
+            <input ng-change='updateStory(false,true)' type="radio" name="storyrd" id="inlineRadio1" ng-model="story" value="max"> Maximum
           </label>
           <label class="radio-inline">
-            <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio2" ng-model="refinancing.refMortgage.story" value="min"> Minimum
+            <input ng-change='updateStory(false,true)' type="radio" name="storyrd" id="inlineRadio2" ng-model="story" value="min"> Minimum
+          </label>
+
+          <label class="radio-inline">
+            <input ng-change='updateStory(false,true)' type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="limit"> Limite
           </label>
           <label class="radio-inline">
-            <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio3" ng-model="refinancing.refMortgage.story" value="same"> identique
-          </label>
-          <label class="radio-inline">
-            <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio3" ng-model="refinancing.refMortgage.story" value="limit"> Limite
-          </label>
-          <label class="radio-inline">
-            <input ng-change='update(true,true)' type="radio" name="storyrd" id="inlineRadio3" ng-model="refinancing.refMortgage.story" value="costum"> personalisé
+            <input ng-change='updateStory(false,true)' type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> personalisé
           </label>
         </div>
       </div>
