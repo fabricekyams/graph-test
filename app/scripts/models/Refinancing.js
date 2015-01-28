@@ -93,14 +93,7 @@ define([
 					this.refMortgage.setDuration();
 				}
 
-				if(this.refMortgage.duration<72 ){
-					this.refMortgage.duration=72;
-				}else{
-					if(this.refMortgage.duration>360 ){
-						this.refMortgage.duration=360;
-					}
-				}
-
+	
 
 				if (this.refMortgage.type.localeCompare('fixe')===0) {
 					var i =0;
@@ -156,6 +149,14 @@ define([
 							this.refMortgage.sameMonthlyPayement = false;
 							this.refMortgage.duration=this.rateTable[linePosition].duration_min;
 						}
+						if(this.refMortgage.duration<72 ){
+							this.refMortgage.duration=72;
+						}else{
+							if(this.refMortgage.duration>360 ){
+								this.refMortgage.duration=360;
+							}
+						}
+
 						
 					}
 				}

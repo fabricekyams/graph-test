@@ -29,7 +29,7 @@ define([
 			this.cap = {pos:6,neg:6};
 			this.refInd = [];
 			this.refInd[0] =  {};
-			this.refInd[0].val =  2.9;
+			this.refInd[0].val = '-';
 			this.refInd[0].rate =  rate;
 			this.refInd[0].date =  date.toLocaleDateString();
 			this.refInd[0].dateList =  [];

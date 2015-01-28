@@ -47,7 +47,7 @@
           <label for="duration">Durée (mois)</label>
           <div class="row">
             <div class="col-md-6">
-              <input ng-model="refinancing.initMortgage.duration" ng-change="update(false,false)" ype="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb" min="12" max="360"  step='12'>
+              <input ng-model="refinancing.initMortgage.duration" ng-change="update(false,false)" type="number" ng-model-options="{ updateOn: 'blur' }" class="form-control" id="duration-nb" min="72" max="360"  step='12'>
             </div>
             <div class="col-md-6">
               <input  ng-change="update(false,false)" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.initMortgage.duration" step='12'>
@@ -148,10 +148,10 @@
       <label for="duration">Durée (mois)</label>
       <div class="row">
         <div class="col-md-6">
-          <input ng-disabled="sameMonthlyPayement" ng-change="updateVarWithDurationFirst(true,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="duration-nb"  ng-model="refinancing.refMortgage.duration" step='12'>
+          <input ng-disabled="sameMonthlyPayement" ng-change="updateVarWithDurationFirst(true,true)" type="number" ng-model-options="{ updateOn: 'blur' }" class="form-control" id="duration-nb"  ng-model="refinancing.refMortgage.duration"  min="72" max="360" step='12'>
         </div>
         <div class="col-md-6">
-          <input  ng-disabled="sameMonthlyPayement" ng-change="updateVarWithDurationFirst(true,true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="12" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
+          <input  ng-disabled="sameMonthlyPayement" ng-change="updateVarWithDurationFirst(true,true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="72" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
         </div>
       </div>
     </div>
@@ -242,7 +242,7 @@
   <div class ="row">
     <div class="col-md-12">
       <CAPTION> <h1 ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}">{{ isBeneficial }}</h1>
-        <span ><h4 >Mois: <strong ng-class = "{isBenef: refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: !refinancing.refMortgage.isMonthlyBeneficial }">{{ monthDiff | number:2 | abs }}€ {{ ismonthlyBeneficial }}</strong></h4></span>
+   <!--      <span ><h4 >Mois: <strong ng-class = "{isBenef: refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: !refinancing.refMortgage.isMonthlyBeneficial }">{{ monthDiff | number:2 | abs }}€ {{ ismonthlyBeneficial }}</strong></h4></span> -->
         <span ><h4>Total: <strong  ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}">{{ TotalDiff | number:2 | abs }}€ {{ isTotalBeneficial }}</strong></h4></span>
       </div>
       <div class="col-md-6"  style="margin-bottom: 0px; bottom: -47px;">
@@ -257,6 +257,11 @@
          <TH>Solde Restant Du:</TH> 
          <td> {{ refinancing.SRD | number:2 }}€</td>
          <td> {{ refinancing.SRD | number:2 }}€</td>
+       </tr> 
+       <tr>
+         <TH>Indice de réference Initial:</TH> 
+         <td> {{ refinancing.initMortgage.refInd[0].val }}%</td>
+         <td> {{ refinancing.refMortgage.refInd[0].val }}%</td>
        </tr> 
        <tr>
          <TH>Indemnité de remploie</TH> 
@@ -280,7 +285,7 @@
           <td> {{ refinancing.refMortgage.totalInterest | number:2 }}€</td>
         </tr>  
         <tr>
-         <TH>Mensualité:</TH> 
+         <TH>Première Mensualité:</TH> 
          <td ng-class = "{isBenef: !refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: refinancing.refMortgage.isMonthlyBeneficial }"> {{ refinancing.initMortgage.monthlyPayment | number:2 }}€</td>
          <td ng-class = "{isBenef: refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: !refinancing.refMortgage.isMonthlyBeneficial }"> {{ refinancing.refMortgage.monthlyPayment | number:2 }}€</td>
        </tr>   
