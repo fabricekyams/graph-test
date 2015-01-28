@@ -75,6 +75,7 @@ define([
 			setAmortizationWithVariation : function () {
 				//this.initRefTable();
 				//console.log(this.story);
+				console.log(this.refInd);
 				this.amortization=[];
 				this.setMax();
 				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital, this.rate);
@@ -110,16 +111,21 @@ define([
 						//console.log(this.refInd[j].val);
 						if (this.refInd[j].dateList.length>1) {
 							var k = 0;
-							console.log(this.refInd[j]);
-
-							while(this.refInd[j].dateList[k].date.localeCompare(this.refInd[j].date)){
+							var found = false
+							while(!found){
+								if(this.refInd[j].dateList[k].date.localeCompare(this.refInd[j].date)==0){
+									found = true;
+								}
+								console.log(this.refInd[j].dateList[k].date);
+								console.log(this.refInd[j].date);
 								k++;
 							}
-							this.refInd[j].val = this.refTab[k][this.variation.type];
+							this.refInd[j].val = this.refTab[this.refInd[j].dateList[k-1].position][this.variation.type];
 						};
 						this.rate = this.indexation(this.refInd[j].val);
 						//console.log(DC.CreditUtil.tauxPeriodiqueToAn(this.rate,1)*100);
 					}
+				console.log(this.refInd);
 					if (this.variation.fixe == 12  && i<= this.variation.fixe+24 && this.rate > DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)) {
 						switch(i){
 							case this.variation.fixe:
@@ -346,8 +352,7 @@ define([
 				}
 
 				var rest = this.duration - this.variation.fixe;
-				var len = Math.ceil(offset/this.variation.reval);
-				len += Math.ceil(rest/this.variation.reval);
+				var len = Math.ceil(rest/this.variation.reval);
 				
 				if(len+1 < this.refInd.length){
 					this.refInd = this.refInd.slice(0,len+1);
@@ -360,6 +365,7 @@ define([
 						this.refInd[i] = {};
 						this.refInd[i].dateList = [];
 						if (position<this.refTab.length) {
+							console.log(this.refTab[position]);
 							this.refInd[i].val = this.refTab[position][this.variation.type];
 							for (var j = 0; j < 3; j++) {
 								//this.refInd[i][j] = {};
@@ -370,12 +376,13 @@ define([
 								//this.refInd[i][j].rate = this.initRate;
 								position--;
 							};
-							this.refInd[i].date = this.refInd[i].dateList[0];
+							this.refInd[i].date = this.refInd[i].dateList[0].date;
 							position = this.startDatePosition + (i)*this.variation.reval;
 						}else{
 								//this.refInd[i][0] = {};
 								this.refInd[i].dateList[0] = {};
 								this.refInd[i].dateList[0].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(i-1)));
+								this.refInd[i].date = this.refInd[i].dateList[0].date;
 								this.refInd[i].dateList[0].position = -1;
 								this.refInd[i].val = this.round(this.calculInRef(rate));
 								//this.refInd[i][0].rate = this.initRate;
