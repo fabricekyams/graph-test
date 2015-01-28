@@ -118,9 +118,7 @@
                 <input ng-model="indice.rate" ng-change="updateWithIndPers(false,true)" type="text" disabled ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
               </div>
               <div class="col-md-4">
-                <select ng-change="updateWithIndPers(false,true)" class="form-control" id="finType" ng-ng-model="indice.date" ng-options="option for option  in indice.dateList">
-
-                </select>
+                <select ng-change="updateWithIndPers(false,true)" class="form-control" id="finType" ng-ng-model="indice.date" ng-options="option.date for option  in indice.dateList"></select>
               </div>
             </div>
           </div>
@@ -233,7 +231,7 @@
                 <input ng-model="indice.rate" disabled ng-change="updateWithIndPers(true,true)" type="text" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
               </div>
               <div class="col-md-4">
-                <input ng-model="indice.date" disabled ng-change="updateWithIndPers(true,true)" type="text" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+              <select ng-change="updateWithIndPers(true,true)"  class="form-control" id="finType" ng-ng-model="indice.date" ng-options="option.date for option  in indice.dateList"></select>
               </div>
             </div>
 
