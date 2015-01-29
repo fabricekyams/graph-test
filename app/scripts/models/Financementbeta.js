@@ -29,14 +29,16 @@ define([
 			this.cap = {pos:6,neg:6};
 			this.refInd = [];
 			this.refInd[0] =  {};
-			this.refInd[0].val = '-';
-			this.refInd[0].rate =  rate;
-			this.refInd[0].date =  date.toLocaleDateString();
-			this.refInd[0].dateList =  [];
+			this.refInd[0].val = 'none';
+			this.refInd[0].rate =  this.rate;
+			this.refInd[0].date =  {date: date.toLocaleDateString()};
+			this.refInd[0].dateList =  [this.refInd[0].date];
+			console.log(this.refInd);
 
 			this.amortization = [];
 			this.story = 'max';
 			this.type = 'fixe';
+			
 			//this.generateRateTable();
 			this.update();
 		}
@@ -51,6 +53,8 @@ define([
 				this.date = new Date(this.formatDate(this.dateString));
 				this.rate = Math.round((Math.pow(1 + (this.initRate/100), 1 / 12) - 1)*1000000)/1000000;
 				this.setMonthlyPayment();
+				this.refInd[0].monthlyPayment = this.monthlyPayment;
+				console.log(this.refInd);
 
 				if(this.type.localeCompare('fixe') == 0 ){
 					this.variation = {};
@@ -194,7 +198,7 @@ define([
 					}else{
 						rate = this.rate;
 					};
-					this.setRefIndData(j,rate);
+					this.setRefIndData(j,rate, DC.CreditUtil.calculMensualite(rate, durationLeft)* this.amortization[i-1].SRD);
 					if(this.duration - i == this.duration%this.variation.reval){
 						this.initArmortizationVal(i,this.duration, durationLeft, this.amortization[i-1].SRD, rate);
 					}else{
@@ -232,6 +236,7 @@ define([
 					period++;
 
 				};
+
 				//console.log(this.amortization);
 			},
 
@@ -272,9 +277,14 @@ define([
 			 * @return {[type]}         [description]
 			 */
 			getDateTerme : function (periode) {
-				var date = new Date(this.date.getTime());
-				date.setMonth(date.getMonth()+periode);
-				return date.toLocaleDateString();
+				var newdate = {};
+				newdate = new Date(this.date.getTime());
+				//console.log(this.date);
+				//console.log(this);
+				//console.log(newdate);
+				//console.log(periode);
+				newdate.setMonth(newdate.getMonth()+periode);
+				return newdate.toLocaleDateString();
 
 			},
 
@@ -568,7 +578,7 @@ define([
 			 * @param {[type]} period [description]
 			 * @param {[type]} rate   [description]
 			 */
-			setRefIndData : function (period,rate) {
+			setRefIndData : function (period,rate, monthlyPayment) {
 				//if (period==0) {
 				//	this.refInd[period].date = this.date.toLocaleDateString();
 				//}else{
@@ -576,6 +586,7 @@ define([
 				///}
 				//console.log(rate);
 				 this.refInd[period].rate = this.round(DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100);
+				 this.refInd[period].monthlyPayment = monthlyPayment;
 			},
 
 			/**

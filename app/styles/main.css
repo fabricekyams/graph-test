@@ -1,3 +1,99 @@
+/****************************/
+/** Design / Front-End     **/
+/** by Phenomen            **/
+/** http://www.phenomen.be **/
+/** Copyright - 2014       **/
+/****************************/
+
+/* ==========================================================================
+   RESET CSS
+   ========================================================================== */
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+[data-sr] { visibility: hidden; } 
+
+
+/* ==========================================================================
+   BODY
+   ========================================================================== */
+
+body {
+  font-family: 'AvenirNextLTRegular';
+  font-size: 18px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+
+h1 {
+  font-family: 'AvenirNextLTBold';
+  font-size: 50px;
+  line-height: 60px;
+  margin-top: 60px;
+}
+
+h2 {
+  font-family: 'AvenirNextLTRegular';
+  font-size: 40px;
+  line-height: 45px;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
 /* Space out content a bit */
 body {
   padding-top: 20px;
@@ -46,14 +142,64 @@ body {
   shape-rendering: crispEdges;
 }
 
+/* ==========================================================================
+   SECTION
+   ========================================================================== */
+
+#website {
+  position: relative;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  padding: 50px 10px 0;
+}
+#sectionid .content{
+  padding-bottom:40px; 
+}
+
+#sections {
+  position: relative;
+}
+
+section {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.form .error {
+  color: red;
+  box-shadow: red;
+}
+
+.form input:nth-child(even) {
+  margin-left: 35px;
+}
+
+.form input:nth-child(odd) {
+  margin-right: 35px;
+}
+
+
+.successMessage, .errorMessage {
+  display: none;
+
+}
 form {
   position: absolute;
   right: 10px;
   top: 10px;
 }
 
+#inputs .container {
+  min-width: 1100px;
+}
 .container {
-  min-width: 96%;
+  min-width: 1500px;
 }
 .isBenef {
   color: green;
@@ -112,6 +258,45 @@ input.datepicker{
   margin-top: 28px;
 }
 
+section#inputs {
+  background-color:     #D6D6FF;
+
+}
+
+.center{
+  text-align: center;
+}
+
+.bottom{
+  padding-bottom: 40px;
+}
+
+#results {
+  background-color: #F0F0F5; */
+}
+
+#initMG {
+  /*background-color: #99CCB2; */
+}
+
+#refMG {
+  /*background-color: #FFC299; */
+}
+
+/* ==========================================================================
+   USER
+   ========================================================================== */
+
+.form-signin {
+margin: 0 auto;
+max-width: 330px;
+padding: 15px;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES
+   ========================================================================== */
+
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
   /* Remove the padding we set earlier */
@@ -130,3 +315,24 @@ input.datepicker{
     border-bottom: 0;
   }
 }
+
+@media screen and (max-height: 790px) {
+}
+
+@media screen and (max-width: 1210px) {
+}
+
+@media screen and (max-width: 1100px) {
+}
+
+@media screen and (max-width: 1023px) {
+}
+
+@media screen and (max-width: 767px) {
+}
+
+@media screen and (max-width: 480px) {
+}
+
+
+

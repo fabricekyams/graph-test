@@ -873,7 +873,10 @@ define('DocteurCreditJS', ['ss'], function (ss) {
       console.log(res.fraisIndemnite);
       res.fraisMainLevee = PHCalculCredit$FraisMainLevee.getFraisMainLevee(res.srd);
       var capitalNet = res.srd + res.fraisIndemnite + res.fraisMainLevee;
+      res.capitalNet = capitalNet;
       res.capital = fraisCredit.getMontantBrut(capitalNet);
+      var tmpNet = res.capitalNet;
+      var tmpBrut;
       res.fraisHypotheque = res.capital - capitalNet;
       var newDuree = res.ancienDureeRestanteMois;
       var mensualiteUnitaire = res.ancienMensualite / res.capital;

@@ -32,6 +32,9 @@ define(['DocteurCreditJS','jquery','Scripts/taux.js'], function (DocteurCredit,$
                     "Capital : " + formatMoney(res.capital) + "<br/>" +
                     "AncienCoutTotal : " + formatMoney(res.get_ancienCoutTotal()) + "<br/>" +
                     "CoutTotal : " + formatMoney(res.get_coutTotal()) + "<br/>" +
-                    "Gain : " + formatMoney(res.get_gain()) + "<br/>");
+                    "Gain : " + formatMoney(res.get_gain()) + "<br/>" +
+                    "Capital net : " + res.capitalNet + "<br/>" +
+                    "1E : " + 2E+1 + "<br/>" +
+                    "Capital Brut: " + res.capital + "<br/>");
             };
         })

@@ -21,6 +21,7 @@ define([
 			this.date = date;
 			this.newDate = newDate;
 			this.knowSRD = 'no';
+			this.externalRef = false;
 			this.duration = duration;
 			this.init();
 			this.fileCharges = 330;
@@ -77,7 +78,15 @@ define([
 				this.durationLeft = this.getDurationLeft(this.date, this.newDate);
 				this.SRD = this.getSRD();
 				this.indem = this.getIndem(this.rate);
-				this.capital = this.getNewCapital();
+				this.capital = this.indem+this.SRD+this.fileCharges;
+				if(this.externalRef){
+					var fraisCredit = DC.FraisCreditFactory.getFraisCredit(1);
+					this.releaseCharges = DC.FraisMainLevee.getFraisMainLevee(this.SRD);
+					this.capital+=this.releaseCharges;
+					var capital = fraisCredit.getMontantBrut(this.capital);
+					this.MGRegistration = capital - this.capital;
+					this.capital = capital;
+				}
 			},
 
 			/**
