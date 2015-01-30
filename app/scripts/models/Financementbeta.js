@@ -52,11 +52,13 @@ define([
 			 * @return {[type]} [description]
 			 */
 			update: function () {
+				console.log('2 ',this.story);
+
 				this.date = new Date(this.formatDate(this.dateString));
 				this.rate = Math.round((Math.pow(1 + (this.initRate/100), 1 / 12) - 1)*1000000)/1000000;
 				this.setMonthlyPayment();
 				this.refInd[0].monthlyPayment = this.monthlyPayment;
-				console.log(this.refInd);
+	
 
 				if(this.type.localeCompare('fixe') == 0 ){
 					this.variation = {};
@@ -115,6 +117,8 @@ define([
 				//this.setRefIndData(0,this.rate);
 				//this.refInd = this.refInd.slice(0,1);
 				//this.setIndexationRate();
+				console.log('1 ',this.story);
+
 				switch(this.story){
 					case 'max':
 						this.calculIndexationMax();
@@ -259,22 +263,21 @@ define([
 						this.amortizationParYears[ypos].totalInterest= 0;
 						};
 						if (i>=this.duration - this.durationLeft) {
-
-							this.amortizationParYears[ypos].month= this.amortization[i].month;
+							//var cutpos = this.duration!== this.durationLeft ? this.duration-this.durationLeft-1, 
+							this.amortizationParYears[ypos].month= 'Année '+(ypos+1);
 							this.amortizationParYears[ypos].dateTerme= this.amortization[i].dateTerme;
 							this.amortizationParYears[ypos].rate=this.amortization[i].rate ;
 							this.amortizationParYears[ypos].monthlyPayment= this.amortization[i].monthlyPayment;
 							this.amortizationParYears[ypos].SRD= this.amortization[i].SRD;
 							this.amortizationParYears[ypos].interest+= this.amortization[i].interest;
 							this.amortizationParYears[ypos].capital+= this.amortization[i].capital;
-							this.amortizationParYears[ypos].totalPayment= this.amortization[i].totalPayment;
-							this.amortizationParYears[ypos].totalInterest= this.amortization[i].totalInterest;
+							this.amortizationParYears[ypos].totalPayment= (this.duration!== this.durationLeft) ? this.amortization[i].totalPayment-(this.amortization[this.duration-this.durationLeft-1].totalPayment):this.amortization[i].totalPayment;
+							this.amortizationParYears[ypos].totalInterest= (this.duration!== this.durationLeft) ? this.amortization[i].totalInterest-(this.amortization[this.duration-this.durationLeft-1].totalInterest):this.amortization[i].totalInterest;
 							
 						};
 
 				};
 
-				console.log(this.amortizationParYears);
 			},
 
 			/**
@@ -450,6 +453,7 @@ define([
 				this.refInd = this.refInd.slice(0,1);
 				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+this.maxInd;
 				this.calculIndexionCostum(this.rate);
+				console.log(this.rate)
 				 
 			},
 

@@ -11,7 +11,7 @@ require.config({
    		'bootstrap' : 			"../bower_components/bootstrap/dist/js/bootstrap",
    		'datetimepicker': 		"../vendors/datepicker/jquery.datetimepicker",
     	'autoNumeric': 			"../vendors/autonumeric/autoNumeric",
-    	'highcharts': 			"http://code.highcharts.com/highcharts",
+    	'highcharts': 			"../vendors/highchart/highcharts",
         'angularAMD': 			'../vendors/angularAmd/angularAMD',
         'shim':                 "../vendors/shim/es5-shim.min",
         'ss':                   "../vendors/ss/ss.min",
