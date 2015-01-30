@@ -25,6 +25,7 @@ define([
 			this.duration = duration;
 			this.init();
 			this.fileCharges = 330;
+			this.fraisNotaire = 400;
 			this.refMortgage = new Financement(this.capital, newRate, this.durationLeft, newDate);
 			this.refMortgage.rateTable = [];
 			this.generateRateTable(rateTable);
@@ -50,8 +51,10 @@ define([
 			 * @return {[type]}               [description]
 			 */
 			update: function (ref,  duration, durationFirst) {
-				this.durationLeft = this.getDurationLeft(this.date, this.newDate);
+				this.durationLeft = this.getDurationLeft(this.date, new Date(this.refMortgage.formatDate(this.refMortgage.dateString)));
 				this.initMortgage.durationLeft = this.durationLeft;
+				console.log(this.initMortgage.durationLeft);
+				console.log(this.initMortgage.durationLeft);
 				
 				if (!ref) {
 					this.initMortgage.update();
@@ -78,6 +81,8 @@ define([
 			 * @return {[type]} [description]
 			 */
 			init : function () {
+				this.releaseCharges =0;
+				this.MGRegistration =0;
 				this.durationLeft = this.getDurationLeft(this.date, this.newDate);
 				this.SRD = this.getSRD();
 				this.indem = this.getIndem(this.rate);
@@ -86,10 +91,13 @@ define([
 					var fraisCredit = DC.FraisCreditFactory.getFraisCredit(1);
 					this.releaseCharges = DC.FraisMainLevee.getFraisMainLevee(this.SRD);
 					this.capital+=this.releaseCharges;
+					
 					var capital = fraisCredit.getMontantBrut(this.capital);
-					this.MGRegistration = capital - this.capital;
-					this.capital = capital;
+					this.MGRegistration = capital - this.capital + this.fraisNotaire;
+					this.FraisDivers = this.MGRegistration - this.fraisNotaire;
+					this.capital = capital + this.fraisNotaire;
 				}
+				this.totalFrais = this.fileCharges+this.MGRegistration+this.releaseCharges+this.indem
 			},
 
 			/**
@@ -103,6 +111,7 @@ define([
 				if(this.refMortgage.sameMonthlyPayement){
 					this.refMortgage.monthlyPayment = this.initMortgage.monthlyPayment;
 					this.refMortgage.setDuration();
+
 				}
 				this.checkDuration();
 				if (this.refMortgage.type.localeCompare('fixe')===0) {
@@ -121,7 +130,7 @@ define([
 					if(durationFirst){
 						while(!found && i<11) {
 							if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
-								 tmpLine = tmpLine<0 ? i : tmpLine;
+								 tmpLine = i;
 								var split = this.refMortgage.type.split(' ');
 								if(split[0].localeCompare(this.rateTable[i].type)==0){
 									linePosition = i;
@@ -143,7 +152,7 @@ define([
 						var tmpline = -1;
 						while(!found && i<11) {
 							if(split[0].localeCompare(this.rateTable[i].type)==0){
-								tmpline = tmpline<0 ? i : tmpline;
+								tmpline = i;
 								if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
 									linePosition = i;
 									found = true;
@@ -199,6 +208,7 @@ define([
 						this.refMortgage.duration=360;
 					}
 				}
+				this.refMortgage.durationLeft = this.refMortgage.duration;
 			},
 
 			/**

@@ -30,15 +30,15 @@ define([
 			this.cap = {pos:6,neg:6};
 			this.refInd = [];
 			this.refInd[0] =  {};
-			this.refInd[0].val = 'none';
+			this.refInd[0].val = 0;
 			this.refInd[0].rate =  this.rate;
 			this.refInd[0].date =  {date: date.toLocaleDateString()};
 			this.refInd[0].dateList =  [this.refInd[0].date];
-			console.log(this.refInd);
+			//console.log(this.refInd);
 
 			this.amortization = [];
 			this.amortizationParYears = [];
-			this.story = 'max';
+			this.story = 'costum';
 			this.type = 'fixe';
 			
 			//this.generateRateTable();
@@ -52,7 +52,6 @@ define([
 			 * @return {[type]} [description]
 			 */
 			update: function () {
-				console.log('2 ',this.story);
 
 				this.date = new Date(this.formatDate(this.dateString));
 				this.rate = Math.round((Math.pow(1 + (this.initRate/100), 1 / 12) - 1)*1000000)/1000000;
@@ -61,6 +60,8 @@ define([
 	
 
 				if(this.type.localeCompare('fixe') == 0 ){
+					this.refInd = this.refInd.slice(0,1);
+					this.refInd[0].val = 0;
 					this.variation = {};
 					this.setAmortization();
 				}else{
@@ -117,7 +118,6 @@ define([
 				//this.setRefIndData(0,this.rate);
 				//this.refInd = this.refInd.slice(0,1);
 				//this.setIndexationRate();
-				console.log('1 ',this.story);
 
 				switch(this.story){
 					case 'max':
@@ -244,27 +244,39 @@ define([
 					this.amortization[i].totalInterest=this.getTotalInterest(i);
 					period++;
 
-					if(i%12==0 && i>=this.duration - this.durationLeft){
-						ypos = (i/12);
-							if(this.duration !== this.durationLeft){
-								ypos-= (this.duration - this.durationLeft)/12;
-							}
-						//console.log(i);
-						//console.log(ypos);
-						this.amortizationParYears[ypos] = {};
+						//console.log('durationLeft',this.durationLeft);
+					if(i>=this.duration - this.durationLeft){
+						
+						var tmp = Math.floor(i/12) 
+						if(this.duration !== this.durationLeft){
+									tmp-= Math.floor((this.duration - this.durationLeft)/12);
+								}
+						if(tmp!==ypos){
+							var ypos = Math.floor(i/12);
+								if(this.duration !== this.durationLeft){
+									ypos-= Math.floor((this.duration - this.durationLeft)/12);
+								}
+							//console.log(i);
+							//console.log(ypos);
+							this.amortizationParYears[ypos] = {};
 
-						this.amortizationParYears[ypos].month=0;
-						this.amortizationParYears[ypos].rate=0;
-						this.amortizationParYears[ypos].monthlyPayment=0;
-						this.amortizationParYears[ypos].SRD=0;
-						this.amortizationParYears[ypos].interest= 0;
-						this.amortizationParYears[ypos].capital= 0;
-						this.amortizationParYears[ypos].totalPayment= 0;
-						this.amortizationParYears[ypos].totalInterest= 0;
+							this.amortizationParYears[ypos].month=0;
+							this.amortizationParYears[ypos].rate=0;
+							this.amortizationParYears[ypos].monthlyPayment=0;
+							this.amortizationParYears[ypos].SRD=0;
+							this.amortizationParYears[ypos].interest= 0;
+							this.amortizationParYears[ypos].capital= 0;
+							this.amortizationParYears[ypos].totalPayment= 0;
+							this.amortizationParYears[ypos].totalInterest= 0;
+						}
 						};
+						//console.log('i',i);
+						//console.log('duration',this.duration);
 						if (i>=this.duration - this.durationLeft) {
-							//var cutpos = this.duration!== this.durationLeft ? this.duration-this.durationLeft-1, 
-							this.amortizationParYears[ypos].month= 'Année '+(ypos+1);
+							//var cutpos = this.duration!== this.durationLeft ? this.duration-this.durationLeft-1,
+							//console.log('ypos: ',ypos); 
+							//console.log('length: ',this.amortizationParYears.length); 
+							this.amortizationParYears[ypos].month= (ypos+1);
 							this.amortizationParYears[ypos].dateTerme= this.amortization[i].dateTerme;
 							this.amortizationParYears[ypos].rate=this.amortization[i].rate ;
 							this.amortizationParYears[ypos].monthlyPayment= this.amortization[i].monthlyPayment;

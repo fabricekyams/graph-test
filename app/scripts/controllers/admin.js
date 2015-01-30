@@ -1,22 +1,81 @@
-'use strict';
 
 /**
  * @ngdoc function
- * @name graphTestApp.controller:AboutCtrl
+ * @name graphTestApp.controller:MainCtrl
  * @description
- * # AboutCtrl
+ * # MainCtrl
  * Controller of the graphTestApp
  */
-angular.module('graphTestApp')
-  .controller('AadminCtrl', 
+define([
+    'scripts/app',
+    '../vendors/finance/finance.js',
+    'DocteurCreditJS',
+    '../vendors/DocteurCredit/taux.js',
+    'scripts/directives/autoNumericFabrice.js',
+    'scripts/models/Refinancing.js',
+    //'scripts/models/Financementbeta.js',
+    'datetimepicker',
+    'scripts/directives/chartDir.js',
+    'scripts/directives/jQueryLibraryDir.js',
+    'scripts/directives/numericDir.js'
+    ],
 
-  	function ($scope) {
-    
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+    function (app,finance,DC) {
+    'use strict';
 
     
-  });
+app.directive('a', function() {
+    return {
+        restrict: 'E',
+        link: function(scope, elem, attrs) {
+            if(attrs.ngClick || attrs.href === '' || attrs.href === '#'){
+                elem.on('click', function(e){
+                    e.preventDefault();
+                });
+            }
+        }
+   };
+});
+    app.controller('AdminCtrl',
+      	function ($scope, $http, $q, Refinancing) {
+    	$scope.nav = 'rate';
+      		$scope.type = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
+ 			$http.get('php/gets.php/?data=all')
+                .success(function(response) {
+                	for (var i = 0; i < response.length; i++) {
+                    		response[i].duration_min  = parseInt(response[i].duration_min);
+                    		response[i].duration_max  = parseInt(response[i].duration_max);   
+                    		response[i].cap_pos = parseInt(response[i].cap_pos);
+                    		response[i].cap_neg = parseInt(response[i].cap_neg);
+                    		response[i].rate = parseInt(response[i].rate*100)/100;
+                    	};
+                	$scope.rateTable = response;
+                	console.log($scope.rateTable);
+                    $http.get('php/gets.php/?data=inds')
+                    .success(function(response) {
+                    	
+                        $scope.indTable=response;
+                        console.log($scope.indTable);
+                    });
+                });
+
+            $scope.getData = function (tab){
+            	$scope.nav =tab;
+            }
+
+            $scope.setRates = function (argument) {
+            	$http.post('php/sets.php', {'rates':$scope.rateTable}).success(function (argument) {
+            		// body...
+            	});
+            }
+
+
+    });
+
+    
+    
+});
+
+
+
+

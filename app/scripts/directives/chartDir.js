@@ -28,7 +28,7 @@ define([
 				    var a = 0;
 	    			var b = 1;
 	    			var chart;
-				element.append('<div id="'+attrs.val+'" style="width:100%;"></div>');
+				element.append('<div id="'+attrs.val+'" style="width:400x; margin-top:20px"></div>');
 
 				scope.$watch('val', function (newVal) {
 

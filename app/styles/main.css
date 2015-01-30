@@ -73,7 +73,6 @@ table {
    ========================================================================== */
 
 body {
-  font-family: 'AvenirNextLTRegular';
   font-size: 18px;
   line-height: 24px;
   -webkit-font-smoothing: antialiased;
@@ -81,14 +80,12 @@ body {
 
 
 h1 {
-  font-family: 'AvenirNextLTBold';
   font-size: 50px;
   line-height: 60px;
   margin-top: 60px;
 }
 
 h2 {
-  font-family: 'AvenirNextLTRegular';
   font-size: 40px;
   line-height: 45px;
   margin-top: 15px;
@@ -96,7 +93,6 @@ h2 {
 }
 /* Space out content a bit */
 body {
-  padding-top: 20px;
   padding-bottom: 20px;
 }
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
@@ -169,6 +165,8 @@ section {
   background-position: center;
   position: relative;
   overflow: hidden;
+  padding-bottom: 40px;
+  padding-top: 40px;
 }
 
 .form .error {
@@ -188,11 +186,6 @@ section {
 .successMessage, .errorMessage {
   display: none;
 
-}
-form {
-  position: absolute;
-  right: 10px;
-  top: 10px;
 }
 
 #inputs .container {
@@ -272,7 +265,16 @@ section#inputs {
 }
 
 #results {
-  background-color: #F0F0F5; */
+  background-color: #F0F0F5; 
+}
+#rateVar {
+  background-color: #ADD6FF; 
+}
+table {
+  background-color: white;
+}
+#amort {
+  background-color: #FFEBC2; 
 }
 
 #initMG {

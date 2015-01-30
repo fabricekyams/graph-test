@@ -15,7 +15,7 @@
        <div class="form-group">
         <div class="capital" ng-show="refinancing.knowSRD =='no'"><label for="amount">Montant Initial</label> 
           <input  ng-model="refinancing.initMortgage.capital" auto-numeric-fabrice ng-change="update(false,true)"  type="text"  class="form-control" id="amount-nb"  > 
-          <input  ng-model="refinancing.initMortgage.capital"  ng-change="update(false,true)" type="range" class="form-control" id="amount"  placeholder="Montant"  min="0" max="500000"  step="10000">
+          <input  ng-model="refinancing.initMortgage.capital"  ng-change="update(false,true)" type="range" class="form-control" id="amount"  placeholder="Montant"  min="0" max="1000000.00"  step="10000.00">
         </div>
       </div>
       
@@ -42,26 +42,12 @@
           <label for="rate" class="col-md-4" >Variation</label>
 
           <div class="col-md-4">
-            +<input ng-model="refinancing.initMortgage.cap.pos" ng-change="update(false,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
+            +<input style="width:50px;" ng-model="refinancing.initMortgage.cap.pos" ng-change="update(false,true)" type="number" ng-model-options="{ getterSetter: true }" class="" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
           </div>
           <div class="col-md-3">
-            -<input  ng-model="refinancing.initMortgage.cap.neg" ng-change="update(false,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001">  
+            -<input  style="width:50px;" ng-model="refinancing.initMortgage.cap.neg" ng-change="update(false,true)" type="number" ng-model-options="{ getterSetter: true }" class="" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001">  
           </div>
         </div>
-        <div class="form-group">
-          <label for="rate">Hausse des taux (scenarios possibles):</label>
-          <div><label class="radio-inline">
-            <input ng-change="updateStory(false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum
-          </label>
-          <label class="radio-inline">
-            <input ng-change="updateStory(false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="min"> Minimum
-          </label>
-          <label class="radio-inline">
-            <input ng-change="updateStory(false,true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> personalisé
-          </label>
-
-        </div>
-      </div>
 
     </div>
   </div>
@@ -104,19 +90,19 @@
           <input ng-disabled="sameMonthlyPayement" ng-change="updateVarWithDurationFirst(true,true)" type="number" ng-model-options="{ updateOn: 'blur' }" class="form-control" id="duration-nb"  ng-model="refinancing.refMortgage.duration"  min="72" max="360" step='12'>
         </div>
         <div class="col-md-6">
-          <input  ng-disabled="sameMonthlyPayement" ng-change="updateVarWithDurationFirst(true,true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="72" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
+          <input  ng-disabled="sameMonthlyPayement" ng-change="updateVarWithDurationFirst(false,true)" type="range" class="form-control" id="duration" placeholder="Duration"  min="72" max="360" ng-model="refinancing.refMortgage.duration" step='12'>
         </div>
       </div>
     </div>
     <div class="form-group">
       <label for="finType">Type</label>
-      <select ng-change="updateVarWithTypeFirst(true,true)" class="form-control" id="finType" ng-model="refinancing.refMortgage.type" ng-options="option for option  in refinancing.refMortgage.typeTable">
+      <select ng-change="updateVarWithTypeFirst(false,true)" class="form-control" id="finType" ng-model="refinancing.refMortgage.type" ng-options="option for option  in refinancing.refMortgage.typeTable">
 
       </select>
     </div>
     <div class="checkbox">
       <label>
-        <input type="checkbox" ng-model="refinancing.refMortgage.sameMonthlyPayement"  ng-change="update(true,false)"> Même mensualité
+        <input type="checkbox" ng-model="refinancing.refMortgage.sameMonthlyPayement"  ng-change="update(false,false)"> Même mensualité
       </label>
     </div>
     <div class="form-group">
@@ -141,23 +127,6 @@
             </div>
           </div>
         </div> -->
-        <div class="form-group">
-          <label for="rate">Hausse des taux (scenarios possibles):</label>
-          <div><label class="radio-inline">
-            <input ng-change='updateStory(false,true)' type="radio" name="storyrd" id="inlineRadio1" ng-model="story" value="max"> Maximum
-          </label>
-          <label class="radio-inline">
-            <input ng-change='updateStory(false,true)' type="radio" name="storyrd" id="inlineRadio2" ng-model="story" value="min"> Minimum
-          </label>
-
-          <label class="radio-inline">
-            <input ng-change='updateStory(false,true)' type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="limit"> Limite
-          </label>
-          <label class="radio-inline">
-            <input ng-change='updateStory(false,true)' type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> personalisé
-          </label>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -183,7 +152,7 @@
   <div class="row">
    <div class="col-md-6" >
      <table class="table">
-      <CAPTION>  <h3>Détails Général</h3></CAPTION>
+      <CAPTION>  <h2>Détails Général</h2></CAPTION>
       <TR> 
        <th></th>
        <th>Pret Actuel</th>
@@ -217,13 +186,18 @@
      <tr ng-show="refinancing.externalRef">
        <TH>Inscription hypothécaire</TH> 
        <td> 0€</td>
-       <td> {{ refinancing.MGRegistration | number:2 }}€</td>
+       <td> {{ refinancing.MGRegistration | number:2 }}€ <span>Dont</span><input  ng-model="refinancing.fraisNotaire" auto-numeric-fabrice ng-change="update(false,true)"  type="text" id="amount-nb" style="width: 85px" > <span>€ (Notaire)</span></td>
      </tr>
      <tr>
-       <TH>frais de dossier</TH> 
+       <TH>Frais de dossier</TH> 
        <td> 0€</td>
        <td> {{ refinancing.fileCharges | number:2 }}€</td>
-     </tr>  
+     </tr>
+     <tr>
+       <TH>Frais total</TH> 
+       <td> 0€</td>
+       <td> {{ refinancing.totalFrais | number:2 }}€</td>
+     </tr>   
      <tr>
        <TH>Capital dû après rachat:</TH> 
        <td> {{ refinancing.SRD | number:2 }}€</td>
@@ -251,8 +225,10 @@
 
 <div class="col-md-6" >
   <gh-visualization val="compChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
+  <gh-visualization val="chargesChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization>  
 </div>
-
+</div>
+<div class="row">
 
 
 <div class="col-md-6" >
@@ -263,26 +239,42 @@
 <div class="col-md-6" >
   <gh-visualization val="InterestChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization>  </div>
 
- <!--  <div class="col-md-4">
+
+
+  <div class="col-md-6">
    <gh-visualization val="srdChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
- </div> -->
+ </div> 
 
 </div>
 </section>
 
-<section ng-show="refinancing.refMortgage.type !='fixe' || refinancing.initMortgage.type !='fixe'">
+<section id='rateVar' ng-show="refinancing.refMortgage.type !='fixe' || refinancing.initMortgage.type !='fixe'">
   <div class="container">
     <div class="row">
      <div class="row" >
        <div class="col-md-12" >
         <div class="row" >
-          <CAPTION>  <h3>Tableau des variations taux </h3></CAPTION>
+          <CAPTION>  <h2>Tableau des variations taux </h2></CAPTION>
+          <div class="form-group">
+          <label for="rate">Hausse des taux (scenarios possibles):</label>
+          <div>
+            <button class ="btn btn-danger" ng-click="updateStory('max', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum</button>
+          
+          
+            <button class ="btn btn-success" ng-click="updateStory('min', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="min"> Minimum</button>
+          
+          
+            <button class ="btn btn-primary" ng-click="updateStory('costum' ,false,true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> personalisé
+          </button>
+
+        </div>
+      </div>
           <div class="col-md-6" >
             <table class="table">
               <CAPTION>  <h4>Prêt actuel</h4></CAPTION>
               <TR> 
                <th>Date</th>
-               <th>Indice</th>
+               <th>Indice {{story}} </th>
                <th>Taux</th>
                <th>Mensualité</th>
              </TR >
@@ -300,7 +292,7 @@
           <CAPTION>  <h4>Rachat</h4></CAPTION>
           <TR> 
            <th>Date</th>
-           <th>Indice</th>
+           <th>Indice {{story}}</th>
            <th>Taux</th>
            <th>Mensualité</th>
          </TR>
@@ -319,17 +311,17 @@
 </div>
 </section>
 
-<section >
+<section id='amort'>
   <div class="container">
    <div class="row" >
      <div class="col-md-12" >
       <div class="row" >
-        <CAPTION>  <h3>Tableau d'amortissement</h3></CAPTION>
+        <CAPTION>  <h2>Tableau d'amortissement</h2></CAPTION>
         <div class="col-md-6" >
           <table class="table">
             <CAPTION>  <h4>Prêt actuel</h4></CAPTION>
             <TR> 
-             <TH>Mois</TH> 
+             <TH>Année</TH> 
              <!--  <TH>Echéance</TH>  -->
              <TH>Taux</TH> 
              <TH>Capital</TH> 
@@ -359,7 +351,7 @@
         <table class="table">
           <CAPTION>  <h4>Rachat</h4></CAPTION>
           <TR> 
-           <TH>Mois</TH> 
+           <TH>Année</TH> 
            <!--  <TH>Echéance</TH>  -->
            <TH>Taux</TH> 
            <TH>Capital</TH> 

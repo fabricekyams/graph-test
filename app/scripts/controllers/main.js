@@ -43,9 +43,9 @@ define([
                 $scope.compChart=4 ;*/
                 $http.get('php/gets.php/?data=all')
                 .success(function(response) {
-                    $scope.story='max';
+                    $scope.story='costum';
                     $scope.refinancingOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
-                    $scope.refinancing= new Refinancing(310000.00, 2.918 , 122 , new Date('01/31/2011'), new Date('01/31/2015'),2,response);
+                    $scope.refinancing= new Refinancing(310000.00, 2.918 , 123 , new Date('01/31/2011'), new Date('01/31/2015'),2,response);
                     $scope.update();
                     console.log($scope.refinancing);
                     $http.get('php/gets.php/?data=inds')
@@ -118,7 +118,8 @@ define([
              * @param  {[type]} duration [description]
              * @return {[type]}          [description]
              */
-            $scope.updateStory = function  (ref,duration) {
+            $scope.updateStory = function  (story, ref,duration) {
+                 $scope.story = story;
                 $scope.refinancing.initMortgage.story = $scope.story; 
                 $scope.refinancing.refMortgage.story = $scope.story;
                 $scope.refinancing.update(ref,duration,true);
@@ -183,22 +184,42 @@ define([
             $scope.formatInterest = function (argument) {
                 var type= 'column';
                 var title = 'Interets et capital payé';  
-                var xtitle = 'mois';
+                var xtitle = 'Anneé';
                 var ytitle = 'Montant';
                 var interest = [];
                 var capitalleft = [];
+                var interestref = [];
+                var capitalleftref = [];
                 
-                for(var i in  $scope.refinancing.refMortgage.amortization ){
-                    interest[i] = $scope.refinancing.refMortgage.amortization[i].interest;
-                    capitalleft[i] = $scope.refinancing.refMortgage.amortization[i].capital;
+                for(var i in  $scope.refinancing.initMortgage.amortizationParYears ){
+                    interest[i] = $scope.refinancing.initMortgage.amortizationParYears[i].interest;
+                    capitalleft[i] = $scope.refinancing.initMortgage.amortizationParYears[i].capital;
+                }
+
+                for(var i in  $scope.refinancing.refMortgage.amortizationParYears ){
+                    interestref[i] = $scope.refinancing.refMortgage.amortizationParYears[i].interest;
+                    capitalleftref[i] = $scope.refinancing.refMortgage.amortizationParYears[i].capital;
                 }
                 var series= [{
                     name: 'Interet',
                     data: interest,
-                    color: '#FF0000'
+                    stack: 'Actuel',
+                    color: '#66C285'
                 }, {
                     name: 'Remboursement',
-                    data: capitalleft
+                    data: capitalleft,
+                    stack: 'Actuel',
+                    color: '#005C1F'
+                }, {
+                    name: 'Interet Rachat',
+                    data: interestref,
+                    stack: 'Rachat',
+                    color: '#66A3FF'
+                }, {
+                    name: 'Remboursement Rachat',
+                    data: capitalleftref,
+                    stack: 'Rachat',
+                    color: '#0052CC'
                 }];
                 var to = $scope.idChart = 'InterestChart';
                 var chart = $scope.chart(to, type, title, series, xtitle, ytitle);
@@ -228,20 +249,18 @@ define([
                     $scope.refinancing.initMortgage.totalInterestIfRef,
                     $scope.refinancing.refMortgage.totalInterest
                 ];
-                var indem = [0, $scope.refinancing.indem ];
-                var charges = [0, $scope.refinancing.fileCharges];
+/*                var indem = [0, $scope.refinancing.indem ];
+                var releaseCharges = [0, $scope.refinancing.releaseCharges ];
+                var MGRegistration = [0, $scope.refinancing.MGRegistration ];*/
+                var charges = [0, $scope.refinancing.fileCharges+$scope.refinancing.MGRegistration+$scope.refinancing.releaseCharges+$scope.refinancing.indem];
 
                 var series= [
                 {
-                    name: 'frais de dossier',
+                    name: 'Total Frais',
                     data: charges
-                },
+                },   
                 {
-                    name: 'indemnité de main levé',
-                    data: indem
-                }, 
-                {
-                    name: 'interest',
+                    name: 'Interet',
                     data: interest,
                     color: '#FF0000'
                 },
@@ -249,7 +268,7 @@ define([
                     name: 'Remboursement',
                     data: payment,
                     color: '#0099FF'
-                } 
+                }, 
                 ];
                 var to = $scope.idChart = 'compChart';
                 var chart = $scope.chart(to, type, title, series, xtitle, ytitle);
@@ -259,6 +278,41 @@ define([
                 };
 
                 chart.xAxis.categories=['prêt actuel' , 'rachat']
+                return chart;
+
+            }
+             $scope.formatdivers = function (argument) {
+
+                var chart = {
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        renderTo: 'chargesChart'
+                    },
+                    title: {
+                        text: 'Repartition des charges'
+                    },
+                    
+                    series: [{
+                        type: 'pie',
+                        name: 'Browser share',
+                        data: [
+                            ['Frais de dossier',   $scope.refinancing.fileCharges],
+                            ['Frais de mainLevée',  $scope.refinancing.releaseCharges],
+                            {
+                                name: 'Frais Hypothécaire',
+                                y: $scope.refinancing.MGRegistration,
+                                sliced: true,
+                                selected: true
+                            },
+                            ["Indemnité de remploi",   $scope.refinancing.indem]
+                        ]
+                    }]
+                }
+
+                $scope.idChart = 'chargesChart';
+
                 return chart;
 
             }
@@ -273,14 +327,57 @@ define([
                 var xtitle = 'mois';
                 var ytitle = 'Montant';
                 var srd = [];
+                var srdref = [];
+                var j =0;
+                /*for(var i = $scope.refinancing.initMortgage.duration - $scope.refinancing.durationLeft; i< $scope.refinancing.initMortgage.amortization.length ;i++ ){
+                    srd[j] = $scope.refinancing.initMortgage.amortization[i].SRD;
+                    j++;
+                }*/
+
+                var j =0;
+                for(var i = 0; i< $scope.refinancing.initMortgage.amortizationParYears.length ;i++ ){
+                    srd[j] = $scope.refinancing.initMortgage.amortizationParYears[i].SRD;
+                    j++;
+                }
+
+                for(var i in  $scope.refinancing.refMortgage.amortizationParYears ){
+                    srdref[i] = $scope.refinancing.refMortgage.amortizationParYears[i].SRD;
+                }
+                var series= [{
+                    name: 'Sole restant dû prêt Actuel',
+                    data: srd,
+                    color: '#005C1F'
+                },
+                {
+                    name: 'Sole restant dû Rachat',
+                    data: srdref,
+                    color: '#0052CC'
+                }
+                ];
+                var to = $scope.idChart = 'srdChart';
+                var chart = $scope.chart(to, type, title, series, xtitle, ytitle);
+                return chart;
+            }
+
+            $scope.formatmontly = function(){
+                var type= 'line';
+                var title = 'Solde Restant Dû';  
+                var xtitle = 'mois';
+                var ytitle = 'Montant';
+                var srd = [];
                 
                 for(var i in  $scope.refinancing.refMortgage.amortization ){
                     srd[i] = $scope.refinancing.refMortgage.amortization[i].SRD;
                 }
                 var series= [{
-                    name: 'Sole restant dû',
+                    name: 'Sole restant dû prêt Actuel',
                     data: srd
-                }];
+                },
+                {
+                    name: 'Sole restant dû Rachat',
+                    data: srdref
+                }
+                ];
                 var to = $scope.idChart = 'srdChart';
                 var chart = $scope.chart(to, type, title, series, xtitle, ytitle);
                 return chart;
@@ -297,7 +394,7 @@ define([
              * @param  {[type]} ytitle [description]
              * @return {[type]}        [description]
              */
-            $scope.chart = function (to, type, title, series, xtitle, ytitle) {
+            $scope.chart = function (to, type, title, series, xtitle, ytitle ) {
                 var results = {
                     chart: {
                         renderTo: to,
@@ -335,6 +432,7 @@ define([
                 $scope.InterestChart = $scope.formatInterest();
                 $scope.srdChart = $scope.formatSRD();
                 $scope.compChart = $scope.formatcomp();
+                $scope.chargesChart = $scope.formatdivers();
 
             }
 
