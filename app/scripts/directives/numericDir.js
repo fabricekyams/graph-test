@@ -21,6 +21,13 @@ define([
             	$scope.refinancing.initMortgage.duration = parseInt(newVal);
         	});
             $scope.$watch('refinancing.refMortgage.duration', function(newVal){
+              if (newVal<72) {
+                newVal = 72;
+              }else{
+                if(newVal>360){
+                  newVal = 360;
+                }
+              };
               $scope.refinancing.refMortgage.duration = parseInt(newVal);
           });
 

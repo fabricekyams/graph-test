@@ -20,6 +20,7 @@ define([
 			this.initRate = this.rate;
 
 			this.duration = duration;
+			this.durationLeft = duration;
 			
 			this.date = date;
 			this.dateString = date.toLocaleDateString();
@@ -36,6 +37,7 @@ define([
 			console.log(this.refInd);
 
 			this.amortization = [];
+			this.amortizationParYears = [];
 			this.story = 'max';
 			this.type = 'fixe';
 			
@@ -77,7 +79,7 @@ define([
 			 * @param {[type]} argument [description]
 			 */
 			setDuration : function (argument) {
-				this.duration = Math.floor(DC.CreditUtil.calculDuree(this.rate, this.monthlyPayment/this.capital));
+				this.duration = Math.ceil(DC.CreditUtil.calculDuree(this.rate, this.monthlyPayment/this.capital));
 			},
 
 			/**
@@ -92,6 +94,7 @@ define([
 			 */
 			setAmortization : function () {
 				this.amortization=[];
+				this.amortizationParYears=[];
 				//this.setRefIndData(0,this.rate);
 				this.initArmortizationVal(0,this.duration, this.duration, this.capital, this.rate);
 				this.totalPayment = this.amortization[this.duration-1].totalPayment;
@@ -106,6 +109,7 @@ define([
 				//this.initRefTable();
 				//console.log(this.story);
 				this.amortization=[];
+				this.amortizationParYears=[];
 				this.setMax();
 				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital, this.rate);
 				//this.setRefIndData(0,this.rate);
@@ -222,6 +226,7 @@ define([
 			 */
 			initArmortizationVal : function (position, len, durationLeft, capital, rate){
 				var period = 1;
+
 				for (var i = position; i < len; i++) {
 					this.amortization[i]={};
 					this.amortization[i].month='mois: '+(i+1);
@@ -235,9 +240,41 @@ define([
 					this.amortization[i].totalInterest=this.getTotalInterest(i);
 					period++;
 
+					if(i%12==0 && i>=this.duration - this.durationLeft){
+						ypos = (i/12);
+							if(this.duration !== this.durationLeft){
+								ypos-= (this.duration - this.durationLeft)/12;
+							}
+						//console.log(i);
+						//console.log(ypos);
+						this.amortizationParYears[ypos] = {};
+
+						this.amortizationParYears[ypos].month=0;
+						this.amortizationParYears[ypos].rate=0;
+						this.amortizationParYears[ypos].monthlyPayment=0;
+						this.amortizationParYears[ypos].SRD=0;
+						this.amortizationParYears[ypos].interest= 0;
+						this.amortizationParYears[ypos].capital= 0;
+						this.amortizationParYears[ypos].totalPayment= 0;
+						this.amortizationParYears[ypos].totalInterest= 0;
+						};
+						if (i>=this.duration - this.durationLeft) {
+
+							this.amortizationParYears[ypos].month= this.amortization[i].month;
+							this.amortizationParYears[ypos].dateTerme= this.amortization[i].dateTerme;
+							this.amortizationParYears[ypos].rate=this.amortization[i].rate ;
+							this.amortizationParYears[ypos].monthlyPayment= this.amortization[i].monthlyPayment;
+							this.amortizationParYears[ypos].SRD= this.amortization[i].SRD;
+							this.amortizationParYears[ypos].interest+= this.amortization[i].interest;
+							this.amortizationParYears[ypos].capital+= this.amortization[i].capital;
+							this.amortizationParYears[ypos].totalPayment= this.amortization[i].totalPayment;
+							this.amortizationParYears[ypos].totalInterest= this.amortization[i].totalInterest;
+							
+						};
+
 				};
 
-				//console.log(this.amortization);
+				console.log(this.amortizationParYears);
 			},
 
 			/**
@@ -686,7 +723,7 @@ define([
 					this.refTab[i].C = this.round(parseFloat(tab[i].C));
 					this.refTab[i].E = this.round(parseFloat(tab[i].E));
 				};
-				console.log(this.refTab);
+				//console.log(this.refTab);
 			},
 
 			/**
@@ -699,9 +736,9 @@ define([
 				var start = 0;
 				var offset = this.getMonthDifference(this.date, today);
 				offset += 0; 
-				console.log(offset);
+				//console.log(offset);
 				var start = offset>0 ? this.refTab.length - offset : this.refTab.length-1;
-				console.log(start);
+				//console.log(start);
 				var fisrtdate = {date:this.refTab[start].date.toLocaleDateString(), position:start}
 				//this.refInd = [];
 				if(this.refInd[0].dateList.indexOf(this.refInd[0].date)<0 ||

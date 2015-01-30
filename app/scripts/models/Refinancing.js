@@ -50,6 +50,9 @@ define([
 			 * @return {[type]}               [description]
 			 */
 			update: function (ref,  duration, durationFirst) {
+				this.durationLeft = this.getDurationLeft(this.date, this.newDate);
+				this.initMortgage.durationLeft = this.durationLeft;
+				
 				if (!ref) {
 					this.initMortgage.update();
 				};
@@ -61,7 +64,7 @@ define([
 				if(!duration){
 					this.refMortgage.duration = this.durationLeft;
 				}
-
+				this.refMortgage.durationLeft = this.refMortgage.duration;
 				
 				this.validateData(durationFirst);
 				this.initMortgage.totalPaymentIfRef = this.initMortgage.getTotalFromPeriode(this.durationLeft);
@@ -101,9 +104,7 @@ define([
 					this.refMortgage.monthlyPayment = this.initMortgage.monthlyPayment;
 					this.refMortgage.setDuration();
 				}
-
-	
-
+				this.checkDuration();
 				if (this.refMortgage.type.localeCompare('fixe')===0) {
 					var i =0;
 					while(!found && i<5) {
@@ -158,13 +159,7 @@ define([
 							this.refMortgage.sameMonthlyPayement = false;
 							this.refMortgage.duration=this.rateTable[linePosition].duration_min;
 						}
-						if(this.refMortgage.duration<72 ){
-							this.refMortgage.duration=72;
-						}else{
-							if(this.refMortgage.duration>360 ){
-								this.refMortgage.duration=360;
-							}
-						}
+						this.checkDuration();
 
 						
 					}
@@ -195,6 +190,15 @@ define([
 					// se dplacer dans la ligne du tableau en fonction des donnee.
 					// une fois deplacer, verifier chaque donnée, si une est different, on lui donne la valeur par defaut de cette ligne
 					// ne pas changer de colone
+			},
+			checkDuration : function  (argument) {
+				if(this.refMortgage.duration<72 ){
+					this.refMortgage.duration=72;
+				}else{
+					if(this.refMortgage.duration>360 ){
+						this.refMortgage.duration=360;
+					}
+				}
 			},
 
 			/**
