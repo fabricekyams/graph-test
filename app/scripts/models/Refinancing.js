@@ -35,7 +35,7 @@ define([
 			this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
 			this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);
 			this.refMortgage.totalPaymentInitMortgage = this.initMortgage.totalPaymentIfRef;
-			this.update();
+			this.update(false, true, true);
 
 			
 
@@ -53,8 +53,6 @@ define([
 			update: function (ref,  duration, durationFirst) {
 				this.durationLeft = this.getDurationLeft(this.date, new Date(this.refMortgage.formatDate(this.refMortgage.dateString)));
 				this.initMortgage.durationLeft = this.durationLeft;
-				console.log(this.initMortgage.durationLeft);
-				console.log(this.initMortgage.durationLeft);
 				
 				if (!ref) {
 					this.initMortgage.update();
@@ -101,27 +99,54 @@ define([
 			},
 
 			equalizeThenUpdate : function  (argument) {
+
 				var minInd = 0;
 				var maxInd = 0;
-				var lenInit = this.initMortgage.getRefIndLength();
+				var lenInit = 1;
 				var lenRef = this.refMortgage.refInd.length;
 				var found = false;
-				var len = lenRef> lenInit ? lenRef : lenInit;
-
+				var len = 0;
+				this.initMortgage.story = 'costum';
+				this.refMortgage.story = 'costum';
+				console.log('min ',minInd);
 				if(this.refMortgage.type.localeCompare('fixe')!==0){
-					minInd = this.refMortgage.minInd ;
-					maxInd = this.refMortgage.maxInd ;
+					minInd = this.refMortgage.getIndiceMin() ;
+					maxInd = this.refMortgage.getIndiceMax();
 					
 				}
+				console.log('min ',minInd);
+
 				if(this.initMortgage.type.localeCompare('fixe')!==0){
-					minInd = this.initMortgage.minInd > minInd ? this.refMortgage.minInd : minInd;
-					maxInd = this.initMortgage.maxInd < maxInd ? this.refMortgage.maxInd : maxInd;
+					lenInit = this.initMortgage.getRefIndLength()+1;
+					minInd = this.initMortgage.getIndiceMin() < minInd ? this.initMortgage.getIndiceMin() : minInd;
+					maxInd = this.initMortgage.getIndiceMax() > maxInd ? this.initMortgage.getIndiceMax() : maxInd;
+					var deb = this.initMortgage.refInd.length - lenInit;
+					console.log(deb);
+					for (var i = deb; i < this.initMortgage.refInd.length; i++) {
+						this.initMortgage.refInd[i].val = minInd;
+					};
 				}
+					for (var i = 1; i < this.refMortgage.refInd.length; i++) {
+						this.refMortgage.refInd[i].val = minInd;
+					};
+				var len = lenRef> lenInit ? lenRef : lenInit;
+				console.log('min ',minInd);
+
+				
+
+				this.update(false, true, true);
+
 				
 				var difference = this.getDiffrence();
 				var i = len-1;
-				while(!found || i>0){
-					found = this.findLimit(minInd, 1, maxInd, difference,i, lenInit, lenRef);
+				while(!found && i>0){
+					this.findLimite(minInd, 1, maxInd, difference,i);
+					if (this.getDiffrence()<= difference) {
+						difference = this.getDiffrence();
+					}else{
+						this.findLimite(minInd, 1, maxInd, difference,i-1);
+						//found = true;
+					};
 					i--;
 				}
 
@@ -130,32 +155,31 @@ define([
 
 			findLimite : function (indice , rank, maxIndice, difference, pos) {
 				if (this.indiceAdvantageous(indice+rank, difference, pos)  && indice+rank < maxIndice) {
-					var difference = getDiffrence();
-					this.findLimite(indice+rank, rank);
+					var difference = this.getDiffrence();
+					console.log('je suis ici');
+					this.findLimite(indice+rank, rank, maxIndice, difference, pos);
 				}else{
-					console.log('indice: ',indice, maxIndice);
 					if (rank>0.001) {
-						this.findLimite(indice,rank/10);
+						this.findLimite(indice,rank/10 , maxIndice, difference, pos);
 					}else{
-						for (var i = 1; i < this.refInd.length; i++) {
-							this.refInd[i].val=indice;
-						}	
+						this.indiceAdvantageous(indice, difference, pos);
 					}
 				}
-				this.update();
+				this.update(false, true, true);
 			},
 
-			indiceAdvantageous : function (indice, pos, difference, refPos, initPos) {
+			indiceAdvantageous : function (indice, difference, pos) {
 				var advantageous = false;
+				var offset = this.initMortgage.refInd.length - (this.initMortgage.getRefIndLength()+1);
 
-				if (this.refMortgage.refInd.lengt>this.refMortgage.refInd.lengt) {
+				if (this.refMortgage.refInd.lengt>(this.initMortgage.getRefIndLength()+1)) {
 					this.refMortgage.refInd[pos].val=indice;
 					var found = false;
-					var i = this.initMortgage.refInd.length< pos ? this.initMortgage.refInd.length: pos;
+					var i = this.initMortgage.getRefIndLength() < pos ? this.initMortgage.refInd.length: pos+offset;
 					var dater = this.refMortgage.refInd[pos].date.date.split('/');
-					var monthr = date[1];
-					var yearsr = date[2];
-					var first = i - this.initMortgage.getRefIndLength();-1
+					var monthr = dater[1];
+					var yearsr = dater[2];
+					var first = i - this.initMortgage.getRefIndLength();
 					while(!found && i>first){
 						var date = this.initMortgage.refInd[i].date.date.split('/');
 						var month = date[1];
@@ -168,12 +192,12 @@ define([
 					}
 
 				}else{
-					this.initMortgage.refInd[i].val=indice;
+					this.initMortgage.refInd[pos+offset].val=indice;
 					var found = false;
-					var i = this.refMortgage.refInd.length< pos ? this.refMortgage.refInd.length: pos;
-					var dater = this.initMortgage.refInd[pos].date.date.split('/');
-					var monthr = date[1];
-					var yearsr = date[2];
+					var i = this.refMortgage.refInd.length-1< pos ? this.refMortgage.refInd.length-1: pos;
+					var dater = this.initMortgage.refInd[pos+offset].date.date.split('/');
+					var monthr = dater[1];
+					var yearsr = dater[2];
 					while(!found && i>0){
 						var date = this.refMortgage.refInd[i].date.date.split('/');
 						var month = date[1];
@@ -187,9 +211,13 @@ define([
 
 				};
 				
-				this.update();
+				this.update(false, true, true);
+				console.log('difference: '+difference);
+				console.log('new difference: '+this.getDiffrence());
+				console.log('pos: '+pos);
+				console.log('indice: '+indice);
 
-				if (this.getDiffrence()< difference) {
+				if (this.getDiffrence()<= difference) {
 					advantageous = true;
 				};
 

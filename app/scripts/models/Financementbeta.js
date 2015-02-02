@@ -516,6 +516,14 @@ define([
 				this.story = 'limit';
 
 			},
+			getIndiceMax : function  () {
+				return this.calculInRef(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+this.maxInd);// body...
+			},
+
+			getIndiceMin : function  () {
+				return this.calculInRef(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)-this.minInd);// body...
+				// body...
+			},
 
 			/**
 			 * [findLimite description]
@@ -624,6 +632,21 @@ define([
 				}
 
 
+			},
+
+			getRefIndLength : function (argument) {
+				var found = false;
+				var i = 0;
+				var start = 0;
+				while(!found && i<this.refInd.length){
+					if(this.refInd[i].dateList.length>1){
+						start++;
+					}else{
+						found = true;
+					}
+					i++;
+				}
+				return this.refInd.length - start;
 			},
 
 			/**
