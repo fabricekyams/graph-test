@@ -100,6 +100,106 @@ define([
 				this.totalFrais = this.fileCharges+this.MGRegistration+this.releaseCharges+this.indem
 			},
 
+			equalizeThenUpdate : function  (argument) {
+				var minInd = 0;
+				var maxInd = 0;
+				var lenInit = this.initMortgage.getRefIndLength();
+				var lenRef = this.refMortgage.refInd.length;
+				var found = false;
+				var len = lenRef> lenInit ? lenRef : lenInit;
+
+				if(this.refMortgage.type.localeCompare('fixe')!==0){
+					minInd = this.refMortgage.minInd ;
+					maxInd = this.refMortgage.maxInd ;
+					
+				}
+				if(this.initMortgage.type.localeCompare('fixe')!==0){
+					minInd = this.initMortgage.minInd > minInd ? this.refMortgage.minInd : minInd;
+					maxInd = this.initMortgage.maxInd < maxInd ? this.refMortgage.maxInd : maxInd;
+				}
+				
+				var difference = this.getDiffrence();
+				var i = len-1;
+				while(!found || i>0){
+					found = this.findLimit(minInd, 1, maxInd, difference,i, lenInit, lenRef);
+					i--;
+				}
+
+			},
+
+
+			findLimite : function (indice , rank, maxIndice, difference, pos) {
+				if (this.indiceAdvantageous(indice+rank, difference, pos)  && indice+rank < maxIndice) {
+					var difference = getDiffrence();
+					this.findLimite(indice+rank, rank);
+				}else{
+					console.log('indice: ',indice, maxIndice);
+					if (rank>0.001) {
+						this.findLimite(indice,rank/10);
+					}else{
+						for (var i = 1; i < this.refInd.length; i++) {
+							this.refInd[i].val=indice;
+						}	
+					}
+				}
+				this.update();
+			},
+
+			indiceAdvantageous : function (indice, pos, difference, refPos, initPos) {
+				var advantageous = false;
+
+				if (this.refMortgage.refInd.lengt>this.refMortgage.refInd.lengt) {
+					this.refMortgage.refInd[pos].val=indice;
+					var found = false;
+					var i = this.initMortgage.refInd.length< pos ? this.initMortgage.refInd.length: pos;
+					var dater = this.refMortgage.refInd[pos].date.date.split('/');
+					var monthr = date[1];
+					var yearsr = date[2];
+					var first = i - this.initMortgage.getRefIndLength();-1
+					while(!found && i>first){
+						var date = this.initMortgage.refInd[i].date.date.split('/');
+						var month = date[1];
+						var years = date[2];
+						if(monthr == month && years == yearsr){
+							found = true;
+							this.initMortgage.refInd[i].val=indice;
+						}
+						i--;
+					}
+
+				}else{
+					this.initMortgage.refInd[i].val=indice;
+					var found = false;
+					var i = this.refMortgage.refInd.length< pos ? this.refMortgage.refInd.length: pos;
+					var dater = this.initMortgage.refInd[pos].date.date.split('/');
+					var monthr = date[1];
+					var yearsr = date[2];
+					while(!found && i>0){
+						var date = this.refMortgage.refInd[i].date.date.split('/');
+						var month = date[1];
+						var years = date[2];
+						if(monthr == month && years == yearsr){
+							found = true;
+							this.refMortgage.refInd[i].val=indice;
+						}
+						i--;
+					}
+
+				};
+				
+				this.update();
+
+				if (this.getDiffrence()< difference) {
+					advantageous = true;
+				};
+
+				return advantageous;
+			},
+
+			getDiffrence : function  (argument) {
+				return Math.abs(this.initMortgage.totalPaymentIfRef-this.refMortgage.totalPayment);
+			},
+
 			/**
 			 * [validateData description]
 			 * @param  {[type]} durationFirst [description]

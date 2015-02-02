@@ -126,6 +126,13 @@ define([
                 $scope.updateUi();
             }
 
+            $scope.updateStoryEqualize = function  (argument) {
+                $scope.refinancing.initMortgage.story = 'costum'; 
+                $scope.refinancing.refMortgage.story = 'costum';
+                $scope.refinancing.equalizeThenUpdate();
+
+            }
+
             /**
              * [updateUi description]
              * @return {[type]} [description]
