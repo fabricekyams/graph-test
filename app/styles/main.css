@@ -146,6 +146,14 @@ body {
   position: relative;
 }
 
+ #resultat {
+    
+    margin-left: 10px;
+    margin-top: 25px;
+    position: fixed;
+    z-index: 100;
+}
+
 .content {
   position: relative;
   z-index: 2;

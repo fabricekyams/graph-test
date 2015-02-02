@@ -45,7 +45,7 @@ define([
                 .success(function(response) {
                     $scope.story='costum';
                     $scope.refinancingOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
-                    $scope.refinancing= new Refinancing(310000.00, 2.918 , 123 , new Date('01/31/2011'), new Date('01/31/2015'),2,response);
+                    $scope.refinancing= new Refinancing(310000.00, 3.918 , 300 , new Date('01/31/2011'), new Date('01/31/2015'),2.08,response);
                     $scope.update();
                     console.log($scope.refinancing);
                     $http.get('php/gets.php/?data=inds')
@@ -90,6 +90,22 @@ define([
                 $scope.updateUi(); 
             }
 
+            $scope.updateWithIndPersRef = function (ref,duration) {
+                $scope.refinancing.initMortgage.story = 'costum'; 
+                $scope.refinancing.refMortgage.story = 'costum';
+                $scope.refinancing.adjust(true);
+                $scope.refinancing.update(ref,duration,true);
+                $scope.updateUi(); 
+            }
+
+            $scope.updateWithIndPersInit = function (ref,duration) {
+                $scope.refinancing.initMortgage.story = 'costum'; 
+                $scope.refinancing.refMortgage.story = 'costum';
+                $scope.refinancing.adjust(false);
+                $scope.refinancing.update(ref,duration,true);
+                $scope.updateUi(); 
+            }
+
             /**
              * [updateVarWithDurationFirst description]
              * @param  {[type]} ref      [description]
@@ -118,13 +134,26 @@ define([
              * @param  {[type]} duration [description]
              * @return {[type]}          [description]
              */
-            $scope.updateStory = function  (story, ref,duration) {
+            $scope.updateStoryInit = function  (story, ref,duration) {
                  $scope.story = story;
                 $scope.refinancing.initMortgage.story = $scope.story; 
-                $scope.refinancing.refMortgage.story = $scope.story;
+                $scope.refinancing.refMortgage.story = 'costum';
                 $scope.refinancing.update(ref,duration,true);
+                $scope.story = 'costum';
+                $scope.refinancing.initMortgage.story = $scope.story; 
                 $scope.updateUi();
             }
+
+            $scope.updateStoryRef = function  (story, ref,duration) {
+                 $scope.story = story;
+                $scope.refinancing.initMortgage.story = 'costum'; 
+                $scope.refinancing.refMortgage.story = $scope.story;
+                $scope.refinancing.update(ref,duration,true);
+                 $scope.story = 'costum';
+                $scope.refinancing.refMortgage.story = $scope.story;
+                $scope.updateUi();
+            }
+
 
             $scope.updateStoryEqualize = function  () {
                 $scope.refinancing.initMortgage.story = 'costum'; 

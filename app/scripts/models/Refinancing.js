@@ -15,7 +15,6 @@ define([
 		 * @param {[type]} rateTable [description]
 		 */
 		function Refinancing(capital, rate, duration, date, newDate, newRate, rateTable){
-			//console.log(new Financement(capital, rate, duration, date));
 			this.initMortgage = new Financement(capital, rate, duration, date);
 			this.rate = rate;
 			this.date = date;
@@ -56,6 +55,7 @@ define([
 				
 				if (!ref) {
 					this.initMortgage.update();
+
 				};
 				this.date = this.initMortgage.date;
 				this.newDate = new Date(this.refMortgage.formatDate(this.refMortgage.dateString));
@@ -68,10 +68,40 @@ define([
 				this.refMortgage.durationLeft = this.refMortgage.duration;
 				
 				this.validateData(durationFirst);
+
+				this.updateStory();
 				this.initMortgage.totalPaymentIfRef = this.initMortgage.getTotalFromPeriode(this.durationLeft);
 				this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
 				this.initMortgage.totalInterestIfRef = this.initMortgage.getTotalInterestFromPeriode(this.durationLeft);
 				this.refMortgage.totalPaymentInitMortgage = this.initMortgage.totalPaymentIfRef;
+			},
+
+			updateStory : function(argument) {
+				if(this.refMortgage.type.localeCompare('fixe')!==0 && this.initMortgage.type.localeCompare('fixe')!==0){
+					if(this.refMortgage.variation.type.localeCompare(this.initMortgage.variation.type)==0){
+						if(this.initMortgage.story.localeCompare(this.refMortgage.story)!==0){
+							var len = this.initMortgage.getRefIndLength();
+							if (this.refMortgage.story.localeCompare('costum')==0) {
+								if(len>1){
+									for (var i = 1; i < this.refMortgage.refInd.length; i++) {
+										this.refMortgage.refInd[i].val = this.initMortgage.refInd[this.initMortgage.refInd.length-1].val;
+									};
+								}
+								this.refMortgage.update();
+							}else{
+								if (this.refMortgage.refInd.length>1) {
+									if (this.initMortgage.refInd.length-len>0) {
+										for (var i = this.initMortgage.refInd.length-len; i < this.initMortgage.refInd.length; i++) {
+											this.initMortgage.refInd[i].val = this.refMortgage.refInd[this.refMortgage.refInd.length-1].val;
+										};
+									};
+								};
+								this.initMortgage.update();
+							}
+						}
+
+					}
+				}
 			},
 
 			/**
@@ -97,8 +127,97 @@ define([
 				}
 				this.totalFrais = this.fileCharges+this.MGRegistration+this.releaseCharges+this.indem
 			},
+			minimizeThenUpdate : function  (argument) {
+				// body...
+			},
+			maximizeThenUpdate : function  (argument) {
+				// body...
+			},
+			adjust : function (ref) {
+				var len = this.initMortgage.getRefIndLength();
+				var start = this.initMortgage.refInd.length-len;
+				if(this.refMortgage.type.localeCompare('fixe')!==0 && this.initMortgage.type.localeCompare('fixe')!==0){
+					if(this.refMortgage.variation.type.localeCompare(this.initMortgage.variation.type)==0){
+						if(ref){
+							if (start>0) {
+								var refpos=1;
+								var i = start;
+								var ended = false;
+								while(i < this.initMortgage.refInd.length && !ended) {
+									var found = false;
+									while(!found && refpos<this.refMortgage.refInd.length){
+										var dater = this.refMortgage.refInd[refpos].date.date.split('/');
+										var monthr = dater[1];
+										var yearsr = dater[2];
 
-			equalizeThenUpdate : function  (argument) {
+										var date = this.initMortgage.refInd[i].date.date.split('/');
+										var month = date[1];
+										var years = date[2];
+											if(monthr == month && years == yearsr){
+												found = true;
+												this.initMortgage.refInd[i].val=this.refMortgage.refInd[refpos].val;
+											}
+										refpos++;
+										ended = refpos == this.refMortgage.refInd.length ? true : false;
+										};
+										if(refpos == this.refMortgage.refInd.length && !found){
+											refpos=1;
+											ended = false;
+										}
+									i++;
+									}
+
+								};
+							
+							//...
+						}else{
+							if (start>0) {
+								var initpos=start;
+								var i = 1;
+								var ended = false;
+								while(i < this.refMortgage.refInd.length && !ended) {
+									var found = false;
+									while(!found && initpos<this.initMortgage.refInd.length){
+										var dater = this.refMortgage.refInd[i].date.date.split('/');
+										var monthr = dater[1];
+										var yearsr = dater[2];
+
+										var date = this.initMortgage.refInd[initpos].date.date.split('/');
+										var month = date[1];
+										var years = date[2];
+											if(monthr == month && years == yearsr){
+												found = true;
+												this.refMortgage.refInd[i].val=this.initMortgage.refInd[initpos].val;
+											}
+										initpos++;
+										ended = initpos == this.initMortgage.refInd.length ? true : false;
+										};
+										if(initpos == this.initMortgage.refInd.length && !found){
+											initpos=start;
+											ended = false;
+										}
+									i++;
+									}
+
+								};
+
+							//...
+						}
+					}
+				}
+			},
+
+			equalizeThenUpdate : function (argument) {
+
+				var maxInd = this.initMortgage.getIndiceMax();
+				var maxInd = this.initMortgage.getIndiceMin();
+				var diff = maxInd - minInd;
+
+
+
+			},
+
+			equalizeThenUpdateBeta : function  (argument) {
 
 				var minInd = 0;
 				var maxInd = 0;
@@ -108,20 +227,17 @@ define([
 				var len = 0;
 				this.initMortgage.story = 'costum';
 				this.refMortgage.story = 'costum';
-				console.log('min ',minInd);
 				if(this.refMortgage.type.localeCompare('fixe')!==0){
 					minInd = this.refMortgage.getIndiceMin() ;
 					maxInd = this.refMortgage.getIndiceMax();
 					
 				}
-				console.log('min ',minInd);
 
 				if(this.initMortgage.type.localeCompare('fixe')!==0){
 					lenInit = this.initMortgage.getRefIndLength()+1;
 					minInd = this.initMortgage.getIndiceMin() < minInd ? this.initMortgage.getIndiceMin() : minInd;
 					maxInd = this.initMortgage.getIndiceMax() > maxInd ? this.initMortgage.getIndiceMax() : maxInd;
 					var deb = this.initMortgage.refInd.length - lenInit;
-					console.log(deb);
 					for (var i = deb; i < this.initMortgage.refInd.length; i++) {
 						this.initMortgage.refInd[i].val = minInd;
 					};
@@ -130,7 +246,6 @@ define([
 						this.refMortgage.refInd[i].val = minInd;
 					};
 				var len = lenRef> lenInit ? lenRef : lenInit;
-				console.log('min ',minInd);
 
 				
 
@@ -138,8 +253,8 @@ define([
 
 				
 				var difference = this.getDiffrence();
-				var i = len-1;
-				while(!found && i>0){
+				var i = 1;
+				while(!found && i<len){
 					this.findLimite(minInd, 1, maxInd, difference,i);
 					if (this.getDiffrence()<= difference) {
 						difference = this.getDiffrence();
@@ -147,7 +262,7 @@ define([
 						this.findLimite(minInd, 1, maxInd, difference,i-1);
 						//found = true;
 					};
-					i--;
+					i++;
 				}
 
 			},
@@ -156,7 +271,6 @@ define([
 			findLimite : function (indice , rank, maxIndice, difference, pos) {
 				if (this.indiceAdvantageous(indice+rank, difference, pos)  && indice+rank < maxIndice) {
 					var difference = this.getDiffrence();
-					console.log('je suis ici');
 					this.findLimite(indice+rank, rank, maxIndice, difference, pos);
 				}else{
 					if (rank>0.001) {
@@ -212,10 +326,6 @@ define([
 				};
 				
 				this.update(false, true, true);
-				console.log('difference: '+difference);
-				console.log('new difference: '+this.getDiffrence());
-				console.log('pos: '+pos);
-				console.log('indice: '+indice);
 
 				if (this.getDiffrence()<= difference) {
 					advantageous = true;
@@ -243,6 +353,7 @@ define([
 				}
 				this.checkDuration();
 				if (this.refMortgage.type.localeCompare('fixe')===0) {
+					this.refMortgage.refInd = this.refMortgage.refInd.slice(0,1);
 					var i =0;
 					while(!found && i<5) {
 						if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
@@ -272,6 +383,7 @@ define([
 						};
 						if(!found){
 							this.refMortgage.type = this.rateTable[linePosition].type+" (+"+this.rateTable[linePosition].cap_pos+'/-'+this.rateTable[linePosition].cap_neg+') de '+Math.floor(this.rateTable[linePosition].duration_min/12)+'ans à '+Math.floor(this.rateTable[linePosition].duration_max/12)+'ans';
+							this.refMortgage.refInd = this.refMortgage.refInd.slice(0,1);
 							this.refMortgage.setCap();
 						}
 					}else{
@@ -295,6 +407,8 @@ define([
 						if(!found){
 							this.refMortgage.sameMonthlyPayement = false;
 							this.refMortgage.duration=this.rateTable[linePosition].duration_min;
+							this.refMortgage.refInd = this.refMortgage.refInd.slice(0,1);
+
 						}
 						this.checkDuration();
 
@@ -400,7 +514,6 @@ define([
 			generateRateTable : function (rateTable) {
 				var quot = {};
 				this.rateTable = [];
-				//console.log(rateTable);
 				for (var i = 0; i < rateTable.length; i++) {
 					this.rateTable[i]= {};
 					this.rateTable[i].id = parseInt(rateTable[i].id);

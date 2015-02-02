@@ -617,7 +617,7 @@ define([
 								this.refInd[i].dateList[0].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(i-1)));
 								this.refInd[i].date = this.refInd[i].dateList[0];
 								this.refInd[i].dateList[0].position = -1;
-								this.refInd[i].val = this.round(this.calculInRef(rate));
+								this.refInd[i].val = this.story.localeCompare('costum')==0 ? this.refTab[this.refTab.length-1][this.variation.type] : this.round(this.calculInRef(rate));
 								//this.refInd[i][0].rate = this.initRate;
 								//start--;
 							
