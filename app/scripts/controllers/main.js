@@ -145,21 +145,22 @@ define([
             }
 
             $scope.updateStoryRef = function  (story, ref,duration) {
-                 $scope.story = story;
+                $scope.story = story;
                 $scope.refinancing.initMortgage.story = 'costum'; 
                 $scope.refinancing.refMortgage.story = $scope.story;
                 $scope.refinancing.update(ref,duration,true);
-                 $scope.story = 'costum';
+                $scope.story = 'costum';
                 $scope.refinancing.refMortgage.story = $scope.story;
                 $scope.updateUi();
             }
 
 
-            $scope.updateStoryEqualize = function  () {
-                $scope.refinancing.initMortgage.story = 'costum'; 
-                $scope.refinancing.refMortgage.story = 'costum';
-                $scope.refinancing.equalizeThenUpdate();
-                $scope.updateUi();
+            $scope.updateStoryLimit = function  (ref) {
+                $scope.story = 'costum';
+                if ((ref && $scope.refinancing.refMortgage.type.localeCompare('fixe')!==0) || (!ref && $scope.refinancing.initMortgage.type.localeCompare('fixe')!==0)) {
+                    $scope.refinancing.limitThenUpdate(ref);
+                    $scope.updateUi();
+                };
 
             }
 

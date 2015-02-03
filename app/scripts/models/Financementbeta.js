@@ -27,7 +27,7 @@ define([
 			
 			this.monthlyPayment = 0;
 			this.variation = {};
-			this.cap = {pos:6,neg:6};
+			this.cap = {pos:3,neg:3};
 			this.refInd = [];
 			this.refInd[0] =  {};
 			this.refInd[0].val = 0;
@@ -465,7 +465,6 @@ define([
 				this.refInd = this.refInd.slice(0,1);
 				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+this.maxInd;
 				this.calculIndexionCostum(this.rate);
-				console.log(this.rate)
 				 
 			},
 

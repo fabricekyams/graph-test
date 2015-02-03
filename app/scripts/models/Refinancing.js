@@ -207,15 +207,247 @@ define([
 				}
 			},
 
-			equalizeThenUpdate : function (argument) {
+			limitThenUpdate : function (ref) {
+				this.initMortgage.story = 'costum';
+				this.refMortgage.story = 'costum';
 
-				var maxInd = this.initMortgage.getIndiceMax();
-				var maxInd = this.initMortgage.getIndiceMin();
-				var diff = maxInd - minInd;
+
+				var minInd = 0;
+				var maxInd = 0;
+				var startPosition;
+
+				if(ref){
+					if(this.refMortgage.type.localeCompare('fixe')!==0){
+						minInd = this.refMortgage.getIndiceMin() ;
+						maxInd = this.refMortgage.getIndiceMax();
+						if (this.initMortgage.type.localeCompare('fixe')!==0 
+								&& this.initMortgage.variation.type.localeCompare(this.refMortgage.variation.type)==0
+								) {
+
+								minInd = this.initMortgage.getIndiceMin() < minInd ? this.initMortgage.getIndiceMin() : minInd;
+								maxInd = this.initMortgage.getIndiceMax() > maxInd ? this.initMortgage.getIndiceMax() : maxInd;
+								var initStart = this.initMortgage.refInd.length - this.initMortgage.getRefIndLength();
+								startPosition = this.findDate(this.refMortgage.refInd[1].date.date, this.initMortgage.refInd, initStart);
+									
+							}
+					}
+
+				}
+
+				if(!ref){
+					if(this.initMortgage.type.localeCompare('fixe')!==0){
+						if (this.refMortgage.type.localeCompare('fixe')!==0 
+							&& this.refMortgage.variation.type.localeCompare(this.initMortgage.variation.type)==0
+							) {
+							minInd = this.initMortgage.getIndiceMin() < minInd ? this.initMortgage.getIndiceMin() : minInd;
+							maxInd = this.initMortgage.getIndiceMax() > maxInd ? this.initMortgage.getIndiceMax() : maxInd;
+							var initStart = this.initMortgage.refInd.length - this.initMortgage.getRefIndLength();
+							startPosition = this.findDate(this.initMortgage.refInd[initStart].date.date, this.refMortgage.refInd, 1);
+
+								
+						}else{
+							minInd = this.initMortgage.getIndiceMin() ;
+							maxInd = this.initMortgage.getIndiceMax();
+						};	
+					}
+				}
+
+
+				var toAdd = maxInd - minInd;
+				var maxOK = false;
+				var minOK = false;
+				this.refIndMax = [];
+
+				this.setAllToRefVal(startPosition, ref, minInd);
+				var minDiff = this.getDifference();
+				if (this.getDifference()>0) {
+					minOK = true;
+				};
+
+				this.setAllToRefVal(startPosition, ref, maxInd);
+				var maxDiff = this.getDifference();
+				if (this.getDifference()>0) {
+					maxOK = true;
+				};
+
+				if(maxOK && !minOK){
+					this.setAllToRefVal(startPosition, ref, minInd);
+					this.findLimitAsc( startPosition, ref,  minInd, toAdd, 20);
+				}else{
+					if(!maxOK && minOK){
+						this.setAllToRefVal(startPosition, ref, maxInd);
+						toAdd = 0 - toAdd;
+						this.findLimitAsc( startPosition, ref, maxInd, toAdd, 20);
+					}else{
+						//this.setAllToRefVal(startPosition, ref, maxInd);
+						if (maxOK && minOK) {
+							this.findLimitExtremums(startPosition, ref, minInd, maxInd);
+							if (this.refIndMax.length==0) {
+								if(minDiff<maxDiff){
+									this.setAllToRefVal(startPosition, ref, minInd);
+								}else{
+									this.setAllToRefVal(startPosition, ref, maxInd);
+								}
+							};
+						}else{
+							if(minDiff>maxDiff){
+								this.setAllToRefVal(startPosition, ref, minInd);
+							}else{
+								this.setAllToRefVal(startPosition, ref, maxInd);
+							}
+						}
+					}
+					
+				}
+
+				console.log(this.refIndMax);
 
 
 
 			},
+
+			findLimitAsc : function (startPosition, ref, start, toAdd,  hit) {
+
+				this.setAllToRefVal(startPosition, ref, start+toAdd);
+
+				if(hit>0 && (this.getDifference()>1 || this.getDifference()<0)){
+					hit-=1;
+					if (this.getDifference()>0 ) {
+						this.findLimitAsc( startPosition, ref, start, toAdd/2, hit);
+					}else{
+						this.findLimitAsc( startPosition, ref,  start+toAdd, toAdd/2,  hit);
+					};
+				}else{
+					if (this.getDifference()<10) {
+						this.refIndMax[this.refIndMax.length] = start+toAdd - this.refMortgage.refInd[0].val;
+					};
+				}
+
+
+			},
+
+			findLimitExtremums :  function (startPosition, ref, floor, ceil) {
+				
+				var maxl = 0;
+				var minl = 0;
+				var maxr = 0;
+				var minr = 0;
+				var foundl = false;
+				var foundr = false;
+				var i = floor+1; 
+				var j=ceil-1;
+				
+				while(i<ceil && !foundl){
+					this.setAllToRefVal(startPosition, ref, i);
+					if (this.getDifference()<0){
+						foundl= true;
+						minl = i-1;
+						maxl = i;
+					}
+					i++;
+				}
+
+				while(j>floor && !foundr){
+					this.setAllToRefVal(startPosition, ref, j);
+					if (this.getDifference()<0){
+						foundr = true;
+						minr = j;
+						maxr = j+1;
+					}
+					j--;
+				}
+
+				console.log(floor);
+				console.log(ceil);
+				console.log(minl);
+				console.log(maxl);
+				console.log(minr);
+				console.log(maxr);
+
+				if(foundl){
+					var toAdd = minl-maxl;
+					this.findLimitAsc( startPosition, ref, maxl, toAdd, 20);
+
+				}
+				console.log(this.getDifference());
+
+				if(foundr){
+					var toAdd = maxr-minr;
+					this.findLimitAsc( startPosition, ref, minr, toAdd, 20);
+				}
+
+
+			},
+
+			setAllToRefVal : function  (start, ref, val) {
+				
+				if (ref) {
+					for (var i = 1; i < this.refMortgage.refInd.length; i++) {
+						this.refMortgage.refInd[i].val = val;
+					};
+
+					if (this.initMortgage.type.localeCompare('fixe')!==0 
+						&& this.initMortgage.variation.type.localeCompare(this.refMortgage.variation.type)==0) {
+						if (start>0 && this.initMortgage.refInd.length>start) {
+							for (var i = start; i < this.initMortgage.refInd.length; i++) {
+								this.initMortgage.refInd[i].val = val;
+							};
+						}
+					};
+				};
+
+
+				if(!ref){
+					var initStart = this.initMortgage.refInd.length - this.initMortgage.getRefIndLength();
+					for (var i = initStart; i < this.initMortgage.refInd.length; i++) {
+						this.initMortgage.refInd[i].val = val;
+					};
+					if (this.refMortgage.type.localeCompare('fixe')!==0 
+						&& this.refMortgage.variation.type.localeCompare(this.initMortgage.variation.type)==0) {
+						if (start>0 && this.refMortgage.refInd.length>start) {
+							for (var i = start; i < this.refMortgage.refInd.length; i++) {
+								this.refMortgage.refInd[i].val = val;
+							};
+						};
+					};
+
+				}
+				
+				this.update(false, true, true);
+			},
+
+			findDate : function (date, dateList, start) {
+				var found = false;
+				var i = start;
+				var position = start;
+				var dater = date.split('/');
+				var monthr = dater[1];
+				var yearsr = dater[2];
+				console.log('date: ', date);
+				
+				while(!found && i<dateList.length){
+					console.log('daten: ', dateList[i].date.date);
+					var daten = dateList[i].date.date.split('/');
+
+					var month = daten[1];
+					var years = daten[2];
+					if( years == yearsr){
+						if(month >= monthr){
+							found = true;
+							position = i;
+						}
+					}else{
+						if (years > yearsr) {
+							found = true;
+							position = i;
+						};
+					}
+					i++;
+				}
+				console.log('position', position);
+				return position;
+			},
+
 
 			equalizeThenUpdateBeta : function  (argument) {
 
@@ -334,8 +566,8 @@ define([
 				return advantageous;
 			},
 
-			getDiffrence : function  (argument) {
-				return Math.abs(this.initMortgage.totalPaymentIfRef-this.refMortgage.totalPayment);
+			getDifference : function  (argument) {
+				return this.initMortgage.totalPaymentIfRef-this.refMortgage.totalPayment;
 			},
 
 			/**

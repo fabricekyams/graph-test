@@ -271,11 +271,13 @@
       <div class="col-md-6" >
                   <div class="form-group">
           <div>
+            <button class ="btn btn-default" ng-click="reset(true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Reset
+          </button>
             <button class ="btn btn-danger" ng-click="updateStoryInit('max', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum</button>
           
           
             <button class ="btn btn-success" ng-click="updateStoryInit('min', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="min"> Minimum</button>
-            <button class ="btn btn-primary" ng-click="updateStoryEqualize()"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Egaliser
+            <button class ="btn btn-primary" ng-click="updateStoryLimit(false)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Limite Perte
           </button>
 
 
@@ -286,11 +288,16 @@
           <div class="col-md-6" >
                       <div class="form-group">
           <div>
+            <button class ="btn btn-default" ng-click="reset(true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Reset
+          </button>
             <button class ="btn btn-danger" ng-click="updateStoryRef('max', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum</button>
           
           
             <button class ="btn btn-success" ng-click="updateStoryRef('min', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="min"> Minimum</button>
-          
+            
+            <button class ="btn btn-primary" ng-click="updateStoryLimit(true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Limite Perte
+          </button>
+
           
 
 
