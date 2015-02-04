@@ -46,12 +46,12 @@ define([
                     $scope.story='costum';
                     $scope.refinancingOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
                     $scope.refinancing= new Refinancing(310000.00, 3.918 , 300 , new Date('01/31/2011'), new Date('01/31/2015'),2.08,response);
-                    $scope.update();
                     console.log($scope.refinancing);
                     $http.get('php/gets.php/?data=inds')
                     .success(function(response) {
                         $scope.refinancing.initMortgage.setRefTab(response);
                         $scope.refinancing.refMortgage.setRefTab(response);
+                        $scope.update();
                     });
                 });
 
@@ -73,6 +73,14 @@ define([
             $scope.update = function (ref , duration) {
                 $scope.refinancing.initMortgage.story = $scope.story; 
                 $scope.refinancing.refMortgage.story = $scope.story;
+                $scope.refinancing.update(ref,duration,true);
+                $scope.updateUi();    
+            }
+
+            $scope.updateInitType = function (ref , duration) {
+                $scope.refinancing.initMortgage.refInd = $scope.refinancing.initMortgage.refInd.slice(0,1);
+                $scope.refinancing.initMortgage.story = 'costum'; 
+                $scope.refinancing.refMortgage.story = 'costum';
                 $scope.refinancing.update(ref,duration,true);
                 $scope.updateUi();    
             }
@@ -163,6 +171,17 @@ define([
                 };
 
             }
+
+            $scope.updateReset = function  (ref) {
+                $scope.story = 'costum';
+                if ((ref && $scope.refinancing.refMortgage.type.localeCompare('fixe')!==0) || (!ref && $scope.refinancing.initMortgage.type.localeCompare('fixe')!==0)) {
+                    $scope.refinancing.reset(ref,false);
+                    $scope.updateUi();
+                };
+
+            }
+
+
 
             /**
              * [updateUi description]
@@ -327,6 +346,7 @@ define([
                         plotBorderWidth: null,
                         plotShadow: false,
                         renderTo: 'chargesChart'
+
                     },
                     title: {
                         text: 'Repartition des charges'
@@ -354,6 +374,206 @@ define([
                 return chart;
 
             }
+
+             $scope.formatindice = function (argument) {
+
+                var interest = [];
+                var capitalleft = [];
+                var interestref = [];
+                var capitalleftref = [];
+                var indice = [];
+                var indiceref = [];
+                
+                for(var i in  $scope.refinancing.initMortgage.amortization ){
+                    interest[i] = $scope.refinancing.initMortgage.amortization[i].interest;
+                    capitalleft[i] = $scope.refinancing.initMortgage.amortization[i].capital;
+                }
+
+                var start = $scope.refinancing.initMortgage.amortization.length - $scope.refinancing.durationLeft;
+                for(var i= 0; i<start; i++ ){
+                    interestref[i] = 0;
+                    capitalleftref[i] = 0;
+                }
+                for (var i = 0; i < $scope.refinancing.refMortgage.amortization.length; i++) {
+                    interestref[i+start] = $scope.refinancing.refMortgage.amortization[i].interest;
+                    capitalleftref[i+start] = $scope.refinancing.refMortgage.amortization[i].capital;
+                }
+
+                var refstart = $scope.refinancing.refMortgage.refTab.length - ($scope.refinancing.initMortgage.amortization.length-$scope.refinancing.durationLeft);
+
+                if ($scope.refinancing.refMortgage.type.localeCompare('fixe')!==0) {
+                    var j = 0;
+                    for (var i = refstart; i < $scope.refinancing.refMortgage.refTab.length; i++) {
+                        indiceref[j] = $scope.refinancing.refMortgage.refTab[i][$scope.refinancing.refMortgage.variation.type];
+                        j++;
+                    };
+                    if ($scope.refinancing.refMortgage.refInd.length>1) {
+                        for (var i = 0; i < $scope.refinancing.refMortgage.refInd.length; i++) {
+                            if (i==0) {
+                                var k=indiceref.length;
+                                for (var j = 0; j < $scope.refinancing.refMortgage.variation.fixe; j++) {
+                                    indiceref[k] = $scope.refinancing.refMortgage.refInd[0].val;
+                                    k++;
+                                };
+                            }else{
+                                var rest = i==1? ($scope.refinancing.refMortgage.variation.fixe) :(((i-1)*$scope.refinancing.refMortgage.variation.reval)+$scope.refinancing.refMortgage.variation.fixe);
+                                console.log(rest);
+                                console.log($scope.refinancing.refMortgage.duration);
+                                console.log($scope.refinancing.refMortgage.duration -  rest);
+                                if($scope.refinancing.refMortgage.duration -  rest < $scope.refinancing.refMortgage.variation.reval){
+                                    console.log('here');
+                                    var k=indiceref.length;
+                                    for (var j = rest; j < $scope.refinancing.refMortgage.duration; j++) {
+                                        indiceref[k] = $scope.refinancing.refMortgage.refInd[i].val;
+                                        k++;
+                                    };
+                                }else{
+                                    var k=indiceref.length;
+                                    for (var j = 0; j < $scope.refinancing.refMortgage.variation.reval; j++) {
+                                        indiceref[k] = $scope.refinancing.refMortgage.refInd[i].val;
+                                        k++
+                                    };
+                                }
+                                
+                            }
+                        };
+                    };
+
+
+                };
+
+                if ($scope.refinancing.initMortgage.type.localeCompare('fixe')!==0) {
+                    var j = 0;
+                    for (var i = refstart; i < $scope.refinancing.initMortgage.refTab.length; i++) {
+                        indice[j] = $scope.refinancing.initMortgage.refTab[i][$scope.refinancing.initMortgage.variation.type];
+                        j++;
+                    };
+                    if ($scope.refinancing.initMortgage.refInd.length>1) {
+                        for (var i = 0; i < $scope.refinancing.initMortgage.refInd.length; i++) {
+                            if (i==0) {
+                                var k=indiceref.length;
+                                for (var j = 0; j < $scope.refinancing.initMortgage.variation.fixe; j++) {
+                                    indiceref[k] = $scope.refinancing.initMortgage.refInd[0].val;
+                                    k++;
+                                };
+                            }else{
+                                var rest = i==1? ($scope.refinancing.initMortgage.variation.fixe) :(((i-1)*$scope.refinancing.initMortgage.variation.reval)+$scope.refinancing.initMortgage.variation.fixe);
+                                console.log(rest);
+                                if($scope.refinancing.initMortgage.duration -  rest < $scope.refinancing.initMortgage.variation.reval){
+                                    console.log('here');
+                                    var k=indiceref.length;
+                                    for (var j = rest; j < $scope.refinancing.initMortgage.duration; j++) {
+                                        indiceref[k] = $scope.refinancing.initMortgage.refInd[i].val;
+                                        k++;
+                                    };
+                                }else{
+                                    var k=indiceref.length;
+                                    for (var j = 0; j < $scope.refinancing.initMortgage.variation.reval; j++) {
+                                        indiceref[k] = $scope.refinancing.initMortgage.refInd[i].val;
+                                        k++
+                                    };
+                                }
+                                
+                            }
+                        };
+                    };
+                };
+
+
+                var chart = {
+                    chart: {
+                        zoomType: 'xy',
+                        renderTo: 'indiceChart'
+
+                    },
+                    title: {
+                        text: 'Indices / Remboursement'
+                    },
+                    plotOptions : {
+                        column: {
+                            stacking: 'normal'}
+                    },
+                    yAxis:[{
+                        title: {
+                            text: 'Remboursement',
+                        }
+                    },{
+                        title: {
+                            text: 'Indice',
+                        }
+                    }],
+                    tooltip: {
+                        shared: true
+                    },
+                    series: [{
+                        name: 'Interet',
+                        type: 'column',
+                        data: interest,
+                        stack: 'Actuel',
+                        color: '#005C1F',
+                        yAxis: 1,
+                        tooltip: {
+                                valueSuffix: '€'
+                            }
+                    }, {
+                        name: 'Remboursement',
+                        type: 'column',
+                        data: capitalleft,
+                        stack: 'Actuel',
+                        color: '#005C1F',
+                        yAxis: 1,
+                        tooltip: {
+                                valueSuffix: '€'
+                            }
+                    }, {
+                        name: 'Interet Rachat',
+                        type: 'column',
+                        data: interestref,
+                        stack: 'Rachat',
+                        color: '#0052CC',
+                        yAxis: 1,
+                        tooltip: {
+                                valueSuffix: '€'
+                            }
+                    }, {
+                        name: 'Remboursement Rachat',
+                        type: 'column',
+                        data: capitalleftref,
+                        stack: 'Rachat',
+                        color: '#0052CC',
+                        yAxis: 1,
+                        tooltip: {
+                                valueSuffix: '€'
+                            }
+                    },
+                    {
+                        name: 'Indice prêt actuel',
+                        type: 'spline',
+                        data: indice,
+                        tooltip: {
+                                valueSuffix: '%'
+                            }
+                    },
+                    {
+                        name: 'indice Rachat',
+                        type: 'spline',
+                        data: indiceref,
+                        tooltip: {
+                                valueSuffix: '%'
+                            }
+                    }]
+
+                        
+                    
+                    
+                }
+
+                $scope.idChart = 'indiceChart';
+
+                return chart;
+
+            }
+
 
             /**
              * [formatSRD description]
@@ -437,6 +657,7 @@ define([
                     chart: {
                         renderTo: to,
                         type: type,
+                        zoomType: 'xy',
                         animation: {
                             duration: 1000
                         }
@@ -471,6 +692,8 @@ define([
                 $scope.srdChart = $scope.formatSRD();
                 $scope.compChart = $scope.formatcomp();
                 $scope.chargesChart = $scope.formatdivers();
+                $scope.indiceChart = $scope.formatindice();
+                console.log($scope.indiceChart);
 
             }
 

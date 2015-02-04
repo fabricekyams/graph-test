@@ -81,17 +81,23 @@ define([
 					if(this.refMortgage.variation.type.localeCompare(this.initMortgage.variation.type)==0){
 						if(this.initMortgage.story.localeCompare(this.refMortgage.story)!==0){
 							var len = this.initMortgage.getRefIndLength();
+							
 							if (this.refMortgage.story.localeCompare('costum')==0) {
 								if(len>1){
+									var initStart = this.initMortgage.refInd.length - this.initMortgage.getRefIndLength();
+									var startPosition = this.findDate(this.initMortgage.refInd[initStart].date.date, this.refMortgage.refInd, 1);
 									for (var i = 1; i < this.refMortgage.refInd.length; i++) {
 										this.refMortgage.refInd[i].val = this.initMortgage.refInd[this.initMortgage.refInd.length-1].val;
 									};
 								}
 								this.refMortgage.update();
+							
 							}else{
 								if (this.refMortgage.refInd.length>1) {
 									if (this.initMortgage.refInd.length-len>0) {
-										for (var i = this.initMortgage.refInd.length-len; i < this.initMortgage.refInd.length; i++) {
+										var initStart = this.initMortgage.refInd.length - this.initMortgage.getRefIndLength();
+										var startPosition = this.findDate(this.refMortgage.refInd[1].date.date, this.initMortgage.refInd, initStart);
+										for (var i = startPosition; i < this.initMortgage.refInd.length; i++) {
 											this.initMortgage.refInd[i].val = this.refMortgage.refInd[this.refMortgage.refInd.length-1].val;
 										};
 									};
@@ -223,6 +229,7 @@ define([
 						if (this.initMortgage.type.localeCompare('fixe')!==0 
 								&& this.initMortgage.variation.type.localeCompare(this.refMortgage.variation.type)==0
 								) {
+								this.reset(ref, true);
 
 								minInd = this.initMortgage.getIndiceMin() < minInd ? this.initMortgage.getIndiceMin() : minInd;
 								maxInd = this.initMortgage.getIndiceMax() > maxInd ? this.initMortgage.getIndiceMax() : maxInd;
@@ -244,6 +251,7 @@ define([
 							var initStart = this.initMortgage.refInd.length - this.initMortgage.getRefIndLength();
 							startPosition = this.findDate(this.initMortgage.refInd[initStart].date.date, this.refMortgage.refInd, 1);
 
+							this.reset(ref, true);
 								
 						}else{
 							minInd = this.initMortgage.getIndiceMin() ;
@@ -300,7 +308,7 @@ define([
 					
 				}
 
-				console.log(this.refIndMax);
+				//console.log(this.refIndMax);
 
 
 
@@ -357,19 +365,13 @@ define([
 					j--;
 				}
 
-				console.log(floor);
-				console.log(ceil);
-				console.log(minl);
-				console.log(maxl);
-				console.log(minr);
-				console.log(maxr);
 
 				if(foundl){
 					var toAdd = minl-maxl;
 					this.findLimitAsc( startPosition, ref, maxl, toAdd, 20);
 
 				}
-				console.log(this.getDifference());
+				//console.log(this.getDifference());
 
 				if(foundr){
 					var toAdd = maxr-minr;
@@ -416,6 +418,53 @@ define([
 				this.update(false, true, true);
 			},
 
+			reset : function (ref, all) {
+
+				var startPosition = 1;
+				if (!all) {
+					if (ref) {
+						if (this.initMortgage.type.localeCompare('fixe')!==0 
+							&& this.initMortgage.variation.type.localeCompare(this.refMortgage.variation.type)==0) {
+							var initStart = this.initMortgage.refInd.length - this.initMortgage.getRefIndLength();
+							startPosition = this.findDate(this.refMortgage.refInd[1].date.date, this.initMortgage.refInd, initStart);
+							}
+						this.setAllToRefVal(startPosition, ref, this.refMortgage.refTab[this.refMortgage.refTab.length-1][this.refMortgage.variation.type]);
+						
+					};
+
+
+					if(!ref){
+						if (this.refMortgage.type.localeCompare('fixe')!==0 
+							&& this.refMortgage.variation.type.localeCompare(this.initMortgage.variation.type)==0) {
+							var initStart = this.initMortgage.refInd.length - this.initMortgage.getRefIndLength();
+							startPosition = this.findDate(this.initMortgage.refInd[initStart].date.date, this.refMortgage.refInd, 1);
+
+						};
+						this.setAllToRefVal(startPosition, ref, this.initMortgage.refTab[this.initMortgage.refTab.length-1][this.initMortgage.variation.type]);
+
+					}
+				}else{
+					if (this.initMortgage.type.localeCompare('fixe')!==0){
+						var initStart = this.initMortgage.refInd.length - this.initMortgage.getRefIndLength();
+						if (initStart>0) {
+							for (var i = initStart; i < this.initMortgage.refInd.length; i++) {
+								this.initMortgage.refInd[i].val = this.initMortgage.refTab[this.initMortgage.refTab.length-1][this.initMortgage.variation.type];
+							};
+						};
+					}
+
+					if (this.refMortgage.type.localeCompare('fixe')!==0 ){
+						for (var i = 1; i < this.refMortgage.refInd.length; i++) {
+							this.refMortgage.refInd[i].val = this.refMortgage.refTab[this.refMortgage.refTab.length-1][this.refMortgage.variation.type];
+						};
+					}
+				};
+
+
+				
+				this.update(false, true, true);
+			},
+
 			findDate : function (date, dateList, start) {
 				var found = false;
 				var i = start;
@@ -423,10 +472,10 @@ define([
 				var dater = date.split('/');
 				var monthr = dater[1];
 				var yearsr = dater[2];
-				console.log('date: ', date);
+				//console.log('date: ', date);
 				
 				while(!found && i<dateList.length){
-					console.log('daten: ', dateList[i].date.date);
+				//	console.log('daten: ', dateList[i].date.date);
 					var daten = dateList[i].date.date.split('/');
 
 					var month = daten[1];
@@ -444,12 +493,16 @@ define([
 					}
 					i++;
 				}
-				console.log('position', position);
+				//console.log('position', position);
 				return position;
 			},
 
+			Limite : function (argument) {
+				
+			},
 
-			equalizeThenUpdateBeta : function  (argument) {
+
+/*			equalizeThenUpdateBeta : function  (argument) {
 
 				var minInd = 0;
 				var maxInd = 0;
@@ -565,7 +618,7 @@ define([
 
 				return advantageous;
 			},
-
+*/
 			getDifference : function  (argument) {
 				return this.initMortgage.totalPaymentIfRef-this.refMortgage.totalPayment;
 			},
@@ -583,7 +636,9 @@ define([
 					this.refMortgage.setDuration();
 
 				}
+				console.log('duration1 ', this.refMortgage.duration);
 				this.checkDuration();
+				console.log('duration2 ', this.refMortgage.duration);
 				if (this.refMortgage.type.localeCompare('fixe')===0) {
 					this.refMortgage.refInd = this.refMortgage.refInd.slice(0,1);
 					var i =0;
@@ -620,6 +675,7 @@ define([
 						}
 					}else{
 						this.refMortgage.setCap();
+						this.refMortgage.refInd = this.refMortgage.refInd.slice(0,1);
 						var split = this.refMortgage.type.split(' ');
 						var tmpline = -1;
 						while(!found && i<11) {
@@ -639,7 +695,6 @@ define([
 						if(!found){
 							this.refMortgage.sameMonthlyPayement = false;
 							this.refMortgage.duration=this.rateTable[linePosition].duration_min;
-							this.refMortgage.refInd = this.refMortgage.refInd.slice(0,1);
 
 						}
 						this.checkDuration();

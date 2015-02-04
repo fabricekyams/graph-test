@@ -17,7 +17,7 @@
   <div class="content clearfix container">
     <div class="row">
 
-      <div class="col-md-6" id="initMG">
+      <div class="col-md-6 mginput" id="initMG">
         <h3>Credit Actuel</h3>
 
         <div class="form-group">
@@ -40,7 +40,7 @@
 
       <div class="form-group">
         <label for="finType">Type</label>
-        <select ng-change="update(false,true)" class="form-control" id="finType" ng-model="refinancing.initMortgage.type" ng-options="option for option  in refinancingOptions">
+        <select ng-change="updateInitType(false,true)" class="form-control" id="finType" ng-model="refinancing.initMortgage.type" ng-options="option for option  in refinancingOptions">
         </select>
       </div>
 
@@ -66,7 +66,7 @@
   </div>
 
 
-  <div class="col-md-6" id="refMG">
+  <div class="col-md-6 mginput" id="refMG">
     <h3>Rachat</h3>
     <div >
       <label for="amount">Rachat Externe ?</label> 
@@ -258,6 +258,10 @@
    <gh-visualization val="srdChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
  </div> 
 
+ <div class="col-md-12">
+   <gh-visualization val="indiceChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
+ </div> 
+
 </div>
 </section>
 
@@ -271,7 +275,7 @@
       <div class="col-md-6" >
                   <div class="form-group">
           <div>
-            <button class ="btn btn-default" ng-click="reset(true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Reset
+            <button class ="btn btn-default" ng-click="updateReset(false)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Reset
           </button>
             <button class ="btn btn-danger" ng-click="updateStoryInit('max', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum</button>
           
@@ -288,7 +292,7 @@
           <div class="col-md-6" >
                       <div class="form-group">
           <div>
-            <button class ="btn btn-default" ng-click="reset(true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Reset
+            <button class ="btn btn-default" ng-click="updateReset(true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Reset
           </button>
             <button class ="btn btn-danger" ng-click="updateStoryRef('max', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum</button>
           

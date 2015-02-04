@@ -82,7 +82,8 @@ define([
 			 * @param {[type]} argument [description]
 			 */
 			setDuration : function (argument) {
-				this.duration = Math.ceil(DC.CreditUtil.calculDuree(this.rate, this.monthlyPayment/this.capital));
+				console.log(this.initRate);
+				this.duration = Math.ceil(DC.CreditUtil.calculDuree(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1), this.monthlyPayment/this.capital));
 			},
 
 			/**
@@ -115,6 +116,7 @@ define([
 				this.amortizationParYears=[];
 				this.setMax();
 				this.initArmortizationVal(0,this.variation.fixe,this.duration, this.capital, this.rate);
+
 				//this.setRefIndData(0,this.rate);
 				//this.refInd = this.refInd.slice(0,1);
 				//this.setIndexationRate();
@@ -148,9 +150,12 @@ define([
 					l++;
 				}
 				this.refInd[0].val = this.refTab[this.refInd[0].dateList[l-1].position][this.variation.type];
+				//console.log(this.variation.fixe);
+				//console.log(this.variation.reval);
 				var rate;
 				var j = 1;
 				for (var i = this.variation.fixe; i < this.duration; i=i+this.variation.reval) {
+					//console.log('i: ',i);
 					var durationLeft = this.duration - i;
 					//console.log(this.refInd);
 					if(this.story.localeCompare('costum')==0 || this.refInd[j].dateList.length>1){
@@ -165,9 +170,9 @@ define([
 							}
 							this.refInd[j].val = this.refTab[this.refInd[j].dateList[k-1].position][this.variation.type];
 							if (j==0) {
-								console.log('val: ', this.refTab[this.refInd[j].dateList[k-1].position][this.variation.type]);
-								console.log(this.refInd[j].val);
-								console.log(this.refInd[j]);
+								//console.log('val: ', this.refTab[this.refInd[j].dateList[k-1].position][this.variation.type]);
+								//console.log(this.refInd[j].val);
+								//console.log(this.refInd[j]);
 							};
 						};
 						//j = j===0 ? 1 : j;
@@ -207,11 +212,16 @@ define([
 						rate = this.rate;
 					};
 					this.setRefIndData(j,rate, DC.CreditUtil.calculMensualite(rate, durationLeft)* this.amortization[i-1].SRD);
-					if(this.duration - i == this.duration%this.variation.reval){
+					if(this.duration - i < this.variation.reval){
 						this.initArmortizationVal(i,this.duration, durationLeft, this.amortization[i-1].SRD, rate);
+						//console.log('duration final ',this.duration );
+
 					}else{
 						this.initArmortizationVal(i,this.variation.reval+i,durationLeft, this.amortization[i-1].SRD, rate);
+						//console.log('duration', this.variation.reval+i );
+
 					}
+
 					j++;
 				};
 				this.totalPayment = this.amortization[this.duration-1].totalPayment;
@@ -230,6 +240,7 @@ define([
 			 */
 			initArmortizationVal : function (position, len, durationLeft, capital, rate){
 				var period = 1;
+
 
 				for (var i = position; i < len; i++) {
 					this.amortization[i]={};

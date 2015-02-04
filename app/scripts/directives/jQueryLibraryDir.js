@@ -25,6 +25,7 @@ define([
                     lang:'fr',
                     timepicker:false,
                     maxDate: 0,
+                    scrollInput : false,
                     defaultDate: new Date()
                   });
             }
@@ -45,6 +46,7 @@ define([
                     lang:'fr',
                     timepicker:false,
                     minDate: 0,
+                    scrollInput : false,
                     defaultDate: new Date()
                   });
             }

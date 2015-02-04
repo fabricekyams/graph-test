@@ -154,6 +154,10 @@ body {
     z-index: 100;
 }
 
+.mginput{
+  /*background-color: white;*/
+}
+
 .content {
   position: relative;
   z-index: 2;
