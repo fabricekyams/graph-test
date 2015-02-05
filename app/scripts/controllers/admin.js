@@ -76,7 +76,7 @@ app.directive('a', function() {
             $scope.setInds = function (argument) {
                 
                 if ($scope.date !== undefined && $scope.A !== undefined && $scope.C !== undefined && $scope.E !== undefined ) {
-                    
+
                     $scope.ind = {
                         date : $scope.date,
                         A : $scope.A,
@@ -88,6 +88,8 @@ app.directive('a', function() {
                     /*$http.post('php/sets.php', {'rates':$scope.rateTable}).success(function (response) {
                         alert(response);
                     });*/
+                }else{
+                    alert('Veuillez entrez des données correct');
                 };
             }
 
