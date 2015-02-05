@@ -24,6 +24,7 @@ if (isset($_GET['data'])) {
 		$slect = $db->query("
 		SELECT *
 		FROM ref_inds
+		ORDER BY date DESC
 		");
 		$rates = $slect->fetchAll();
 

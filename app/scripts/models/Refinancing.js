@@ -268,24 +268,26 @@ define([
 
 				this.setAllToRefVal(startPosition, ref, minInd);
 				var minDiff = this.getDifference();
+				console.log('min diff ', minDiff);
 				if (this.getDifference()>0) {
 					minOK = true;
 				};
 
 				this.setAllToRefVal(startPosition, ref, maxInd);
 				var maxDiff = this.getDifference();
+				console.log('max diff ', maxDiff);
 				if (this.getDifference()>0) {
 					maxOK = true;
 				};
 
 				if(maxOK && !minOK){
 					this.setAllToRefVal(startPosition, ref, minInd);
-					this.findLimitAsc( startPosition, ref,  minInd, toAdd, 20);
+					this.findLimitAsc( startPosition, ref,  minInd, toAdd, 100);
 				}else{
 					if(!maxOK && minOK){
 						this.setAllToRefVal(startPosition, ref, maxInd);
 						toAdd = 0 - toAdd;
-						this.findLimitAsc( startPosition, ref, maxInd, toAdd, 20);
+						this.findLimitAsc( startPosition, ref, maxInd, toAdd, 100);
 					}else{
 						//this.setAllToRefVal(startPosition, ref, maxInd);
 						if (maxOK && minOK) {
@@ -308,7 +310,6 @@ define([
 					
 				}
 
-				//console.log(this.refIndMax);
 
 
 
@@ -318,7 +319,7 @@ define([
 
 				this.setAllToRefVal(startPosition, ref, start+toAdd);
 
-				if(hit>0 && (this.getDifference()>1 || this.getDifference()<0)){
+				if(hit>0 && (this.getDifference()>10 || this.getDifference()<0)){
 					hit-=1;
 					if (this.getDifference()>0 ) {
 						this.findLimitAsc( startPosition, ref, start, toAdd/2, hit);
@@ -368,21 +369,20 @@ define([
 
 				if(foundl){
 					var toAdd = minl-maxl;
-					this.findLimitAsc( startPosition, ref, maxl, toAdd, 20);
+					this.findLimitAsc( startPosition, ref, maxl, toAdd, 100);
 
 				}
-				//console.log(this.getDifference());
 
 				if(foundr){
 					var toAdd = maxr-minr;
-					this.findLimitAsc( startPosition, ref, minr, toAdd, 20);
+					this.findLimitAsc( startPosition, ref, minr, toAdd, 100);
 				}
 
 
 			},
 
 			setAllToRefVal : function  (start, ref, val) {
-				
+				val = this.round(val);
 				if (ref) {
 					for (var i = 1; i < this.refMortgage.refInd.length; i++) {
 						this.refMortgage.refInd[i].val = val;
@@ -472,10 +472,8 @@ define([
 				var dater = date.split('/');
 				var monthr = dater[1];
 				var yearsr = dater[2];
-				//console.log('date: ', date);
 				
 				while(!found && i<dateList.length){
-				//	console.log('daten: ', dateList[i].date.date);
 					var daten = dateList[i].date.date.split('/');
 
 					var month = daten[1];
@@ -493,12 +491,14 @@ define([
 					}
 					i++;
 				}
-				//console.log('position', position);
 				return position;
 			},
 
 			Limite : function (argument) {
 				
+			},
+			round : function (val) {
+				return Math.round(val*1000)/1000;
 			},
 
 
@@ -631,14 +631,12 @@ define([
 			validateData : function (durationFirst) {
 				var found = false;
 				var linePosition;
+				var savedDuration = this.refMortgage.duration;
 				if(this.refMortgage.sameMonthlyPayement){
 					this.refMortgage.monthlyPayment = this.initMortgage.monthlyPayment;
 					this.refMortgage.setDuration();
-
 				}
-				console.log('duration1 ', this.refMortgage.duration);
 				this.checkDuration();
-				console.log('duration2 ', this.refMortgage.duration);
 				if (this.refMortgage.type.localeCompare('fixe')===0) {
 					this.refMortgage.refInd = this.refMortgage.refInd.slice(0,1);
 					var i =0;
@@ -655,10 +653,18 @@ define([
 					var i =5;
 					if(durationFirst){
 						while(!found && i<11) {
+							console.log(this.refMortgage.duration+'>='+this.rateTable[i].duration_min);
+							console.log(this.refMortgage.duration+'<='+this.rateTable[i].duration_max );
 							if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
 								 tmpLine = i;
 								var split = this.refMortgage.type.split(' ');
-								if(split[0].localeCompare(this.rateTable[i].type)==0){
+								var min = (parseInt(split[3].substring(0,2))*12);
+								var max = (parseInt(split[5].substring(0,2))*12)+11;
+								min = min == 300 ? 301 : min;
+								console.log(split[0].localeCompare(this.rateTable[i].type)==0);
+								console.log(split[0]+'='+this.rateTable[i].type);
+								if(split[0].localeCompare(this.rateTable[i].type)==0 && min==this.rateTable[i].duration_min && max==this.rateTable[i].duration_max ){
+									console.log('in');
 									linePosition = i;
 									found = true;
 								}else{
@@ -674,25 +680,45 @@ define([
 							this.refMortgage.setCap();
 						}
 					}else{
+						console.log('hereee');
+						console.log('i', i);
+						console.log(found);
 						this.refMortgage.setCap();
 						this.refMortgage.refInd = this.refMortgage.refInd.slice(0,1);
 						var split = this.refMortgage.type.split(' ');
+						var min = (parseInt(split[3].substring(0,2))*12);
+						var max = (parseInt(split[5].substring(0,2))*12)+11;
+						min = min == 300 ? 301 : min;
 						var tmpline = -1;
 						while(!found && i<11) {
-							if(split[0].localeCompare(this.rateTable[i].type)==0){
+
+							if(split[0].localeCompare(this.rateTable[i].type)===0 ){
+								console.log('in?');
 								tmpline = i;
-								if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
-									linePosition = i;
-									found = true;
-								}else{
-									linePosition = tmpline;
-								}
+								console.log(this.refMortgage.duration+' >= '+this.rateTable[i].duration_min);
+								console.log(this.refMortgage.duration+' <= '+this.rateTable[i].duration_max);
+								console.log('min',min);
+								console.log('max',max);
+								if (min==this.rateTable[i].duration_min && max==this.rateTable[i].duration_max) {
+									tmpline = i;
+									if(this.refMortgage.duration>=this.rateTable[i].duration_min && this.refMortgage.duration<=this.rateTable[i].duration_max  ){
+										console.log('i', i);
+										console.log('line', this.rateTable[i]);
+										linePosition = i;
+										found = true;
+									}else{
+										linePosition = tmpline;
+									}
+								};
 								
 							}
+							linePosition = tmpline;
 							i++;
 						}
 
+						console.log(found);
 						if(!found){
+							console.log('here?');
 							this.refMortgage.sameMonthlyPayement = false;
 							this.refMortgage.duration=this.rateTable[linePosition].duration_min;
 
@@ -723,6 +749,8 @@ define([
 						
 						
 				}  
+				this.refMortgage.sameMonthlyPayement = false;
+
 				this.refMortgage.update();
 				
 					// se dplacer dans la ligne du tableau en fonction des donnee.

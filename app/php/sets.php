@@ -10,19 +10,22 @@ try {
 }
 
 
-	$data = file_get_contents("php://input");
+$data = file_get_contents("php://input");
 if (isset($data)) {
 	$datatab = json_decode($data);
+	$query = "INSERT INTO rates (id, type, cap_pos, cap_neg, duration_min, duration_max, rate ) VALUES ";
 	foreach ($datatab->rates as $key => $value) {
-		for($i=267;$i<268;$i++){
-			$date = trim($allDataInSheet[$i]["A"]);
-			$A = trim($allDataInSheet[$i]["B"]);
-			$C = trim($allDataInSheet[$i]["C"]);
-			$E = trim($allDataInSheet[$i]["D"]);
-			$query = $query.", ('$date', $A, $C, $E)";
-		}
-		var_dump($query);
-			$db->query($query);
-			}
+		///var_dump($value);
+		$query = $query." ($value->id, '$value->type', $value->cap_pos, $value->cap_neg, $value->duration_min, $value->duration_max, $value->rate),";
+	}
+	$query = substr($query, 0, -1);
+	$query = $query." ON DUPLICATE KEY UPDATE type=VALUES(type), cap_pos=VALUES(cap_pos), cap_neg=VALUES(cap_neg), duration_min=VALUES(duration_min), duration_max=VALUES(duration_max), rate=VALUES(rate)";
+	
 
-}
+	if ($db->query($query)!= false){
+		echo "Données sauvegardée";
+	}else{
+		echo "Erreur. Veuillez contacter Fabrice Kyams";
+	}
+	}
+

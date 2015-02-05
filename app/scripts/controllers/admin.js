@@ -53,7 +53,11 @@ app.directive('a', function() {
                 	console.log($scope.rateTable);
                     $http.get('php/gets.php/?data=inds')
                     .success(function(response) {
-                    	
+                    	for (var i = 0; i < response.length; i++) {
+                            response[i].A  = parseFloat(response[i].A);   
+                            response[i].C = parseFloat(response[i].C);
+                            response[i].E = parseFloat(response[i].E);
+                        };
                         $scope.indTable=response;
                         console.log($scope.indTable);
                     });
@@ -64,9 +68,27 @@ app.directive('a', function() {
             }
 
             $scope.setRates = function (argument) {
-            	$http.post('php/sets.php', {'rates':$scope.rateTable}).success(function (argument) {
-            		// body...
+            	$http.post('php/sets.php', {'rates':$scope.rateTable}).success(function (response) {
+            		alert(response);
             	});
+            }
+
+            $scope.setInds = function (argument) {
+                
+                if ($scope.date !== undefined && $scope.A !== undefined && $scope.C !== undefined && $scope.E !== undefined ) {
+                    
+                    $scope.ind = {
+                        date : $scope.date,
+                        A : $scope.A,
+                        C : $scope.C,
+                        E : $scope.E
+                    }
+
+                    console.log($scope.ind);
+                    /*$http.post('php/sets.php', {'rates':$scope.rateTable}).success(function (response) {
+                        alert(response);
+                    });*/
+                };
             }
 
 

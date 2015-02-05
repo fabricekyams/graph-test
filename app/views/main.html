@@ -113,11 +113,9 @@
 
       </select>
     </div>
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" ng-model="refinancing.refMortgage.sameMonthlyPayement"  ng-change="update(false,false)"> Même mensualité
-      </label>
-    </div>
+   
+
+    
     <div class="form-group">
       <label for="rate">Nouveau Taux Annuel</label>
       <div class="row">
@@ -234,6 +232,9 @@
      </tr>  
    </TR>
  </table >
+       <label>
+         <button class="btn btn-success" ng-click="updateSM(false,false)">Même mensualité</button>
+      </label>
 </div>
 
 <div class="col-md-6" >
@@ -258,9 +259,7 @@
    <gh-visualization val="srdChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
  </div> 
 
- <div class="col-md-12">
-   <gh-visualization val="indiceChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
- </div> 
+ 
 
 </div>
 </section>
@@ -346,6 +345,14 @@
          </tr>
        </table>
      </div>
+   </div>
+   <div class="row">
+ <div class="col-md-12">
+   <gh-visualization val="indiceInitChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
+ </div> 
+     <div class="col-md-12">
+   <gh-visualization val="indiceRefChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
+ </div> 
    </div>
 
  </div>

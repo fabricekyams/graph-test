@@ -19,6 +19,9 @@ define([
         return {
             restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
             link: function($scope, iElm, iAttrs, controller) {
+              iElm.keydown(function(event) { 
+                  return false;
+              });
                 iElm.datetimepicker({
                    format:'d/m/Y',
                     step:30,
@@ -40,6 +43,9 @@ define([
         return {
             restrict: 'A', // E = Element, A = Attribute, C = Class, M = Comment
             link: function($scope, iElm, iAttrs, controller) {
+              iElm.keydown(function(event) { 
+                  return false;
+              });
                 iElm.datetimepicker({
                    format:'d/m/Y',
                     step:30,
