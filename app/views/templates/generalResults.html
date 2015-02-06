@@ -1,0 +1,69 @@
+<div ng-show='refinancing.case == 1'>
+	<p>Sauf erreur de notre part et sur base des renseignements que nous avons en notre possession, un refinancement de votre crédit auprès d’Axa ne parait pas intéressant.</p><br>
+
+<p>Cette appréciation s’explique au regard du taux dont vous bénéficiez actuellement et des taux que nous sommes en mesure de vous proposer.</p><br>
+
+<p>A l’heure actuelle, vous bénéficiez d’un taux de <strong>{{ refinancing.initMortgage.initRate | number:2  }}</strong> % en  <strong>{{ refinancing.initMortgage.type }}</strong>. Avec la même formule de taux, nous pourrions vous proposer un taux de  <strong>{{ refinancing.refMortgage.initRate | number:2  }}</strong> %. Votre mensualité s’élèverait alors à  <strong>{{ refinancing.refMortgage.monthlyPayment | number:2  }}</strong> € alors qu’elle s’élève aujourd’hui à  <strong>{{ refinancing.initMortgage.monthlyPayment | number:2  }}</strong> €.</p><br>
+
+<p>Pour qu’un refinancement soit intéressant, il faudrait que l’on vous propose un taux de <select ng-model="refinancing.bestRateVal" ng-options="option for option  in refinancing.bestRate"></select>
+ %.</p><br>
+
+<p>Vu qu’un refinancement entraine le paiement d’une indemnité de remploi ( <strong>{{ refinancing.indem  | number:2 }}</strong> €), des frais de mainlevée ( <strong>{{ refinancing.releaseCharges | number:2  }}</strong> €), une nouvelle inscription hypothécaire ( <strong>{{ refinancing.MGRegistration | number:2  }}</strong> €) et des frais de dossier (330 €), nous ne vous conseillons donc pas de refinancer votre crédit.
+</p><br>
+</div >
+
+<div ng-show='refinancing.case == 2'>
+	<p>
+		Sauf erreur de notre part et sur base des renseignements que nous avons en notre possession, bien que ce taux soit inférieur au premier, le paiement  d’une indemnité de remploi (<strong>{{ refinancing.indem  | number:2 }}</strong> €),  de frais de mainlevée (<strong>{{ refinancing.releaseCharges  | number:2 }}</strong> €) et  d’une nouvelle inscription hypothécaire (<strong>{{ refinancing.MGRegistration  | number:2 }}</strong> €) rendent le refinancement peu intéressant.
+	</p><br>
+</div>
+
+
+<div ng-show='refinancing.case == 3'>
+	<p>Sauf erreur de notre part et sur base des renseignements que nous avons en notre possession, Pour cette tranche de crédit, nous vous conseillons d’attendre la révision de votre taux en <strong> {{ refinancing.initMortgage.refInd[refinancing.initpos].date.date }}</strong> et donc de ne pas refinancer votre crédit. </p><br>
+
+<p>Cette appréciation s’explique au vu des indices de taux actuels. Ceux-ci étant fort bas, la révision de votre taux  <strong> {{ refinancing.initMortgage.variation.type | typeName }}</strong> annuel vous permettra de bénéficier d’un taux plus avantageux sans devoir refinancer votre crédit.</p><br>
+
+Afin d’illustrer nos propos et de rendre les choses plus concrètes, en voici l’explication chiffrée.<p>
+</p><br>
+
+<table class="table">
+	<tr>
+		<td>Taux initial en  <strong> {{ refinancing.initMortgage.refInd[0].date.date }}</strong>  </td>
+		<td> <strong> {{ refinancing.initMortgage.refInd[0].rate }}</strong> %</td>
+	</tr>
+	<tr>
+		<td>Nouveau taux après révision en  <strong> {{ refinancing.initMortgage.refInd[refinancing.initpos].date.date }}</strong>  </td>
+		<td> <strong> {{ refinancing.initMortgage.refInd[refinancing.initpos].rate }}</strong> %</td>
+	</tr>
+	<tr>
+		<td>Taux  <strong> {{ refinancing.refMortgage.type }}</strong> actuel si refinancement  </td>
+		<td>  <strong> {{ refinancing.refMortgage.initRate }}</strong>%</td>
+	</tr>
+</table>
+
+<p>Lors de votre crédit, vous avez opté pour un taux variable. Celui-ci sera revu le  <strong> {{ refinancing.initMortgage.refInd[refinancing.initpos].date.date }}</strong>, sur base de la différence entre l’indice de référence de  <strong> {{ refinancing.initMortgage.refInd[0].val }}</strong> (date indice de référence sur renteopdevoet) et de celui du mois qui précède le date de révision le <strong> {{ refinancing.initMortgage.refInd[refinancing.initpos].date.date }}</strong>. A condition que l’indice de référence du mois qui precède la date de révision prévu le  <strong> {{ refinancing.initMortgage.refInd[refinancing.initpos].date.date }}</strong> soit équivalent à celui applicable aujourd’hui, le nouveau taux dont vous pourriez bénéficier lors de cette révision serait de  <strong> {{ refinancing.initMortgage.refInd[refinancing.initpos].rate }}</strong> %. Ce taux vaudrait alors pour les  <strong> {{ refinancing.initMortgage.variation.reval | toAn }}</strong> années l’année à suivre</p><br>
+
+<p>Ces calculs sont effectués à titre informatif et n’impliquent aucun engagement de notre part. Nous attirons votre attention sur le fait que les calculs effectués ci-dessus sont susceptibles d’évoluer en fonction de l’évolution des indices de référence. Nous vous recontacterons bien entendu si les indices de référence évoluent de manière telle qu’un refinancement de votre crédit s’avère plus intéressant que l’attente de la révision des taux en *.</p><br>
+
+</div>
+
+<div ng-show='refinancing.case == 4'>
+	<p></p><br>
+</div>
+
+<div ng-show='refinancing.case == 5'>
+	<p></p><br>
+</div>
+
+<div ng-show='refinancing.case == 6'>
+	<p></p><br>
+</div>
+
+<div ng-show='refinancing.case == 7'>
+	<p></p><br>
+</div>
+
+<div ng-show='refinancing.case == 8'>
+	<p></p><br>
+</div>

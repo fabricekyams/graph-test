@@ -1,6 +1,6 @@
-<?
+<?php
 try {
-	$db = new PDO('mysql:host=localhost;dbname=Refinancement', 'root', 'root');
+	$db = new PDO('mysql:host=ubuweb.alpha1.local;dbname=c1phptest', 'c1phptest', '8j7wzF0x');
 	$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 }catch (Exception $e){
@@ -8,7 +8,6 @@ try {
 	echo $e->getMessage();
 	die();
 }
-
 if (isset($_GET['data'])) {
 	if ($_GET['data'] == 'all') {
 		$slect = $db->query("
@@ -24,7 +23,7 @@ if (isset($_GET['data'])) {
 		$slect = $db->query("
 		SELECT *
 		FROM ref_inds
-		ORDER BY date DESC
+		ORDER BY date 
 		");
 		$rates = $slect->fetchAll();
 

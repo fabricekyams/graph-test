@@ -43,6 +43,7 @@ define([
 			
 			//this.generateRateTable();
 			this.update();
+
 		}
 
 		Financement.prototype = {
@@ -53,7 +54,11 @@ define([
 			 */
 			update: function () {
 
+				var savedate= this.date.toLocaleDateString();
 				this.date = new Date(this.formatDate(this.dateString));
+				if (savedate.localeCompare(this.date.toLocaleDateString())!==0) {
+					this.refInd = this.refInd.slice(0,1);
+				};
 				this.rate = Math.round((Math.pow(1 + (this.initRate/100), 1 / 12) - 1)*1000000)/1000000;
 				this.setMonthlyPayment();
 				this.refInd[0].monthlyPayment = this.monthlyPayment;
@@ -62,6 +67,9 @@ define([
 				if(this.type.localeCompare('fixe') == 0 ){
 					this.refInd = this.refInd.slice(0,1);
 					this.refInd[0].val = 0;
+					this.refInd[0].rate = this.initRate;
+					this.refInd[0].date =  {date: this.dateString};
+					this.refInd[0].dateList =  [this.refInd[0].date];
 					this.variation = {};
 					this.setAmortization();
 				}else{
@@ -673,6 +681,7 @@ define([
 				//console.log(rate);
 				 this.refInd[period].rate = this.round(DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100);
 				 this.refInd[period].monthlyPayment = monthlyPayment;
+
 			},
 
 			/**
