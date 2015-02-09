@@ -1,6 +1,7 @@
 <?php
 try {
-	$db = new PDO('mysql:host=ubuweb.alpha1.local;dbname=c1phptest', 'c1phptest', '8j7wzF0x');
+	$db = new PDO('mysql:host=localhost;dbname=Refinancement', 'root', '');
+	//$db = new PDO('mysql:host=ubuweb.alpha1.local;dbname=c1phptest', 'c1phptest', '8j7wzF0x');
 	$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 }catch (Exception $e){

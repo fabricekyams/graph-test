@@ -328,11 +328,15 @@ define([
 
 			findLimitAsc : function (startPosition, ref, start, toAdd,  hit) {
 				console.log('hit', hit);
+				console.log('toAdd ', toAdd);
+				console.log('toAdd ', toAdd*1000);
+				console.log('toAdd ', Math.ceil(toAdd*1000));
+				console.log('toAdd ', Math.ceil(toAdd*1000)/1000);
+				toAdd = toAdd>0 ? Math.ceil(toAdd*1000)/1000 : Math.floor(toAdd*1000)/1000;
+				start = this.round(start);
 				console.log('start ', start);
 				console.log('toAdd ', toAdd);
-				toAdd = this.round(toAdd);
-				start = this.round(start);
-				console.log('toAdd ', toAdd);
+				console.log('difference ', this.getDifference());
 
 				this.setAllToRefVal(startPosition, ref, start+toAdd);
 
@@ -729,7 +733,7 @@ define([
 
 			 		}
 			 	}
-			 	console.log(found);
+			 	//console.log(found);
 			 	if(this.rateTable[linePosition].quotLess.homeSafeOne.indexOf(this.refMortgage.initRate)== -1 && 
 			 		this.rateTable[linePosition].quotLess.homeSafeTwo.indexOf(this.refMortgage.initRate)== -1 && 
 			 		this.rateTable[linePosition].quotLess.homeSafeThree.indexOf(this.refMortgage.initRate)== -1 && 
@@ -798,7 +802,7 @@ define([
 			 * @return {[type]}      [description]
 			 */
 			 getIndem : function (rate){
-			 	console.log(rate);
+			 	//console.log(rate);
 			 	rate = Math.round((Math.pow(1 + (rate/100), 1 / 12) - 1)*1000000)/1000000;
 			 	return this.SRD*rate*3;
 			 },
@@ -858,61 +862,59 @@ define([
 			 },
 			 getResultsCase : function  (argument) {
 			 	this.case=0;
-			 	this.leftAvantage = false;
-			 	if (this.initMortgage.type.localeCompare('fixe')===0 && this.refMortgage.type.localeCompare('fixe')===0) {
-			 		if (this.getDifference()<0 && this.refMortgage.initRate>this.initMortgage.initRate) {
-			 			this.case = 1;
-			 		}else{
-			 			if (this.getDifference()<0 && this.refMortgage.initRate<this.initMortgage.initRate) {
-			 				console.log(this.getDifference());
-			 				this.case = 2;
-			 			};
-			 		};
+			 	var wait = false;
+			 	if ((this.initMortgage.type.localeCompare('fixe')===0 && this.refMortgage.type.localeCompare('fixe')===0) || 
+			 		(this.initMortgage.type.localeCompare('fixe')===0 && this.refMortgage.type.localeCompare('fixe')!==0)) {
+			 		this.case = this.checkBestCase();
 			 	}else{
 			 		if (this.initMortgage.type.localeCompare('fixe')!==0 && this.refMortgage.type.localeCompare('fixe')!==0) {
-			 			this.leftAvantage = this.variableWait();
-			 			if(this.leftAvantage !==false){
-			 				this.case = 3;
+			 			wait = this.variableWait();
+			 			if(wait !==false){
+			 				this.case = wait;
 			 			}else{
-			 				if (this.getDifference()<0 && this.refMortgage.initRate>this.initMortgage.initRate) {
-			 					this.case = 1;
-			 				}else{
-			 					if (this.getDifference()<0 && this.refMortgage.initRate<this.initMortgage.initRate) {
-			 						console.log(this.getDifference());
-			 						this.case = 2;
-			 					};
-			 				};
+			 				this.case = this.checkBestCase();
 			 			}
 
 
 			 		}else{
-			 			if (this.initMortgage.type.localeCompare('fixe')===0 && this.refMortgage.type.localeCompare('fixe')!==0) {
-
-			 			}else{
-			 				this.leftAvantage = this.variableWait();
-			 				if(this.leftAvantage !==false){
-			 					this.case = 3;
-			 				}else{
-			 					if (this.getDifference()<0 && this.refMortgage.initRate>this.initMortgage.initRate) {
-			 						this.case = 1;
-			 					}else{
-			 						if (this.getDifference()<0 && this.refMortgage.initRate<this.initMortgage.initRate) {
-			 							console.log(this.getDifference());
-			 							this.case = 2;
-			 						};
-			 					};
-			 				}
+			 			
+		 				wait = this.variableWait();
+		 				if(wait !==false){
+		 					this.case = wait;
+		 				}else{
+		 					this.case = this.checkBestCase();
+		 				}
 
 
-			 			}
+			 			
 			 		};
 			 	};
 			 	if (this.case ==1 ) {
 			 		this.setBestRate();
 			 	};
 			 },
+
+			 checkBestCase : function (argument) {
+			 	var cat;
+			 	if (this.refMortgage.monthlyPayment > this.initMortgage.monthlyPayment && this.refMortgage.initRate>this.initMortgage.initRate) { 
+		 			cat = 1;
+		 		}else{
+		 			if (this.refMortgage.monthlyPayment > this.initMortgage.monthlyPayment && this.refMortgage.initRate<this.initMortgage.initRate) {
+		 				//console.log(this.getDifference());
+		 				cat = 2;
+		 			}else{
+		 				if (this.externalRef){
+		 					cat=6;
+		 				}else{
+		 					cat = 5;
+		 				}
+		 			};
+		 		};
+		 		return cat;
+
+			 },
 			 
-			 setBestRate : function function_name (argument) {
+			 setBestRate : function (argument) {
 			 	this.bestRate=[];
 			 	var saveRate = this.refMortgage.initRate;
 			 	for (var i = 0; i < this.refMortgage.rateTable.length; i++) {
@@ -945,7 +947,7 @@ define([
 			 	var initDate = 0;
 			 	var refDate = 0;
 			 	var ok= false;
-			 	var initpos = 0;
+			 	this.initpos = 1;
 
 			 	if (this.refMortgage.type.localeCompare('fixe')!==0) {
 			 		var tmp = this.refMortgage.refInd[1].date.date.split('/');
@@ -974,7 +976,7 @@ define([
 			 	if(refDate == 0 && initDate !==0){
 			 		if (initDate - refYears < 3) {
 			 			if (this.initMortgage.refInd[this.initpos].rate < this.refMortgage.initRate && this.initMortgage.refInd[this.initpos-1].rate > this.refMortgage.initRate){
-			 				ok = initDate - refYears;
+			 				ok = true;
 			 			};
 			 		}
 
@@ -983,14 +985,26 @@ define([
 			 			if (initDate < refDate  &&  initDate - refYears < 3) {
 
 			 				if (this.initMortgage.refInd[this.initpos].rate < this.refMortgage.initRate){
-			 					ok = initDate - refDate;
+			 					ok = true;
 			 				};
 			 			}
 
 			 		}
 			 	}
-			 	console.log(this.initpos);
-			 	return ok;
+			 	if (ok) {
+			 		
+			 		//if(this.checkEtremums())
+			 		var cas;
+			 		if (this.refMortgage.monthlyPayment < this.initMortgage.monthlyPayment && this.refMortgage.type.localeCompare('fixe')!==0) {
+			 			cas = 4;
+			 		}else {
+			 			cas = 3;
+			 		} ;
+			 		return cas;
+			 	}else{
+			 		return ok;
+			 	} ;
+			 	
 			 }
 
 

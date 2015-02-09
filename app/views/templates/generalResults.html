@@ -19,10 +19,10 @@
 </div>
 
 
-<div ng-show='refinancing.case == 3'>
+<div ng-show='refinancing.case == 3 || refinancing.case == 4'>
 	<p>Sauf erreur de notre part et sur base des renseignements que nous avons en notre possession, Pour cette tranche de crédit, nous vous conseillons d’attendre la révision de votre taux en <strong> {{ refinancing.initMortgage.refInd[refinancing.initpos].date.date }}</strong> et donc de ne pas refinancer votre crédit. </p><br>
 
-<p>Cette appréciation s’explique au vu des indices de taux actuels. Ceux-ci étant fort bas, la révision de votre taux  <strong> {{ refinancing.initMortgage.variation.type | typeName }}</strong> annuel vous permettra de bénéficier d’un taux plus avantageux sans devoir refinancer votre crédit.</p><br>
+<p>Cette appréciation s’explique au vu des indices de taux actuels. Ceux-ci étant fort bas, la révision de votre taux  <strong> {{ refinancing.initMortgage.variation.type | typeName }}</strong> vous permettra de bénéficier d’un taux plus avantageux sans devoir refinancer votre crédit.</p><br>
 
 Afin d’illustrer nos propos et de rendre les choses plus concrètes, en voici l’explication chiffrée.<p>
 </p><br>
@@ -49,15 +49,176 @@ Afin d’illustrer nos propos et de rendre les choses plus concrètes, en voici 
 </div>
 
 <div ng-show='refinancing.case == 4'>
-	<p></p><br>
+	<p>
+		Pour cette tranche de crédit, nous vous conseillons de ne pas procéder au refinancement mais d’attendre la révision de votre taux <strong> {{ refinancing.initMortgage.variation.type | typeName }}</strong> en <strong> {{ refinancing.initMortgage.type }}</strong>.</p><br>
+
+<p>En refinançant votre crédit, vous pourriez gagner <strong>{{ monthDiff | number:2 }}</strong> € de mensualité. Cependant, cette opération entrainera un changement de votre indice de référence. Actuellement, les indices de référence sont très bas. Or, plus votre indice est bas, plus vous risquez de subir une augmentation de votre taux et donc de votre mensualité lors de la prochaine révision.
+	</p><br>
 </div>
 
 <div ng-show='refinancing.case == 5'>
-	<p></p><br>
+	<p>Nous avons le plaisir de vous annoncer qu’un refinancement est intéressant et avantageux pour vous.</p><br>
+
+<p>Pour qu’Axa accepte de procéder au refinancement de votre crédit, sachez que votre compte Axa doit être actif, c’est à dire que vous y ayez domicilié votre(vos) salaire(s) et que vous effectuiez au moins cinq transactions par mois avec votre carte bancaire Axa ou votre carte de crédit (Visa Classic et Visa premiumplus), liée au compte.</p><br>
+
+<p>Sauf erreur de notre part et sur base des informations que vous nous avez communiquées, le décompte du refinancement de votre crédit s’établit comme suit :</p><br>
+
+<table class="table">
+	<tr>
+		<td>Solde restant dû (numéro crédit 774-*) (décompte après paiement de l’échéance du *)
+ </td>
+		<td> <strong> {{ refinancing.initMortgage.refInd[0].rate }}</strong> %</td>
+	</tr>
+	<tr>
+		<td>Indemnité de remploi   </td>
+		<td> <strong> {{ refinancing.initMortgage.refInd[refinancing.initpos].rate }}</strong> %</td>
+	</tr>
+	<tr>
+		<td>Frais de dossier </td>
+		<td>  <strong> {{ refinancing.refMortgage.initRate }}</strong>%</td>
+	</tr>
+	<tr>
+		<td> Montant total du crédit   </td>
+		<td>  <strong> {{ refinancing.refMortgage.initRate }}</strong>%</td>
+	</tr>
+</table>
+
+<p>
+	I. Tarification du crédit
+
+Les taux présentés ci-dessous :
+
+Choix entre les différentes possibilités en fonction de la situation et du statut du client
+
+- sont ceux offerts aux clients ayant le statut VIP, c’est-à-dire si :
+1) Pour les plus de 35 ans :
+Vous avez un actif chez Axa Banque de minimum 35.000 € depuis plus de six mois, ou si vous souscrivez un tel placement sur une durée de plus de trois ans, avant l’acte ;
+Ou, vous (ou vos parents) avez un actif chez Axa Banque ou Axa Assurances de minimum 70.000 €, ou si vous souscrivez un tel placement sur une durée de plus de trois ans
+2) Pour les moins de 35 ans :
+Vous avez moins de 36 ans et avez plus de 3.000 € de revenus nets mensuels.
+- sont ceux offerts aux clients ayant le statut TOP VIP, c’est-à-dire si vous avez moins de 36 ans et si :
+Vous (ou vos parents) avez un actif chez Axa Banque de minimum 35.000 € depuis plus de six mois, ou si vous souscrivez un tel placement sur une durée de plus de trois ans, avant l’acte ;
+Vous (ou vos parents) avez un actif chez Axa Banque ou Axa Assurances de minimum 70.000 €, ou si vous souscrivez un tel placement sur une durée de plus de trois ans, avant l’acte.
+- sont ceux offerts aux clients ayant des revenus mensuels nets entre * et * € 
+- et sont fonction d’une quotité faible, c’est-à-dire que le montant total du crédit représente max. 85% des garanties (immobilières et mobilières).
+A défaut, les taux seront majorés.
+
+Nous vous proposons pour votre demande de crédit de *.000 € :
+
+REVISION TAUX
+
+En cas de hausse max. du taux, la mensualité max. sera à partir de la *ème année de * €
+En cas de hausse max. du taux et en maintenant la mensualité, la durée totale du crédit sera portée à * mois
+
+GENERALITES
+
+Si taux fixe proposé : Mettre les § 1, 4 et 5
+
+Si taux variable ou semi-variable : Mettre les 5 §
+
+Nous vous rappelons que les taux changent tous les jours. Ils ne sont garantis que si vous souscrivez une assurance solde restant dû AXA couvrant au minimum 100% du capital emprunté (assurance qui est parmi les plus compétitives du marché !), une assurance incendie AXA et si vous ouvrez ou disposez d'un compte à vue AXA actif avec domiciliation de salaire. A défaut, Axa est en train de majorer le taux de 0,50%.
+
+Axa vous offre la possibilité de modifier la durée du crédit (l’augmenter ou la diminuer pour un taux variable), à tout moment sans indemnité de remploi et sans nouvelle hypothèque (durée max. 30 ans). Ces modifications entraînent uniquement des frais de dossier (actuellement de 330 €).
+
+En cas de hausse du taux variable, vous pouvez également modifier la convention en prolongeant la durée du crédit (max. 30 ans). 
+
+Ces tarifications sont effectuées à titre informatif et n’impliquent de notre part ni engagement ni acceptation de votre demande de crédit hypothécaire.
+
+* Si refin interne : Nous attirons votre attention sur le fait que, si vous nous donnez votre aval pour le refinancement, celui-ci ne sera effectif que deux mois après la signature de l’offre. Après celle-ci, vous devrez donc encore payer deux fois la mensualité actuelle avant de pouvoir bénéficier de la nouvelle mensualité proposée.
+
+
+IN FINE
+
+Nous vous remercions et restons bien entendu à votre disposition pour tout renseignement complémentaire.
+</p>
 </div>
 
 <div ng-show='refinancing.case == 6'>
-	<p></p><br>
+	<p>
+		Nous avons le plaisir de vous annoncer que le refinancement votre crédit * (nom de la banque) chez Axa est intéressant et avantageux pour vous.
+
+Sauf erreur de notre part et sur base des informations que vous nous avez communiquées, le décompte du refinancement de votre crédit s’établit comme suit (à confirmer par votre banque et votre notaire) :
+
+Solde restant dû
+* €
+Indemnité de remploi 
+* €
+Frais de mainlevée
+1.000,00 €
+Frais de l’acte de crédit 
+6.964,34 €
+Frais de dossier
+330,00 €
+Montant total du crédit (arrondi) 
+307.000,00 €
+
+
+TARIFICATIONS
+
+I. Tarification du crédit
+
+Les taux présentés ci-dessous :
+Choix entre les différentes possibilités en fonction de la situation et du statut du client
+
+- sont ceux offerts aux clients ayant le statut VIP, c’est-à-dire si :
+1) Pour les plus de 35 ans :
+Vous avez un actif chez Axa Banque de minimum 35.000 € depuis plus de six mois, ou si vous souscrivez un tel placement sur une durée de plus de trois ans, avant l’acte ;
+Ou, vous (ou vos parents) avez un actif chez Axa Banque ou Axa Assurances de minimum 70.000 €, ou si vous souscrivez un tel placement sur une durée de plus de trois ans
+2) Pour les moins de 35 ans :
+Vous avez moins de 36 ans et avez plus de 3.000 € de revenus nets mensuels.
+- sont ceux offerts aux clients ayant le statut TOP VIP, c’est-à-dire si vous avez moins de 36 ans et si :
+Vous (ou vos parents) avez un actif chez Axa Banque de minimum 35.000 € depuis plus de six mois, ou si vous souscrivez un tel placement sur une durée de plus de trois ans, avant l’acte ;
+Vous (ou vos parents) avez un actif chez Axa Banque ou Axa Assurances de minimum 70.000 €, ou si vous souscrivez un tel placement sur une durée de plus de trois ans, avant l’acte.
+- sont ceux offerts aux clients ayant des revenus mensuels nets entre * et * € 
+- et sont fonction d’une quotité faible, c’est-à-dire que le montant total du crédit représente max. 85% des garanties (immobilières et mobilières).
+A défaut, les taux seront majorés.
+
+Nous vous proposons pour votre demande de crédit de *.000 € :
+
+
+REVISION TAUX
+
+En cas de hausse max. du taux, la mensualité max. sera à partir de la *ème année de * €
+En cas de hausse max. du taux et en maintenant la mensualité, la durée totale du crédit sera portée à * mois
+
+
+
+
+GENERALITES
+
+
+Si taux fixe proposé : Mettre les § 1 et 4
+
+Si taux variable ou semi-variable : Mettre les 4 §
+
+Nous vous rappelons que les taux changent tous les jours. Ils ne sont garantis que si vous souscrivez une assurance solde restant dû AXA couvrant au minimum 100% du capital emprunté (assurance qui est parmi les plus compétitives du marché !), une assurance incendie AXA et si vous ouvrez ou disposez d'un compte à vue AXA actif avec domiciliation de salaire. A défaut, Axa est en train de majorer le taux de 0,50%.
+
+Axa vous offre la possibilité de modifier la durée du crédit (l’augmenter ou la diminuer pour un taux variable), à tout moment sans indemnité de remploi et sans nouvelle hypothèque (durée max. 30 ans). Ces modifications entraînent uniquement des frais de dossier (actuellement de 330 €).
+
+En cas de hausse du taux variable, vous pouvez également modifier la convention en prolongeant la durée du crédit (max. 30 ans). 
+
+Ces tarifications sont effectuées à titre informatif et n’impliquent de notre part ni engagement ni acceptation de votre demande de crédit hypothécaire.
+
+
+II. Tarification de l’assurance solde restant dû
+
+Si vous le désirez, nous vous ferons parvenir une tarification pour l’assurance solde restant dû. N’hésitez pas à nous contacter pour que nous vous la fassions parvenir dans les plus brefs délais.
+
+III. Comptes bancaires
+
+Nous vous invitons à ouvrir un compte à vue et un compte d’épargne gratuit chez Axa et **** y verser vos fonds propres afin de bénéficier des meilleurs taux chez Axa. Le compte d’épargne offre un taux de 0,90% + 0,20%
+
+Pour ce faire, cliquer sur l’adresse : https://start2bank.axa.be/start2bank/form.aspx?lang=FR&WT.mc_id=BE-PERM-011&origaorgcd=14419
+
+OU :
+
+Nous vous invitons à ouvrir un compte d’épargne chez Axa et y verser vos fonds propres afin de bénéficier des meilleurs taux chez Axa. Dès accord de votre part, nous ouvrirons le compte en notre agence et vous transmettrons le numéro de compte par e-mail.
+
+
+IN FINE
+
+Nous vous en remercions d’avance et restons bien entendu à votre disposition pour tout renseignement complémentaire.
+	</p><br>
 </div>
 
 <div ng-show='refinancing.case == 7'>
