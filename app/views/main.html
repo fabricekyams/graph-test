@@ -150,7 +150,7 @@
       <CAPTION>  <h1  class= "center" ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}">{{ isBeneficial }}</h1></CAPTION>
 
       <span >
-        <h3 class= "center" >Total: <strong  ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}">{{ TotalDiff | number:2 | abs }}€ {{ isTotalBeneficial }}</strong></h3>
+        <h3 class= "center" >Risque Total: <strong  ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}">{{ TotalDiff | number:2 | abs }}€ {{ isTotalBeneficial }}</strong></h3>
       </span>
       <span  >
         <h3 class= "center" style= "margin-bottom:0;" >Mois: <strong ng-class = "{isBenef: refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: !refinancing.refMortgage.isMonthlyBeneficial }">{{ monthDiff | number:2 | abs }}€ {{ ismonthlyBeneficial }}</strong></h3>
@@ -182,6 +182,11 @@
        <td> {{ refinancing.initMortgage.initRate }}%</td>
        <td> {{ refinancing.refMortgage.initRate }}%</td>
      </tr>  
+     <tr ng-if="refinancing.initMortgage.refInd.length > 1">
+       <TH>Taux Actuel:</TH> 
+       <td> {{ refinancing.initMortgage.refInd[refinancing.initPos-1].rate }}%</td>
+       <td> {{ refinancing.refMortgage.initRate }}%</td>
+     </tr>
      <tr>
        <TH>Indemnité de remploie</TH> 
        <td> 0€</td>
@@ -281,13 +286,13 @@
       <div class="col-md-6" >
                   <div class="form-group">
           <div>
-            <button class ="btn btn-default" ng-click="updateReset(false)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Reset
+            <button class ="btn btn-default" ng-click="updateReset(false)"  > Reset
           </button>
-            <button class ="btn btn-danger" ng-click="updateStoryInit('max', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum</button>
+            <button class ="btn btn-danger" ng-click="updateStoryInit('max', false,true)" > Maximum</button>
           
           
-            <button class ="btn btn-success" ng-click="updateStoryInit('min', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="min"> Minimum</button>
-            <button class ="btn btn-primary" ng-click="updateStoryLimit(false)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Limite Perte
+            <button class ="btn btn-success" ng-click="updateStoryInit('min', false,true)"> Minimum</button>
+            <button class ="btn btn-primary" ng-click="updateStoryLimit(false)"  > Limite Perte
           </button>
 
 
@@ -298,14 +303,13 @@
           <div class="col-md-6" >
                       <div class="form-group">
           <div>
-            <button class ="btn btn-default" ng-click="updateReset(true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Reset
+            <button class ="btn btn-default" ng-click="updateReset(true)"  > Reset
           </button>
-            <button class ="btn btn-danger" ng-click="updateStoryRef('max', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="max" checked="checked"> Maximum</button>
+            <button class ="btn btn-danger" ng-click="updateStoryRef('max', false,true)"> Maximum</button>
           
           
-            <button class ="btn btn-success" ng-click="updateStoryRef('min', false,true)" ng-model="story" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="min"> Minimum</button>
-            
-            <button class ="btn btn-primary" ng-click="updateStoryLimit(true)"  type="radio" name="storyrd" id="inlineRadio3" ng-model="story" value="costum"> Limite Perte
+            <button class ="btn btn-success" ng-click="updateStoryRef('min', false,true)" > Minimum</button>
+            <button class ="btn btn-primary" ng-click="updateStoryLimit(true)"  > Limite 
           </button>
 
           
@@ -353,10 +357,21 @@
        </table>
      </div>
    </div>
+
+   <div class="row" id="text">
+  <div class="col-md-12">
+  <div story-results>
+  </div>
+
+  </div>
+</div>
+
    <div class="row">
  <div class="col-md-12">
    <gh-visualization val="indiceInitChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
  </div> 
+ </div> 
+ <div class="row">
      <div class="col-md-12">
    <gh-visualization val="indiceRefChart" grouped="grouped" type="column" field="field" style="display:block;"></gh-visualization> 
  </div> 

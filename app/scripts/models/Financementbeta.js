@@ -34,7 +34,6 @@ define([
 			this.refInd[0].rate =  this.rate;
 			this.refInd[0].date =  {date: date.toLocaleDateString()};
 			this.refInd[0].dateList =  [this.refInd[0].date];
-			//console.log(this.refInd);
 
 			this.amortization = [];
 			this.amortizationParYears = [];
@@ -90,7 +89,6 @@ define([
 			 * @param {[type]} argument [description]
 			 */
 			setDuration : function (argument) {
-				console.log(this.initRate);
 				this.duration = Math.ceil(DC.CreditUtil.calculDuree(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1), this.monthlyPayment/this.capital));
 			},
 
@@ -119,7 +117,6 @@ define([
 			 */
 			setAmortizationWithVariation : function () {
 				//this.initRefTable();
-				//console.log(this.story);
 				this.amortization=[];
 				this.amortizationParYears=[];
 				this.setMax();
@@ -158,14 +155,10 @@ define([
 					l++;
 				}
 				this.refInd[0].val = this.refTab[this.refInd[0].dateList[l-1].position][this.variation.type];
-				//console.log(this.variation.fixe);
-				//console.log(this.variation.reval);
 				var rate;
 				var j = 1;
 				for (var i = this.variation.fixe; i < this.duration; i=i+this.variation.reval) {
-					//console.log('i: ',i);
 					var durationLeft = this.duration - i;
-					//console.log(this.refInd);
 					if(this.story.localeCompare('costum')==0 || this.refInd[j].dateList.length>1){
 						if (this.refInd[j].dateList.length>1) {
 							var k = 0;
@@ -178,13 +171,9 @@ define([
 							}
 							this.refInd[j].val = this.refTab[this.refInd[j].dateList[k-1].position][this.variation.type];
 							if (j==0) {
-								//console.log('val: ', this.refTab[this.refInd[j].dateList[k-1].position][this.variation.type]);
-								//console.log(this.refInd[j].val);
-								//console.log(this.refInd[j]);
 							};
 						};
 						//j = j===0 ? 1 : j;
-						//console.log(DC.CreditUtil.tauxPeriodiqueToAn(this.rate,1)*100);
 					}
 					this.rate = this.indexation(this.refInd[j].val);
 					if (this.variation.fixe == 12  && i<= this.variation.fixe+24 && this.rate > DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)) {
@@ -192,13 +181,11 @@ define([
 							case this.variation.fixe:
 								var one =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(1/100,1));
 								rate = one < this.rate ? (one): this.rate;
-								//console.log(i/12);
 									if (this.story.localeCompare('costum')!=0) {
 										this.refInd[i/12].val = this.round(this.calculInRef(rate)); 
 									};
 								break;
 							case this.variation.fixe+12:
-								//console.log(i/12);
 								var two =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(2/100,1));
 								rate = two < this.rate ? (two) : this.rate;
 									if (this.story.localeCompare('costum')!=0) {
@@ -206,7 +193,6 @@ define([
 									};
 								break;
 							case this.variation.fixe+24:
-								//console.log(i/12);
 								var three =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(3/100,1));
 								rate = three < this.rate ? (three) : this.rate;
 									if (this.story.localeCompare('costum')!=0) {
@@ -222,11 +208,9 @@ define([
 					this.setRefIndData(j,rate, DC.CreditUtil.calculMensualite(rate, durationLeft)* this.amortization[i-1].SRD);
 					if(this.duration - i < this.variation.reval){
 						this.initArmortizationVal(i,this.duration, durationLeft, this.amortization[i-1].SRD, rate);
-						//console.log('duration final ',this.duration );
 
 					}else{
 						this.initArmortizationVal(i,this.variation.reval+i,durationLeft, this.amortization[i-1].SRD, rate);
-						//console.log('duration', this.variation.reval+i );
 
 					}
 
@@ -263,7 +247,6 @@ define([
 					this.amortization[i].totalInterest=this.getTotalInterest(i);
 					period++;
 
-						//console.log('durationLeft',this.durationLeft);
 					if(i>=this.duration - this.durationLeft){
 						
 						var tmp = Math.floor(i/12) 
@@ -275,8 +258,6 @@ define([
 								if(this.duration !== this.durationLeft){
 									ypos-= Math.floor((this.duration - this.durationLeft)/12);
 								}
-							//console.log(i);
-							//console.log(ypos);
 							this.amortizationParYears[ypos] = {};
 
 							this.amortizationParYears[ypos].month=0;
@@ -289,12 +270,8 @@ define([
 							this.amortizationParYears[ypos].totalInterest= 0;
 						}
 						};
-						//console.log('i',i);
-						//console.log('duration',this.duration);
 						if (i>=this.duration - this.durationLeft) {
 							//var cutpos = this.duration!== this.durationLeft ? this.duration-this.durationLeft-1,
-							//console.log('ypos: ',ypos); 
-							//console.log('length: ',this.amortizationParYears.length); 
 							this.amortizationParYears[ypos].month= (ypos+1);
 							this.amortizationParYears[ypos].dateTerme= this.amortization[i].dateTerme;
 							this.amortizationParYears[ypos].rate=this.amortization[i].rate ;
@@ -350,10 +327,6 @@ define([
 			getDateTerme : function (periode) {
 				var newdate = {};
 				newdate = new Date(this.date.getTime());
-				//console.log(this.date);
-				//console.log(this);
-				//console.log(newdate);
-				//console.log(periode);
 				newdate.setMonth(newdate.getMonth()+periode);
 				return newdate.toLocaleDateString();
 
@@ -525,7 +498,6 @@ define([
 			 * @return {[type]} [description]
 			 */
 			calculIndexionLimite : function (){
-				console.log('a ton avis?');
 				this.story = 'costum';
 				this.calculIndexationSame();
 				var ind = Math.floor(this.refInd[0].val - this.refInd[0].rate);
@@ -550,12 +522,9 @@ define([
 			 * @return {[type]}        [description]
 			 */
 			findLimite : function (indice , rank) {
-				console.log(indice);
-				console.log(rank);
 				if (this.indiceAdvantageous(indice+rank)  && indice+rank < this.maxIndice) {
 					this.findLimite(indice+rank, rank);
 				}else{
-					console.log('indice: ',indice);
 					if (rank>0.001) {
 						this.findLimite(indice,rank/10);
 					}else{
@@ -579,10 +548,8 @@ define([
 				};
 				this.update();
 				if (this.totalPaymentInitMortgage>this.totalPayment) {
-					console.log(this.totalPaymentInitMortgage+' est plus grand que '+this.totalPayment+'?');
 					advantageous = true;
 				};
-				console.log(advantageous);
 				return advantageous;
 			},
 
@@ -611,7 +578,6 @@ define([
 				}else{
 					var deb = this.refInd.length;
 					position = this.startDatePosition;
-					//console.log(deb);
 					for (var i = deb; i < len+1 ; i++) {
 						position = this.startDatePosition + (i-1)*this.variation.reval;
 						this.refInd[i] = {};
@@ -641,10 +607,8 @@ define([
 							
 						};
 
-						//console.log(rate);
 						//this.refInd[i] = [];
 						//this.refInd[i].val = this.round(this.calculInRef(rate));
-						//console.log(this.variation.fixe+(this.variation.reval*(i-1)));
 						//this.refInd[i].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(i-1)));
 					};
 				}
@@ -678,7 +642,6 @@ define([
 				//}else{
 					//this.refInd[period].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(period-1)));
 				///}
-				//console.log(rate);
 				 this.refInd[period].rate = this.round(DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100);
 				 this.refInd[period].monthlyPayment = monthlyPayment;
 
@@ -727,7 +690,6 @@ define([
 			 */
 			calculInRef : function (rate) {
 				var indRef = rate - DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + DC.CreditUtil.tauxAnToPeriodique(this.refInd[0].val/100,1);
-				//console.log(DC.CreditUtil.tauxPeriodiqueToAn(indRef,1)*100);
 				return DC.CreditUtil.tauxPeriodiqueToAn(indRef,1)*100;
 			},
 
@@ -738,13 +700,11 @@ define([
 			 */
 			indexation : function  (refInd) {
 				var indexation = DC.CreditUtil.tauxAnToPeriodique(refInd/100,1) - DC.CreditUtil.tauxAnToPeriodique(this.refInd[0].val/100,1);
-				//console.log('indexation1:', DC.CreditUtil.tauxPeriodiqueToAn(indexation,1)*100);
 				if (indexation<0) {
 					indexation = Math.abs(indexation) < this.minInd ? indexation :( 0 - this.minInd);
 				}else{
 					indexation = indexation < this.minInd ? indexation : this.minInd;
 				};
-				//console.log('indexation2:', DC.CreditUtil.tauxPeriodiqueToAn(indexation,1)*100);
 				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + indexation;
 			},
 
@@ -781,7 +741,6 @@ define([
 					this.refTab[i].C = this.round(parseFloat(tab[i].C));
 					this.refTab[i].E = this.round(parseFloat(tab[i].E));
 				};
-				//console.log(this.refTab);
 			},
 
 			/**
@@ -794,9 +753,7 @@ define([
 				var start = 0;
 				var offset = this.getMonthDifference(this.date, today);
 				offset += 0; 
-				//console.log(offset);
 				var start = offset>0 ? this.refTab.length - offset : this.refTab.length-1;
-				//console.log(start);
 				var fisrtdate = {date:this.refTab[start].date.toLocaleDateString(), position:start}
 				//this.refInd = [];
 				if(this.refInd[0].dateList.indexOf(this.refInd[0].date)<0 ||

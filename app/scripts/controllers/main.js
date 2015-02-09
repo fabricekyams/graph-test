@@ -60,6 +60,12 @@
             };
         });
 
+        app.filter('slice', function() {
+          return function(arr, start, end) {
+            return (arr || []).slice(start);
+          };
+        });
+
         app.controller('MainCtrl',
 
          function ($scope, $http, $q, Refinancing) {
@@ -84,6 +90,8 @@
                         $scope.refinancing.refMortgage.setRefTab(response);
                     console.log(response);
                         $scope.update();
+                        $scope.initstory='reset';
+                        $scope.refstory='reset';
                     });
                 });
 
@@ -182,8 +190,9 @@
              * @return {[type]}          [description]
              */
              $scope.updateStoryInit = function  (story, ref,duration) {
-               $scope.story = story;
-               $scope.refinancing.initMortgage.story = $scope.story; 
+               $scope.initstory = story;
+               $scope.initializeStory(ref, story);
+               $scope.refinancing.initMortgage.story = $scope.initstory; 
                $scope.refinancing.refMortgage.story = 'costum';
                $scope.refinancing.update(ref,duration,true);
                $scope.story = 'costum';
@@ -192,18 +201,18 @@
            }
 
            $scope.updateStoryRef = function  (story, ref,duration) {
-            $scope.story = story;
+            $scope.refstory = story;
+            $scope.initializeStory(ref, story);
             $scope.refinancing.initMortgage.story = 'costum'; 
-            $scope.refinancing.refMortgage.story = $scope.story;
+            $scope.refinancing.refMortgage.story = $scope.refstory;
             $scope.refinancing.update(ref,duration,true);
-            $scope.story = 'costum';
             $scope.refinancing.refMortgage.story = $scope.story;
             $scope.updateUi();
         }
 
 
         $scope.updateStoryLimit = function  (ref) {
-            $scope.story = 'costum';
+            $scope.initializeStory(ref, 'limit');
             if ((ref && $scope.refinancing.refMortgage.type.localeCompare('fixe')!==0) || (!ref && $scope.refinancing.initMortgage.type.localeCompare('fixe')!==0)) {
                 $scope.refinancing.limitThenUpdate(ref);
                 $scope.updateUi();
@@ -211,7 +220,32 @@
 
         }
 
+        $scope.initializeStory = function (ref, story) {
+            if ( $scope.refinancing.refMortgage.type.localeCompare('fixe')!==0 &&  $scope.refinancing.initMortgage.type.localeCompare('fixe')!==0) {
+                if ( $scope.refinancing.refMortgage.variation.type.localeCompare($scope.refinancing.initMortgage.variation.type)==0 ) {
+                    $scope.refstory = story;
+                    $scope.initstory = story;
+                }else{
+                    if (ref) {
+                        $scope.refstory = story;
+
+                    }else{
+                        $scope.initstory = story;
+                    };
+                };
+            }else{
+                if (ref) {
+                    $scope.refstory = story;
+
+                }else{
+                    $scope.initstory = story;
+                };
+                
+            }
+        }
+
         $scope.updateReset = function  (ref) {
+            $scope.initializeStory(ref, 'reset');
             $scope.story = 'costum';
             if ((ref && $scope.refinancing.refMortgage.type.localeCompare('fixe')!==0) || (!ref && $scope.refinancing.initMortgage.type.localeCompare('fixe')!==0)) {
                 $scope.refinancing.reset(ref,false);
@@ -289,13 +323,13 @@
                 var capitalleftref = [];
                 
                 for(var i in  $scope.refinancing.initMortgage.amortizationParYears ){
-                    interest[i] = $scope.refinancing.initMortgage.amortizationParYears[i].interest;
-                    capitalleft[i] = $scope.refinancing.initMortgage.amortizationParYears[i].capital;
+                    interest[i] = $scope.round($scope.refinancing.initMortgage.amortizationParYears[i].interest);
+                    capitalleft[i] = $scope.round($scope.refinancing.initMortgage.amortizationParYears[i].capital);
                 }
 
                 for(var i in  $scope.refinancing.refMortgage.amortizationParYears ){
-                    interestref[i] = $scope.refinancing.refMortgage.amortizationParYears[i].interest;
-                    capitalleftref[i] = $scope.refinancing.refMortgage.amortizationParYears[i].capital;
+                    interestref[i] = $scope.round($scope.refinancing.refMortgage.amortizationParYears[i].interest);
+                    capitalleftref[i] = $scope.round($scope.refinancing.refMortgage.amortizationParYears[i].capital);
                 }
                 var series= [{
                     name: 'Interet',
@@ -339,12 +373,12 @@
                 var xtitle = 'Financement';
                 var ytitle = 'Montant';
                 var payment = [
-                $scope.refinancing.initMortgage.totalCapitalIfRef,
-                $scope.refinancing.refMortgage.totalCapital
+                $scope.round($scope.refinancing.initMortgage.totalCapitalIfRef),
+                $scope.round($scope.refinancing.refMortgage.totalCapital)
                 ];
                 var interest = [
-                $scope.refinancing.initMortgage.totalInterestIfRef,
-                $scope.refinancing.refMortgage.totalInterest
+                $scope.round($scope.refinancing.initMortgage.totalInterestIfRef),
+                $scope.round($scope.refinancing.refMortgage.totalInterest)
                 ];
 /*                var indem = [0, $scope.refinancing.indem ];
                 var releaseCharges = [0, $scope.refinancing.releaseCharges ];
@@ -396,15 +430,15 @@
                             type: 'pie',
                             name: 'Browser share',
                             data: [
-                            ['Frais de dossier',   $scope.refinancing.fileCharges],
-                            ['Frais de mainLevée',  $scope.refinancing.releaseCharges],
+                            ['Frais de dossier',   $scope.round($scope.refinancing.fileCharges)],
+                            ['Frais de mainLevée',  $scope.round($scope.refinancing.releaseCharges)],
                             {
                                 name: 'Frais Hypothécaire',
-                                y: $scope.refinancing.MGRegistration,
+                                y: $scope.round($scope.refinancing.MGRegistration),
                                 sliced: true,
                                 selected: true
                             },
-                            ["Indemnité de remploi",   $scope.refinancing.indem]
+                            ["Indemnité de remploi",   $scope.round($scope.refinancing.indem)]
                             ]
                         }]
                     }
@@ -427,8 +461,8 @@
                         capitalleftref[i] = 0;
                     }
                     for (var i = 0; i < $scope.refinancing.refMortgage.amortization.length; i++) {
-                        interestref[i+start] = $scope.refinancing.refMortgage.amortization[i].interest;
-                        capitalleftref[i+start] = $scope.refinancing.refMortgage.amortization[i].capital;
+                        interestref[i+start] = $scope.round($scope.refinancing.refMortgage.amortization[i].interest);
+                        capitalleftref[i+start] = $scope.round($scope.refinancing.refMortgage.amortization[i].capital);
                     }
 
                     var refstart = $scope.refinancing.refMortgage.refTab.length - ($scope.refinancing.initMortgage.amortization.length-$scope.refinancing.durationLeft);
@@ -477,7 +511,7 @@
 
                         },
                         title: {
-                            text: 'Indices / Remboursement'
+                            text: 'Indices - Remboursement (Rachat)'
                         },
                         plotOptions : {
                             area: {
@@ -555,8 +589,8 @@
                     var indice = [];
 
                     for(var i in  $scope.refinancing.initMortgage.amortization ){
-                        interest[i] = $scope.refinancing.initMortgage.amortization[i].interest;
-                        capitalleft[i] = $scope.refinancing.initMortgage.amortization[i].capital;
+                        interest[i] = $scope.round($scope.refinancing.initMortgage.amortization[i].interest);
+                        capitalleft[i] = $scope.round($scope.refinancing.initMortgage.amortization[i].capital);
                     }
 
                     var start = $scope.refinancing.initMortgage.amortization.length - $scope.refinancing.durationLeft;
@@ -630,7 +664,7 @@
 
                 },
                 title: {
-                    text: 'Indices / Remboursement'
+                    text: 'Indices - Remboursement Prêt Actuel'
                 },
                 plotOptions : {
                     area: {
@@ -719,12 +753,12 @@
 
                 var j =0;
                 for(var i = 0; i< $scope.refinancing.initMortgage.amortizationParYears.length ;i++ ){
-                    srd[j] = $scope.refinancing.initMortgage.amortizationParYears[i].SRD;
+                    srd[j] = $scope.round($scope.refinancing.initMortgage.amortizationParYears[i].SRD);
                     j++;
                 }
 
                 for(var i in  $scope.refinancing.refMortgage.amortizationParYears ){
-                    srdref[i] = $scope.refinancing.refMortgage.amortizationParYears[i].SRD;
+                    srdref[i] = $scope.round($scope.refinancing.refMortgage.amortizationParYears[i].SRD);
                 }
                 var series= [{
                     name: 'Sole restant dû prêt Actuel',
@@ -750,7 +784,7 @@
                 var srd = [];
                 
                 for(var i in  $scope.refinancing.refMortgage.amortization ){
-                    srd[i] = $scope.refinancing.refMortgage.amortization[i].SRD;
+                    srd[i] = $scope.round($scope.refinancing.refMortgage.amortization[i].SRD);
                 }
                 var series= [{
                     name: 'Sole restant dû prêt Actuel',
@@ -820,6 +854,11 @@
                 $scope.indiceRefChart = $scope.formatindiceRef();
                 $scope.indiceInitChart = $scope.formatindiceInit();
 
+            }
+
+            $scope.round = function  (val) {
+                return Math.round(val*100)/100;
+                // body...
             }
 
 
