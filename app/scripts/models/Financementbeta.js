@@ -1,8 +1,9 @@
 define([
 	'scripts/app',
 	'DocteurCreditJS',
+	'moment',
 	'scripts/models/DBRead.js'
-	], function (app,DC) {
+	], function (app,DC,mm) {
 	app.factory('Financement', function (DBRead , $http){
 		/**
 		 * [Financement description]
@@ -18,12 +19,14 @@ define([
 
 			this.rate = rate;
 			this.initRate = this.rate;
+			this.addRate = 0;
+			this.trueRate = this.initRate+this.addRate;
 
 			this.duration = duration;
 			this.durationLeft = duration;
 			
 			this.date = date;
-			this.dateString = date.toLocaleDateString();
+			this.dateString = mm(date).format('DD/MM/YYYY');
 			
 			this.monthlyPayment = 0;
 			this.variation = {};
@@ -32,7 +35,7 @@ define([
 			this.refInd[0] =  {};
 			this.refInd[0].val = 0;
 			this.refInd[0].rate =  this.rate;
-			this.refInd[0].date =  {date: date.toLocaleDateString()};
+			this.refInd[0].date =  {date: mm(date).format('DD/MM/YYYY')};
 			this.refInd[0].dateList =  [this.refInd[0].date];
 
 			this.amortization = [];
@@ -52,13 +55,13 @@ define([
 			 * @return {[type]} [description]
 			 */
 			update: function () {
-
-				var savedate= this.date.toLocaleDateString();
+				var savedate= mm(this.date).format('DD/MM/YYYY');
 				this.date = new Date(this.formatDate(this.dateString));
-				if (savedate.localeCompare(this.date.toLocaleDateString())!==0) {
+				if (savedate.localeCompare(mm(this.date).format('DD/MM/YYYY'))!==0) {
 					this.refInd = this.refInd.slice(0,1);
 				};
-				this.rate = Math.round((Math.pow(1 + (this.initRate/100), 1 / 12) - 1)*1000000)/1000000;
+				this.trueRate = this.initRate+this.addRate;
+				this.rate = Math.round((Math.pow(1 + ((this.initRate+this.addRate)/100), 1 / 12) - 1)*1000000)/1000000;
 				this.setMonthlyPayment();
 				this.refInd[0].monthlyPayment = this.monthlyPayment;
 	
@@ -66,7 +69,7 @@ define([
 				if(this.type.localeCompare('fixe') == 0 ){
 					this.refInd = this.refInd.slice(0,1);
 					this.refInd[0].val = 0;
-					this.refInd[0].rate = this.initRate;
+					this.refInd[0].rate = (this.initRate+this.addRate);
 					this.refInd[0].date =  {date: this.dateString};
 					this.refInd[0].dateList =  [this.refInd[0].date];
 					this.variation = {};
@@ -89,7 +92,7 @@ define([
 			 * @param {[type]} argument [description]
 			 */
 			setDuration : function (argument) {
-				this.duration = Math.ceil(DC.CreditUtil.calculDuree(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1), this.monthlyPayment/this.capital));
+				this.duration = Math.ceil(DC.CreditUtil.calculDuree(DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1), this.monthlyPayment/this.capital));
 			},
 
 			/**
@@ -176,7 +179,7 @@ define([
 						//j = j===0 ? 1 : j;
 					}
 					this.rate = this.indexation(this.refInd[j].val);
-					if (this.variation.fixe == 12  && i<= this.variation.fixe+24 && this.rate > DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)) {
+					if (this.variation.fixe == 12  && i<= this.variation.fixe+24 && this.rate > DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1)) {
 						switch(i){
 							case this.variation.fixe:
 								var one =  this.calculIndexionAdd(DC.CreditUtil.tauxAnToPeriodique(1/100,1));
@@ -328,7 +331,7 @@ define([
 				var newdate = {};
 				newdate = new Date(this.date.getTime());
 				newdate.setMonth(newdate.getMonth()+periode);
-				return newdate.toLocaleDateString();
+				return mm(newdate).format('DD/MM/YYYY');
 
 			},
 
@@ -455,7 +458,7 @@ define([
 			 */
 			calculIndexationMax : function (argument) {
 				this.refInd = this.refInd.slice(0,1);
-				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+this.maxInd;
+				this.rate =  DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1)+this.maxInd;
 				this.calculIndexionCostum(this.rate);
 				 
 			},
@@ -467,7 +470,7 @@ define([
 			 */
 			calculIndexationMin : function (argument) {
 				this.refInd = this.refInd.slice(0,1);
-				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)-this.minInd;
+				this.rate =  DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1)-this.minInd;
 				this.calculIndexionCostum(this.rate);
 			},
 
@@ -488,7 +491,7 @@ define([
 					ind = this.max(Math.abs(tmp),this.maxInd);
 					ind = ind;
 				};
-				this.rate =  DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + ind; 
+				this.rate =  DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1) + ind; 
 				this.calculIndexionCostum(this.rate);
 
 			},
@@ -507,11 +510,11 @@ define([
 
 			},
 			getIndiceMax : function  () {
-				return this.calculInRef(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+this.maxInd);// body...
+				return this.calculInRef(DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1)+this.maxInd);// body...
 			},
 
 			getIndiceMin : function  () {
-				return this.calculInRef(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)-this.minInd);// body...
+				return this.calculInRef(DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1)-this.minInd);// body...
 				// body...
 			},
 
@@ -587,10 +590,10 @@ define([
 							for (var j = 0; j < 3; j++) {
 								//this.refInd[i][j] = {};
 								this.refInd[i].dateList[j] = {};
-								this.refInd[i].dateList[j].date = this.refTab[position].date.toLocaleDateString();
+								this.refInd[i].dateList[j].date = mm(this.refTab[position].date).format('DD/MM/YYYY');
 								this.refInd[i].dateList[j].position = position;
 								//this.refInd[i][j].val = this.refTab[position][this.variation.type];
-								//this.refInd[i][j].rate = this.initRate;
+								//this.refInd[i][j].rate = (this.initRate+this.addRate);
 								position--;
 							};
 							this.refInd[i].date = this.refInd[i].dateList[0];
@@ -602,7 +605,7 @@ define([
 								this.refInd[i].date = this.refInd[i].dateList[0];
 								this.refInd[i].dateList[0].position = -1;
 								this.refInd[i].val = this.story.localeCompare('costum')==0 ? this.refTab[this.refTab.length-1][this.variation.type] : this.round(this.calculInRef(rate));
-								//this.refInd[i][0].rate = this.initRate;
+								//this.refInd[i][0].rate = (this.initRate+this.addRate);
 								//start--;
 							
 						};
@@ -653,7 +656,7 @@ define([
 			 * @return {[type]}           [description]
 			 */
 			calculIndexionAdd : function (rateToAdd) {
-				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1)+rateToAdd;
+				return DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1)+rateToAdd;
 			},
 
 			/**
@@ -661,9 +664,9 @@ define([
 			 * @param {[type]} argument [description]
 			 */
 			setMax : function (argument) {
-				this.maxInd = this.max(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.pos/100,1));
-				this.minInd = this.max(DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.neg/100,1));
-				this.maxIndice =  this.calculInRef(this.maxInd + DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1));
+				this.maxInd = this.max(DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.pos/100,1));
+				this.minInd = this.max(DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1),DC.CreditUtil.tauxAnToPeriodique(this.cap.neg/100,1));
+				this.maxIndice =  this.calculInRef(this.maxInd + DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1));
 			},
 
 			/**
@@ -689,7 +692,7 @@ define([
 			 * @return {[type]}      [description]
 			 */
 			calculInRef : function (rate) {
-				var indRef = rate - DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + DC.CreditUtil.tauxAnToPeriodique(this.refInd[0].val/100,1);
+				var indRef = rate - DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1) + DC.CreditUtil.tauxAnToPeriodique(this.refInd[0].val/100,1);
 				return DC.CreditUtil.tauxPeriodiqueToAn(indRef,1)*100;
 			},
 
@@ -705,7 +708,7 @@ define([
 				}else{
 					indexation = indexation < this.minInd ? indexation : this.minInd;
 				};
-				return DC.CreditUtil.tauxAnToPeriodique(this.initRate/100,1) + indexation;
+				return DC.CreditUtil.tauxAnToPeriodique((this.initRate+this.addRate)/100,1) + indexation;
 			},
 
 			/**
@@ -754,11 +757,11 @@ define([
 				var offset = this.getMonthDifference(this.date, today);
 				offset += 0; 
 				var start = offset>0 ? this.refTab.length - offset : this.refTab.length-1;
-				var fisrtdate = {date:this.refTab[start].date.toLocaleDateString(), position:start}
+				var fisrtdate = {date:mm(this.refTab[start].date).format('DD/MM/YYYY'), position:start};
 				//this.refInd = [];
 				if(this.refInd[0].dateList.indexOf(this.refInd[0].date)<0 ||
 					JSON.stringify(this.refInd[0].dateList[0]) !== JSON.stringify(fisrtdate)||
-					this.refInd[0].rate !== this.initRate
+					this.refInd[0].rate !== (this.initRate+this.addRate)
 					){
 					this.refInd[0].dateList = [];
 					this.refInd[0].val = this.refTab[start][this.variation.type];
@@ -767,20 +770,20 @@ define([
 						for (var i = 0; i < 3; i++) {
 							//this.refInd[0][i] = {};
 							this.refInd[0].dateList[i] ={};
-							this.refInd[0].dateList[i].date = this.refTab[start].date.toLocaleDateString();
+							this.refInd[0].dateList[i].date = mm(this.refTab[start].date).format('DD/MM/YYYY');
 							this.refInd[0].dateList[i].position = start;
 							//this.refInd[0][i].val = this.refTab[start][this.variation.type];
-							//this.refInd[0][i].rate = this.initRate;
+							//this.refInd[0][i].rate = (this.initRate+this.addRate);
 							start--;
 						};
 					}else{
 						this.refInd[0].dateList[0] ={};
-						this.refInd[0].dateList[0].date = this.refTab[start].date.toLocaleDateString();
+						this.refInd[0].dateList[0].date = mm(this.refTab[start].date).format('DD/MM/YYYY');
 						this.refInd[0].dateList[0].position = start;
 					};
 
 					this.refInd[0].date = this.refInd[0].dateList[0];
-					this.refInd[0].rate = this.initRate;
+					this.refInd[0].rate = (this.initRate+this.addRate);
 					this.refInd[0].type = this.variation.type;
 				}
 				start = this.refTab.length;

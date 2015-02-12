@@ -16,6 +16,9 @@ require.config({
         'shim':                 "../vendors/shim/es5-shim.min",
         'ss':                   "../vendors/ss/ss.min",
         'DocteurCreditJS':        "../vendors/DocteurCredit/DocteurCreditJS.min", 
+        'modernizr':        "../vendors/modernizr/modernizr.min",
+        'moment':        "../vendors/moment/moment.min",
+        'docxgen':        "../vendors/docxgen/docxgen.min"
     },
     shim: {
     	'angularAMD': ['angular'],

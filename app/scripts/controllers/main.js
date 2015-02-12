@@ -8,9 +8,10 @@
  */
  define([
     'scripts/app',
-    '../vendors/finance/finance.js',
     'DocteurCreditJS',
-    '../vendors/DocteurCredit/taux.js',
+    'moment',
+    'docxgen',
+    'highcharts',
     'scripts/directives/autoNumericFabrice.js',
     'scripts/models/Refinancing.js',
     //'scripts/models/Financementbeta.js',
@@ -21,7 +22,7 @@
     'scripts/directives/numericDir.js'
     ],
 
-    function (app,finance,DC) {
+    function (app,DC,mm,docx) {
         'use strict';
 
 
@@ -69,6 +70,7 @@
         app.controller('MainCtrl',
 
          function ($scope, $http, $q, Refinancing) {
+            $scope.loaded = false;
             /**
              * in
              * @param  {[type]}
@@ -81,17 +83,16 @@
                 $http.get('php/gets.php?data=all')
                 .success(function(response) {
                     $scope.story='costum';
-                    console.log(response);
                     $scope.refinancingOptions = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
-                    $scope.refinancing= new Refinancing(310000.00, 3.918 , 300 , new Date('01/31/2011'), new Date('01/31/2015'),2.08,response);
+                    $scope.refinancing= new Refinancing(310000.00, 7 , 180 , new Date('01/31/2011'), new Date('02/28/2015'),0,response);
                     $http.get('php/gets.php?data=inds')
                     .success(function(response) {
                         $scope.refinancing.initMortgage.setRefTab(response);
                         $scope.refinancing.refMortgage.setRefTab(response);
-                    console.log(response);
                         $scope.update();
                         $scope.initstory='reset';
                         $scope.refstory='reset';
+                        $scope.loaded = true;
                     });
                 });
 
@@ -265,7 +266,7 @@
                 $scope.TotalDiff = $scope.calculTotalDiff();
                 $scope.isTotalBeneficial = $scope.calculIsTotalBeneficial() ? "D'avantage" : "De désavantage";
                 $scope.ismonthlyBeneficial = $scope.calculIsMonthlyBeneficial() ? "D'avantage" : "De désavantage";
-                $scope.isBeneficial = $scope.calculIsTotalBeneficial() ? "Avantageux" : "Désavantageux";
+                $scope.isBeneficial = $scope.calculIsTotalBeneficial() ? "Avantageux" : "Risqué";
                 $scope.formatDataGraph(); 
             }
 
@@ -282,7 +283,7 @@
              * @return {[type]} [description]
              */
              $scope.calculTotalDiff = function () {
-                return ($scope.refinancing.initMortgage.totalPaymentIfRef) - $scope.refinancing.refMortgage.totalPayment;
+                return $scope.refinancing.initMortgage.totalPaymentIfRef - $scope.refinancing.refMortgage.totalPayment;
             }
 
             /**
@@ -739,40 +740,111 @@
              * @return {[type]} [description]
              */
              $scope.formatSRD = function(){
-                var type= 'line';
-                var title = 'Solde Restant Dû';  
-                var xtitle = 'mois';
-                var ytitle = 'Montant';
                 var srd = [];
                 var srdref = [];
+                srd[0] = $scope.refinancing.SRD;
+                srdref[0] = $scope.refinancing.refMortgage.capital;
+                var srdifference = [];
+                srdifference[0]= $scope.refinancing.refMortgage.capital - $scope.refinancing.SRD;
                 var j =0;
-                /*for(var i = $scope.refinancing.initMortgage.duration - $scope.refinancing.durationLeft; i< $scope.refinancing.initMortgage.amortization.length ;i++ ){
-                    srd[j] = $scope.refinancing.initMortgage.amortization[i].SRD;
+                for(var i = $scope.refinancing.initMortgage.duration - $scope.refinancing.durationLeft; i< $scope.refinancing.initMortgage.amortization.length ;i++ ){
+                    srd[j+1] = $scope.round($scope.refinancing.initMortgage.amortization[i].SRD);
+                    j++;
+                }
+
+                /*var j =0;
+                for(var i = 0; i< $scope.refinancing.initMortgage.amortizationParYears.length ;i++ ){
+                    srd[j+1] = $scope.round($scope.refinancing.initMortgage.amortizationParYears[i].SRD);
                     j++;
                 }*/
-
-                var j =0;
-                for(var i = 0; i< $scope.refinancing.initMortgage.amortizationParYears.length ;i++ ){
-                    srd[j] = $scope.round($scope.refinancing.initMortgage.amortizationParYears[i].SRD);
-                    j++;
+                var l = 0;
+                for(var i in  $scope.refinancing.refMortgage.amortization ){
+                    srdref[l+1] = $scope.round($scope.refinancing.refMortgage.amortization[i].SRD);
+                    l++;
                 }
 
-                for(var i in  $scope.refinancing.refMortgage.amortizationParYears ){
-                    srdref[i] = $scope.round($scope.refinancing.refMortgage.amortizationParYears[i].SRD);
-                }
-                var series= [{
+                var len = $scope.refinancing.refMortgage.amortization.length < $scope.refinancing.durationLeft ? $scope.refinancing.refMortgage.amortization.length : $scope.refinancing.durationLeft;
+                var offset = $scope.refinancing.initMortgage.duration - $scope.refinancing.durationLeft;
+                var left;
+                
+                for (var k = 0; k < len ; k++) {
+                    srdifference[k+1] =  $scope.round($scope.round($scope.refinancing.refMortgage.amortization[k].SRD) - $scope.round($scope.refinancing.initMortgage.amortization[k+offset].SRD));
+                    left = k;
+                };
+                if ($scope.refinancing.refMortgage.amortization.length>len) {
+                    for (var k = len; k < $scope.refinancing.refMortgage.amortization.length ; k++) {
+                        srdifference[k+1] =  $scope.round($scope.round($scope.refinancing.refMortgage.amortization[k].SRD) - 0);
+                    };
+                }else{
+                  if ($scope.refinancing.durationLeft>len) {
+                        for (var k = len; k < $scope.refinancing.durationLeft ; k++) {
+                            srdifference[k+1] =  $scope.round(0 - $scope.round($scope.refinancing.initMortgage.amortization[k+offset].SRD));
+                        };
+                    }  
+                };
+
+
+
+                var chart = {
+                chart: {
+                    zoomType: 'xy',
+                    renderTo: 'srdChart'
+
+                },
+                title: {
+                    text: 'Solde Restant Du - Difference'
+                },
+                plotOptions : {
+                    line: {
+                        marker: {
+                            enabled: false
+                        }
+                    },
+                    spline: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                yAxis:[{
+                    title: {
+                        text: 'SRD',
+                    }
+                },{
+                    title: {
+                        text: 'Difference',
+                    }
+                }],
+                tooltip: {
+                    shared: true
+                },
+                series: [{
                     name: 'Sole restant dû prêt Actuel',
                     data: srd,
-                    color: '#005C1F'
+                    color: '#005C1F',
+                    type: 'line',
+                    yAxis: 1
                 },
                 {
                     name: 'Sole restant dû Rachat',
                     data: srdref,
-                    color: '#0052CC'
-                }
-                ];
-                var to = $scope.idChart = 'srdChart';
-                var chart = $scope.chart(to, type, title, series, xtitle, ytitle);
+                    color: '#0052CC',
+                    type: 'line',
+                    yAxis: 1
+                },
+                {
+                    name: 'Difference',
+                    data: srdifference,
+                    type: 'line'
+                }]
+
+
+
+
+            }
+
+                $scope.idChart = 'srdChart';
+                
                 return chart;
             }
 

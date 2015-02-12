@@ -8,19 +8,16 @@
  */
 define([
     'scripts/app',
-    '../vendors/finance/finance.js',
     'DocteurCreditJS',
-    '../vendors/DocteurCredit/taux.js',
     'scripts/directives/autoNumericFabrice.js',
     'scripts/models/Refinancing.js',
-    //'scripts/models/Financementbeta.js',
     'datetimepicker',
     'scripts/directives/chartDir.js',
     'scripts/directives/jQueryLibraryDir.js',
     'scripts/directives/numericDir.js'
     ],
 
-    function (app,finance,DC) {
+    function (app,DC) {
     'use strict';
 
     
@@ -40,7 +37,7 @@ app.directive('a', function() {
       	function ($scope, $http, $q, Refinancing) {
     	$scope.nav = 'rate';
       		$scope.type = ['fixe','1/1/1','3/3/3','5/5/5','10/5/5','12/5/5','15/5/5','20/5/5','7/3/3','8/3/3','9/3/3', '10/3/3','15/1/1','20/1/1','20/3/3','25/5/5','5/3/3','3/1/1','6/1/1'];
- 			$http.get('php/gets.php/?data=all')
+ 			$http.get('php/gets.php?data=all')
                 .success(function(response) {
                 	for (var i = 0; i < response.length; i++) {
                     		response[i].duration_min  = parseInt(response[i].duration_min);
@@ -51,7 +48,7 @@ app.directive('a', function() {
                     	};
                 	$scope.rateTable = response;
                 	console.log($scope.rateTable);
-                    $http.get('php/gets.php/?data=inds')
+                    $http.get('php/gets.php?data=inds')
                     .success(function(response) {
                     	for (var i = 0; i < response.length; i++) {
                             response[i].A  = parseFloat(response[i].A);   
@@ -73,6 +70,10 @@ app.directive('a', function() {
             	});
             }
 
+            $scope.deleteInds = function (argument) {
+                alert('Pas encore instancié');
+            }
+
             $scope.setInds = function (argument) {
                 
                 if ($scope.date !== undefined && $scope.A !== undefined && $scope.C !== undefined && $scope.E !== undefined ) {
@@ -85,9 +86,10 @@ app.directive('a', function() {
                     }
 
                     console.log($scope.ind);
-                    /*$http.post('php/sets.php', {'rates':$scope.rateTable}).success(function (response) {
-                        alert(response);
-                    });*/
+                    $http.post('php/sets.php', {'inds':$scope.ind}).success(function (response) {
+                        alert('Sauvegarde reussi');
+                        console.log(response);
+                    });
                 }else{
                     alert('Veuillez entrez des données correct');
                 };

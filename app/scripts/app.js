@@ -19,7 +19,9 @@ define([
   'jquery',
   'ss',
   'shim',
-  'highcharts'
+  'highcharts',
+  'modernizr',
+  'moment'
    ], function (angularAMD) {
   var app = angular.module('graphTestApp', [
       'ngCookies',

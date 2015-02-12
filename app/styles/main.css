@@ -68,6 +68,82 @@ table {
 [data-sr] { visibility: hidden; } 
 
 
+
+
+/* ==========================================================================
+   LOADING;
+   ========================================================================== */
+#mainapp {
+  display:none;
+}
+
+#mainloading {
+  display: block;
+}
+
+#loading {
+position: absolute;
+top: 0px;
+width: 1280px;
+margin: 0 auto;
+overflow: hidden;
+z-index: 100;
+width: 100%;
+height: 100%;
+background-color: white;
+}
+#loading .container-fluid {
+width: 250px;
+margin: 0 auto;
+padding-top: 50px;
+margin-top: 50px;
+}
+.ball {
+background-color: rgba(0,0,0,0);
+border:5px solid rgba(0,183,229,0.9);
+opacity:.9;
+border-top:5px solid rgba(0,0,0,0);
+border-left:5px solid rgba(0,0,0,0);
+border-radius:50px;
+box-shadow: 0 0 35px #2187e7;
+width:50px;
+height:50px;
+margin:0 auto;
+-moz-animation:spin .5s infinite linear;
+-webkit-animation:spin .5s infinite linear;
+}
+.ball1 {
+background-color: rgba(0,0,0,0);
+border:5px solid rgba(0,183,229,0.9);
+opacity:.9;
+border-top:5px solid rgba(0,0,0,0);
+border-left:5px solid rgba(0,0,0,0);
+border-radius:50px;
+box-shadow: 0 0 15px #2187e7;
+width:30px;
+height:30px;
+margin:0 auto;
+position:relative;
+top:-50px;
+-moz-animation:spinoff .5s infinite linear;
+-webkit-animation:spinoff .5s infinite linear;
+}
+@-moz-keyframes spin {
+0% { -moz-transform:rotate(0deg); }
+100% { -moz-transform:rotate(360deg); }
+}
+@-moz-keyframes spinoff {
+0% { -moz-transform:rotate(0deg); }
+100% { -moz-transform:rotate(-360deg); }
+}
+@-webkit-keyframes spin {
+0% { -webkit-transform:rotate(0deg); }
+100% { -webkit-transform:rotate(360deg); }
+}
+@-webkit-keyframes spinoff {
+0% { -webkit-transform:rotate(0deg); }
+100% { -webkit-transform:rotate(-360deg); }
+}
 /* ==========================================================================
    BODY
    ========================================================================== */
@@ -119,6 +195,12 @@ body {
   padding-bottom: 19px;
 }
 
+.export-btn {
+    margin-top: 8px;
+    position: fixed;
+    right: 15px;
+    z-index: 1040;
+}
 /* Custom page footer */
 .footer {
   padding-top: 19px;
@@ -181,9 +263,15 @@ section {
   background-size: cover;
   background-position: center;
   position: relative;
-  overflow: hidden;
+  overflow: scroll;
   padding-bottom: 40px;
   padding-top: 40px;
+}
+
+
+
+.header{
+  /*height: 70px;*/
 }
 
 .form .error {
@@ -205,7 +293,7 @@ section {
 
 }
 
-#inputs .container {
+#inputs .container, .container-fluid .container {
   min-width: 1100px;
 }
 .container {

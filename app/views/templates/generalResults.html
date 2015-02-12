@@ -3,7 +3,7 @@
 
 <p>Cette appréciation s’explique au regard du taux dont vous bénéficiez actuellement et des taux que nous sommes en mesure de vous proposer.</p><br>
 
-<p>A l’heure actuelle, vous bénéficiez d’un taux de <strong>{{ refinancing.initMortgage.initRate | number:2  }}</strong> % en  <strong>{{ refinancing.initMortgage.type }}</strong>. Avec la même formule de taux, nous pourrions vous proposer un taux de  <strong>{{ refinancing.refMortgage.initRate | number:2  }}</strong> %. Votre mensualité s’élèverait alors à  <strong>{{ refinancing.refMortgage.monthlyPayment | number:2  }}</strong> € alors qu’elle s’élève aujourd’hui à  <strong>{{ refinancing.initMortgage.monthlyPayment | number:2  }}</strong> €.</p><br>
+<p>A l’heure actuelle, vous bénéficiez d’un taux de <strong>{{ refinancing.initMortgage.trueRate | number:2  }}</strong> % en  <strong>{{ refinancing.initMortgage.type }}</strong>. Avec la même formule de taux, nous pourrions vous proposer un taux de  <strong>{{ refinancing.refMortgage.trueRate | number:2  }}</strong> %. Votre mensualité s’élèverait alors à  <strong>{{ refinancing.refMortgage.monthlyPayment | number:2  }}</strong> € alors qu’elle s’élève aujourd’hui à  <strong>{{ refinancing.initMortgage.monthlyPayment | number:2  }}</strong> €.</p><br>
 
 <p>Pour qu’un refinancement soit intéressant, il faudrait que l’on vous propose un taux de <select ng-model="refinancing.bestRateVal" ng-options="option for option  in refinancing.bestRate"></select>
  %.</p><br>
@@ -38,7 +38,7 @@ Afin d’illustrer nos propos et de rendre les choses plus concrètes, en voici 
 	</tr>
 	<tr>
 		<td>Taux  <strong> {{ refinancing.refMortgage.type }}</strong> actuel si refinancement  </td>
-		<td>  <strong> {{ refinancing.refMortgage.initRate }}</strong>%</td>
+		<td>  <strong> {{ refinancing.refMortgage.trueRate }}</strong>%</td>
 	</tr>
 </table>
 
@@ -65,7 +65,7 @@ Afin d’illustrer nos propos et de rendre les choses plus concrètes, en voici 
 
 <table class="table">
 	<tr>
-		<td>Solde restant dû (numéro crédit 774- <input type="text" ng-model="credit"> ) (décompte après paiement de l’échéance du <strong> {{ refinancing.initMortgage.refInd[0].date.date }}</strong>)
+		<td>Solde restant dû (numéro crédit 774- <input type="text" ng-model="credit"> ) (décompte après paiement de l’échéance du <strong> {{ refinancing.refResults.date.date }}</strong>)
  </td>
 		<td> <strong> {{ refinancing.SRD | number:2 }}</strong> €</td>
 	</tr>
@@ -127,7 +127,7 @@ A défaut, les taux seront majorés.<br></p>
 <h4 >REVISION TAUX</h4>
 
 <p  >En cas de hausse max. du taux, la mensualité max. sera à partir de la <strong>{{ refinancing.refMortgage.variation.fixe | toAn }}</strong> ème année de <strong>{{ refinancing.refResults.monthlyPayment | number:2 }}</strong> €</p>
-<p >En cas de hausse max. du taux et en maintenant la mensualité, la durée totale du crédit sera portée à ????????? mois</p><br>
+<p >En cas de hausse max. du taux et en maintenant la mensualité, la durée totale du crédit sera portée à <strong>{{ refinancing.refResults.durationSameMP }}</strong> mois</p><br>
 </div></div>
 
 <h4>GENERALITES</h4>
@@ -157,7 +157,7 @@ A défaut, les taux seront majorés.<br></p>
 
 <table class="table">
 	<tr>
-		<td>Solde restant dû (numéro crédit 774-*) (décompte après paiement de l’échéance du *)
+		<td>Solde restant dû (numéro crédit 774-<input type="text" ng-model="credit">) (décompte après paiement de l’échéance du  <strong> {{ refinancing.refResults.date.date }}</strong>)
  </td>
 		<td> <strong> {{ refinancing.SRD | number:2 }}</strong> €</td>
 	</tr>
@@ -185,7 +185,7 @@ A défaut, les taux seront majorés.<br></p>
 
 
 
-<h4>TARIFICATIONS</h4>I
+<h4>TARIFICATIONS</h4>
 
 <p>. Tarification du crédit</p><br>
 
