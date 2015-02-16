@@ -46,6 +46,7 @@ define([
 		 	this.refMortgage.homeSafe = this.homeSafe[0];
 		 	this.vip = ['NON VIP', 'VIP', 'TOP VIP'];
 		 	this.refMortgage.vip = this.vip[0];
+		 	this.prime = ['Prime unique','Prime annuelle', 'Prime successive']
 		 	this.update(false, true, true);
 
 
@@ -688,12 +689,24 @@ define([
 			 				this.refMortgage.duration=this.rateTable[linePosition].duration_min;
 
 			 			}
+
 			 			this.checkDuration();
 
 
 			 		}
 			 	}
 			 	
+			 	this.refMortgage.rateTable = [];
+			 	console.log(this.rateTable[linePosition]);
+				this.refMortgage.rateTable[0] = this.rateTable[linePosition].rate;
+				this.refMortgage.rateTable = this.refMortgage.rateTable.concat(
+				this.rateTable[linePosition].quotLess.One,
+				this.rateTable[linePosition].quotLess.Two,
+				this.rateTable[linePosition].quotLess.Three,
+				this.rateTable[linePosition].quotPlus.One,
+				this.rateTable[linePosition].quotPlus.Two,
+				this.rateTable[linePosition].quotPlus.Three
+				);
 			 
 				var qt = this.refMortgage.quote.localeCompare('<=85%') ===0 ? this.rateTable[linePosition].quotLess : this.rateTable[linePosition].quotPlus;
 				var hs = qt[this.refMortgage.homeSafe];
@@ -731,6 +744,9 @@ define([
 			 getDurationLeft : function (date, newDate) {
 			 	var month = (newDate.getFullYear() - date.getFullYear())*12;
 			 	month-= (date.getMonth() - newDate.getMonth());
+			 	if (newDate.getDate()<date.getDate()) {
+			 		month-=1;
+			 	};
 			 	return this.initMortgage.duration-month;
 			 },
 
@@ -953,21 +969,24 @@ define([
 			 
 			setBestRate : function (argument) {
 			 	this.bestRate=[];
+			 	var rateTab = this.freeRate ? this.freeRateTable : this.refMortgage.rateTable;
 			 	var saveRate = this.refMortgage.initRate;
-			 	for (var i = 0; i < this.refMortgage.rateTable.length; i++) {
-			 		this.refMortgage.initRate = this.refMortgage.rateTable[i];
+			 	var saveAddRate = this.refMortgage.addRate;
+			 	for (var i = 0; i < rateTab.length; i++) {
+			 		this.refMortgage.initRate = rateTab[i];
+			 		this.refMortgage.addRate = saveAddRate;
 			 		this.refMortgage.update();
 			 		if (this.initMortgage.type.localeCompare('fixe')!==0 && this.refMortgage.type.localeCompare('fixe')!==0
 			 			|| (this.initMortgage.type.localeCompare('fixe')!==0 && this.refMortgage.type.localeCompare('fixe')==0)){
 			 			var wait = this.variableWait();
 			 			if (wait ==false) {
 			 				if (this.refMortgage.initRate<this.initMortgage.initRate && this.refMortgage.monthlyPayment < this.initMortgage.monthlyPayment && this.getDifference()>0) {
-					 			this.bestRate.push(this.refMortgage.rateTable[i]);
+					 			this.bestRate.push(rateTab[i]);
 					 		}
 			 			};
 			 		}else{
 		 				if (this.refMortgage.initRate<this.initMortgage.initRate && this.refMortgage.monthlyPayment < this.initMortgage.monthlyPayment && this.getDifference()>0)  {
-				 			this.bestRate.push(this.refMortgage.rateTable[i]);
+				 			this.bestRate.push(rateTab[i]);
 				 		}
 			 		}
 
@@ -976,6 +995,7 @@ define([
 			 		this.bestRateVal = this.bestRate[0];
 			 	};
 			 	this.refMortgage.initRate = saveRate;
+			 	this.refMortgage.addRate = saveAddRate;
 			 	this.refMortgage.update();
 			},
 

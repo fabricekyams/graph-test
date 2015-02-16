@@ -108,7 +108,7 @@ border-radius:50px;
 box-shadow: 0 0 35px #2187e7;
 width:50px;
 height:50px;
-margin:0 auto;
+margin:10px auto;
 -moz-animation:spin .5s infinite linear;
 -webkit-animation:spin .5s infinite linear;
 }
@@ -293,7 +293,7 @@ section {
 
 }
 
-#inputs .container, .container-fluid .container {
+#inputs .container, #inputsPlus .container, .container-fluid .container, #calcbtn .container {
   min-width: 1100px;
 }
 .container {
@@ -358,6 +358,11 @@ input.datepicker{
 
 section#inputs {
   background-color:     #D6D6FF;
+
+}
+
+section#inputsPlus {
+  background-color:     #FFEBC2;
 
 }
 

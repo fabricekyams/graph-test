@@ -161,6 +161,14 @@
                 $scope.refinancing.update(ref,duration,true);
                 $scope.updateUi(); 
             }
+            $scope.assSRDinit = function  (ref,duration) {
+               this.refinancing.initMortgage.hasAssSRD = !this.refinancing.initMortgage.hasAssSRD;
+               $scope.update();
+            }
+            $scope.assSRDref = function  (ref,duration) {
+               this.refinancing.refMortgage.hasAssSRD = !this.refinancing.refMortgage.hasAssSRD; 
+               $scope.update();
+            }
 
             /**
              * [updateVarWithDurationFirst description]

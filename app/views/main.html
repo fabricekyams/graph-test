@@ -76,7 +76,8 @@
                 +<input style="width:50px;" ng-model="refinancing.initMortgage.cap.pos" ng-change="update(false,true)" type="number" ng-model-options="{ getterSetter: true }" class="" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" >
               </div>
               <div class="col-md-3">
-                -<input  style="width:50px;" ng-model="refinancing.initMortgage.cap.neg" ng-change="update(false,true)" type="number" ng-model-options="{ getterSetter: true }" class="" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001">  
+                -<input  ng-show="refinancing.initMortgage.cap.neg!==100" style="width:50px;" ng-model="refinancing.initMortgage.cap.neg" ng-change="update(false,true)" type="number" ng-model-options="{ getterSetter: true }" class="" id="rate-nb"   step ="0.001">
+                <input type="checkbox" ng-model="refinancing.initMortgage.cap.neg" ng-change="update(false,true)" ng-true-value="100" ng-false-value="3">∞ 
               </div>
             </div>
 
@@ -140,34 +141,41 @@
           </div>
           <div ng-if="refinancing.freeRate" class="row">
             <div class="col-md-6">
+            <label for="">Taux</label>
               <select ng-change="update(true,true)" class="form-control"  id="rate-nb"  ng-model="refinancing.refMortgage.initRate " ng-options="option for option  in refinancing.freeRateTable"></select>
             </div>
             <div class="col-md-6">
+            <label for="">Ajout</label>
               <input type="number" ng-change="update(true,true)" class="form-control" ng-model="refinancing.refMortgage.addRate" min='-10.00'>
             </div>
           </div>
           <div ng-if="!refinancing.freeRate" class="row">
             <div class="col-md-4">
+            <label for="">Quotité</label>
               <select ng-change="update(true,true)" class="form-control"    ng-model="refinancing.refMortgage.quote " ng-options="option for option  in refinancing.quote"></select>
             </div>
             <div class="col-md-4">
+            <label for="">Home Safe</label>
               <select ng-change="update(true,true)" class="form-control"    ng-model="refinancing.refMortgage.homeSafe " ng-options="option for option  in refinancing.homeSafe"></select>
             </div>
             <div class="col-md-4">
+            <label for="">Vip</label>
               <select ng-change="update(true,true)" class="form-control"    ng-model="refinancing.refMortgage.vip " ng-options="option for option  in refinancing.vip"></select>
             </div>
           </div>
             <div ng-if="!refinancing.freeRate" class="row">
               <div class="col-md-4">
+            <label for="">Taux</label>
                 <input ng-change="update(true,true)" class="form-control" disabled   ng-model="refinancing.refMortgage.initRate " >
               </div>
               <div class="col-md-4">
+            <label for="">Ajout</label>
                 <input ng-change="update(true,true)" type='number' class="form-control"   min='-10.00' ng-model="refinancing.refMortgage.addRate " >
               </div>
               
             </div>
 
-           <button class="btn btn-success" ng-click='started = true' ng-show='!started'> CALCULER</button>
+          <!--  <button class="btn btn-success" ng-click='started = true' ng-show='!started'> CALCULER</button> -->
         </div>
         <div ng-show="refinancing.refMortgage.type !='fixe'">
 <!--           <div class="form-group" >
@@ -184,8 +192,105 @@
       </div>
     </div>
 
+
   </div>
+<!--   <div class="row">
+    <div class="col-md-12"><button class="center btn btn-default" style="margin-left:515px;" >PLUS</button></div>
+  </div> -->
 </div>
+</section>
+
+
+
+<!--  <section id="inputsPlus">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <span ng-click="assSRDinit(true,true)" class="btn btn-default" ><h3 >+ Assurance Solde Restant Dû</h3></span>
+          <div ng-if="refinancing.initMortgage.hasAssSRD">
+            <select ng-change="update(true,true)" class="form-control"    ng-model="refinancing.initMortgage.AssSRD.prime " ng-options="option for option  in refinancing.prime"></select> 
+
+          <div class="form-group">
+            <div class="row">
+              <label for="amount">Montant</label> 
+              <div class="col-md-6">
+                <input  ng-model="refinancing.initMortgage.AssSRD.amount"  ng-change="update(false,false)"  type="number"  class="form-control"  > 
+              </div>
+              <div class="col-md-6">
+                <label for="amount">Total</label> 
+                <input  ng-model="refinancing.initMortgage.AssSRD.totAmount" disabled   type="text"  class="form-control"  > 
+              </div>
+
+            </div>
+          </div>
+
+
+          <div ng-if="!refinancing.initMortgage.AssSRD.PrimeUnique" class="form-group" >
+            <label for="duration">Durée (mois)</label>
+            <input ng-change="update(true,true)" type="number" ng-model-options="{ updateOn: 'blur' }" class="form-control" id="duration-nb"  ng-model="refinancing.initMortgage.AssSRD.duration"   max="360" step='12'>
+           <input ng-change="update(true,true)" type="range" min="72" id="duration-nb"  ng-model="refinancing.initMortgage.AssSRD.duration"   max="360" step='12'> 
+          </div>
+           <table class="table">
+          <TR> 
+           <th>Annee</th>
+           <th>Prime</th>
+         </TR>
+         <tr ng-repeat="prime in refinancing.initMortgage.AssSRD.primeTable track by $index ">
+           <td>{{$index+1}} </td>
+           <td> <input ng-model="prime" ng-change="update(true,true)" type="number"  class="form-control" ></td>
+
+         </tr>
+       </table>
+          </div>
+      </div>
+      <div class="col-md-6">
+        <span ng-click="assSRDref(true,true)" class="btn btn-default" ><h3 > + Assurance Solde Restant Dû Rachat</h3></span>
+          <div ng-if="refinancing.refMortgage.hasAssSRD">
+
+
+            <select ng-change="update(true,true)" class="form-control"    ng-model="refinancing.refMortgage.AssSRD.prime " ng-options="option for option  in refinancing.prime"></select>
+
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-6">
+              <label for="amount">Montant</label> 
+                <input  ng-model="refinancing.refMortgage.AssSRD.amount"  ng-change="update(false,false)"  type="number"  class="form-control"  > 
+              </div>
+              <div class="col-md-6">
+                <label for="amount">Total</label> 
+                <input  ng-model="refinancing.refMortgage.AssSRD.totAmount" disabled   type="text"  class="form-control"  > 
+              </div>
+
+            </div>
+          </div>
+
+      <div ng-if="refinancing.refMortgage.AssSRD.prime == 'Prime successive'">
+          <div  class="form-group" >
+            <label for="duration">Durée (mois)</label>
+            <input ng-change="update(true,true)" type="number" class="form-control" id="duration-nb"  ng-model="refinancing.refMortgage.AssSRD.duration"   max="360" step='12'> 
+           <input ng-change="update(true,true)" type="range" min="72" id="duration-nb"  ng-model="refinancing.refMortgage.AssSRD.duration"   max="360" step='12'> 
+          </div>
+           <table class="table">
+          <TR> 
+           <th>Annee</th>
+           <th>Prime</th>
+         </TR>
+         <tr ng-repeat="prime in refinancing.refMortgage.AssSRD.primeTable track by $index ">
+           <td>{{$index+1}} </td>
+           <td> <input ng-model="prime.amount" ng-change="update(true,true)" type="number"  class="form-control" ></td>
+
+         </tr>
+       </table>
+          </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</section>  -->
+
+<section  id="calcbtn" ng-show='!started'>
+  <div class="container"><span style="margin-left:463px;" class="btn btn-danger" ng-click='started = true' ><h3 > CALCULER</h3></span></div>
+  
 </section>
 
 <section ng-show='started' id="results" class="filter bg02">
