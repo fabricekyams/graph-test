@@ -263,7 +263,6 @@ section {
   background-size: cover;
   background-position: center;
   position: relative;
-  overflow: scroll;
   padding-bottom: 40px;
   padding-top: 40px;
 }

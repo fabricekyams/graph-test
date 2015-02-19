@@ -12,13 +12,16 @@ define([
 		 * @param {[type]} duration [description]
 		 * @param {[type]} date     [description]
 		 */
-		function AssSRD(){
+		function AssSRD(rate){
 
 			this.prime = 'Prime unique';
 			this.amount = 0;
-			this.duration = 60;
-			this.addRate = 0;
+			this.duration = 6;
+			this.rate = rate;
+			this.totAmount = 0;
 			this.primeTable = [];
+			this.diffMp = 0;
+			this.newMp = 0;
 
 			//this.generateRateTable();
 			//this.update();
@@ -27,75 +30,89 @@ define([
 
 		AssSRD.prototype = {
 
-			setAddRate : function (duration, mpay, rate, capital) {
-				console.log(' ');
-				console.log(' ');
-				console.log('dur', duration);
+			setRate : function (duration, mpay, rate, capital) {
 				var newMp;
 				var amount;
+				this.primeTable[0] = {};
+				this.primeTable[0].amount = this.amount;
+				this.primeTable[0].realAmount = this.amount;
+				this.primeTable[0].totAmount = this.amount;
 				if (this.prime.localeCompare("Prime unique")==0) {
 					amount = this.amount;
-
 				}else{
 					if (this.prime.localeCompare("Prime annuelle")==0) {
 						this.setAnPrimeTable(duration);
 						amount = this.getTotalAmount(rate,this.amount);
 					}else{
+						var anDuration = Math.floor(duration);
+						this.duration = this.duration>anDuration ? anDuration : this.duration ;
 						this.setSuccPrimeTable(this.duration);
 						amount = this.getTotalAmount(rate,this.amount);
 
 					}
 				};
 				this.totAmount = amount;
-
-				newMp = mpay+(amount/duration);
-				var newCapital = (capital/*+amount*/);
-				console.log('amount: ', amount);
-				console.log('oldMP: ', mpay);
-				console.log('newMP: ', newMp);
-				var nrate = DC.CreditUtil.calculTauxC( newMp/newCapital,duration);
-				console.log('new Rate: ',DC.CreditUtil.tauxPeriodiqueToAn(nrate,1)*100);
-				console.log('Rate: ', rate);
-				var addRate = (DC.CreditUtil.tauxPeriodiqueToAn(nrate,1)*100) - rate;
-				this.addRate = addRate;
-				console.log('this.addRate: ',this.addRate);
+				this.diffMp = this.round(amount/duration,100);
+				this.newMp = mpay+this.diffMp;
+				this.rate = this.getRealRate(duration, mpay,  capital);
 			},
+
+			getRealRate : function (durationLeft, mPay, capitalLeft) {
+				mp = mPay+this.diffMp;
+
+				var rrate = DC.CreditUtil.calculTauxC( mp/capitalLeft,durationLeft);
+				rrate = DC.CreditUtil.tauxPeriodiqueToAn(rrate,1)*100;
+				return this.round(rrate,1000);;
+			},
+
 			getTotalAmount : function  (rate,amount) {
-				var totAmount = this.amount;
-				for (var i = 0; i < this.primeTable.length-1; i++) {
-					totAmount+= this.primeTable[i].amount/(1+(rate/100));
+				var totAmount = this.primeTable[0].amount;
+				for (var i = 1; i < this.primeTable.length; i++) {
+					this.primeTable[i].realAmount = this.round(this.primeTable[i].amount/Math.pow((1+(rate/100)), i),100);
+					this.primeTable[i].totAmount = this.primeTable[i].realAmount+this.primeTable[i-1].totAmount;
+					totAmount+= this.primeTable[i].realAmount;
 				};
-				console.log('totAmount: ',totAmount);
+				totAmount = this.round(totAmount,100);
 				return totAmount;
 				
 			},
+
 			setAnPrimeTable : function  (duration) {
 				var len = Math.round(((duration/12)/3)*2);
-				console.log('duration ',duration);
-				console.log('len ',len);
 				this.primeTable = [];
 				for (var i = 0; i < len; i++) {
 					this.primeTable[i] = {};
 					this.primeTable[i].amount = this.amount;
 				};
-				console.log(this.primeTable);
+				this.primeTable[0].realAmount = this.amount;
+				this.primeTable[0].totAmount = this.amount;
 			},
+
 			setSuccPrimeTable : function  (duration) {
-				console.log('durat', duration);
-				var len = Math.ceil(duration/12);
-				console.log('lenn ',len);
-				console.log('plenn ',this.primeTable.length);
+				var len = Math.ceil(duration);
 				var j = this.primeTable.length;
 				if(len<this.primeTable.length){
 					this.primeTable=this.primeTable.slice(0,len);
-					console.log('here');
+
 				}else{
 					for (var i = j ; i < len; i++) {
 						this.primeTable[i] = {};
 						this.primeTable[i].amount = this.amount;
 					};
 				}
-				console.log(this.primeTable);
+			},
+
+			reset : function (rate) {
+				this.rate = rate;
+				this.totAmount = 0;
+				//this.prime = 'Prime unique';
+				//this.amount = 0;
+				//this.duration = 60;
+				//this.primeTable = [];
+			},
+
+			round : function (val,rank) {
+				return Math.round(val*rank)/rank;
 			}
 
 

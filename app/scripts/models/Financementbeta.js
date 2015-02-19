@@ -44,7 +44,7 @@ define([
 			this.story = 'costum';
 			this.type = 'fixe';
 			this.hasAssSRD = false;
-			this.AssSRD = new AssSRD();
+			this.AssSRD = new AssSRD(this.trueRate);
 			//this.generateRateTable();
 			this.update();
 
@@ -68,15 +68,17 @@ define([
 				this.trueRate = this.initRate+this.addRate;
 				this.rate = Math.round((Math.pow(1 + ((this.trueRate)/100), 1 / 12) - 1)*1000000)/1000000;
 				this.setMonthlyPayment();
-				console.log('mp: ',DC.CreditUtil.tauxPeriodiqueToAn(DC.CreditUtil.calculTauxC( this.monthlyPayment/this.capital,this.duration),1)*100);
 				if (this.hasAssSRD) {
 					
-					this.AssSRD.setAddRate(this.duration, this.monthlyPayment, this.trueRate, this.capital); 
+					this.AssSRD.setRate(this.duration, this.monthlyPayment, this.trueRate, this.capital); 
+				}else{
+					this.AssSRD.reset(this.trueRate);
 				};
-				this.trueRate = this.initRate+this.addRate+this.AssSRD.addRate;
+				this.trueRate = this.initRate+this.addRate;
 				this.rate = Math.round((Math.pow(1 + ((this.trueRate)/100), 1 / 12) - 1)*1000000)/1000000;
 				this.setMonthlyPayment();
 				this.refInd[0].monthlyPayment = this.monthlyPayment;
+				this.refInd[0].realRate = this.AssSRD.rate;
 	
 
 				if(this.type.localeCompare('fixe') == 0 ){
@@ -97,6 +99,10 @@ define([
 						this.setAmortizationWithVariation();
 					}
 				}
+				if (this.hasAssSRD) {
+					this.addAssSRDToAmortization();
+				};
+
 
 			},
 
@@ -124,6 +130,9 @@ define([
 				//this.setRefIndData(0,this.rate);
 				this.initArmortizationVal(0,this.duration, this.duration, this.capital, this.rate);
 				this.totalPayment = this.amortization[this.duration-1].totalPayment;
+				if (this.hasAssSRD) {
+					this.totalPayment+=this.AssSRD.totAmount;
+				};
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
 				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
@@ -221,7 +230,7 @@ define([
 					}else{
 						rate = this.rate;
 					};
-					this.setRefIndData(j,rate, DC.CreditUtil.calculMensualite(rate, durationLeft)* this.amortization[i-1].SRD);
+					this.setRefIndData(j,rate, DC.CreditUtil.calculMensualite(rate, durationLeft)* this.amortization[i-1].SRD, durationLeft, this.amortization[i-1].SRD);
 					if(this.duration - i < this.variation.reval){
 						this.initArmortizationVal(i,this.duration, durationLeft, this.amortization[i-1].SRD, rate);
 
@@ -233,6 +242,9 @@ define([
 					j++;
 				};
 				this.totalPayment = this.amortization[this.duration-1].totalPayment;
+				if (this.hasAssSRD) {
+					this.totalPayment+=this.AssSRD.totAmount;
+				};
 				this.totalInterest = this.amortization[this.duration-1].totalInterest;
 				this.totalCapital = this.totalPayment - this.totalInterest;
 			},
@@ -300,6 +312,18 @@ define([
 							
 						};
 
+				};
+
+			},
+
+			addAssSRDToAmortization : function () {
+				for (var i = 0; i < this.AssSRD.primeTable.length; i++) {
+					this.amortizationParYears[i].totalPayment+= this.AssSRD.primeTable[i].totAmount;
+					this.amortizationParYears[i].ASRD = this.AssSRD.primeTable[i].realAmount;
+				};
+				for (var i = this.AssSRD.primeTable.length; i < this.amortizationParYears.length; i++) {
+					this.amortizationParYears[i].totalPayment += this.AssSRD.totAmount;
+					this.amortizationParYears[i].ASRD = 0;
 				};
 
 			},
@@ -375,6 +399,7 @@ define([
 				}else{
 					totPayment = this.amortization[0].interest+this.amortization[0].capital;
 				}
+
 				return totPayment;
 			},
 
@@ -427,6 +452,7 @@ define([
 				for(var i=periode; i<this.amortization.length ; i++){
 					total += this.amortization[i].capital;
 				}
+
 				return total;
 			},
 
@@ -441,6 +467,9 @@ define([
 				for(var i=periode; i<this.amortization.length ; i++){
 					total += this.amortization[i].interest+this.amortization[i].capital;
 				}
+				if (this.hasAssSRD) {
+					total+=this.AssSRD.totAmount;
+				};
 				return total;
 			},
 
@@ -652,13 +681,21 @@ define([
 			 * @param {[type]} period [description]
 			 * @param {[type]} rate   [description]
 			 */
-			setRefIndData : function (period,rate, monthlyPayment) {
+			setRefIndData : function (period,rate, monthlyPayment, durationLeft, capitalLeft) {
 				//if (period==0) {
 				//	this.refInd[period].date = this.date.toLocaleDateString();
 				//}else{
 					//this.refInd[period].date = this.getDateTerme(this.variation.fixe+(this.variation.reval*(period-1)));
 				///}
 				 this.refInd[period].rate = this.round(DC.CreditUtil.tauxPeriodiqueToAn(rate,1)*100);
+
+				 if (this.hasAssSRD) {
+
+				 	//capitalLeft += (this.AssSRD.diffMp *  durationLeft);
+				 	
+				 	//var capital = DC.CreditUtil.calculCapital(DC.CreditUtil.tauxAnToPeriodique(this.refInd[period-1].realRate /100,1), durationLeft, 1)*this.capital;
+				 	this.refInd[period].realRate = this.AssSRD.getRealRate(durationLeft,monthlyPayment,capitalLeft)
+				 };
 				 this.refInd[period].monthlyPayment = monthlyPayment;
 
 			},

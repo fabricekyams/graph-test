@@ -11,7 +11,7 @@
   <div id="mainapp" isloaded>
     <nav  class="navbar navbar-default navbar-fixed-top header">
       <div class="container-fluid">
-        <div class="navbar-header"><img alt="Brand" class="navbar-brand" src="images/logo.jpg"><span  class="navbar-brand navbar-right">RACHAT DE PRÊT HYPOTECAIRE</span></div>
+        <div class="navbar-header"><span  class="navbar-brand navbar-right">RACHAT DE PRÊT HYPOTECAIRE</span></div>
         <div ng-if='started' class="container centerdiv">
          <span class= "center navbar-brand" >Risque Total: <span  ng-class = "{isBenef: refinancing.refMortgage.isTotalBeneficial , isNotBenef: !refinancing.refMortgage.isTotalBeneficial}">{{ TotalDiff | number:2 | abs }}€ {{ isTotalBeneficial }}</span></span>
          <span class= "center navbar-brand" >Mois:<span ng-class = "{isBenef: refinancing.refMortgage.isMonthlyBeneficial, isNotBenef: !refinancing.refMortgage.isMonthlyBeneficial }">{{ monthDiff | number:2 | abs }}€ {{ ismonthlyBeneficial }} </span> sur la première mensualité</span>
@@ -202,7 +202,7 @@
 
 
 
-<!--  <section id="inputsPlus">
+ <section id="inputsPlus">
   <div class="container">
     <div class="row">
       <div class="col-md-6">
@@ -212,8 +212,8 @@
 
           <div class="form-group">
             <div class="row">
-              <label for="amount">Montant</label> 
               <div class="col-md-6">
+              <label for="amount">Montant</label> 
                 <input  ng-model="refinancing.initMortgage.AssSRD.amount"  ng-change="update(false,false)"  type="number"  class="form-control"  > 
               </div>
               <div class="col-md-6">
@@ -224,11 +224,11 @@
             </div>
           </div>
 
-
+<div ng-if="refinancing.initMortgage.AssSRD.prime == 'Prime successive'">
           <div ng-if="!refinancing.initMortgage.AssSRD.PrimeUnique" class="form-group" >
-            <label for="duration">Durée (mois)</label>
+            <label for="duration">Durée (Année)</label>
             <input ng-change="update(true,true)" type="number" ng-model-options="{ updateOn: 'blur' }" class="form-control" id="duration-nb"  ng-model="refinancing.initMortgage.AssSRD.duration"   max="360" step='12'>
-           <input ng-change="update(true,true)" type="range" min="72" id="duration-nb"  ng-model="refinancing.initMortgage.AssSRD.duration"   max="360" step='12'> 
+           <!-- <input ng-change="update(true,true)" type="range" min="72" id="duration-nb"  ng-model="refinancing.initMortgage.AssSRD.duration"   max="360" step='12'> --> 
           </div>
            <table class="table">
           <TR> 
@@ -237,10 +237,11 @@
          </TR>
          <tr ng-repeat="prime in refinancing.initMortgage.AssSRD.primeTable track by $index ">
            <td>{{$index+1}} </td>
-           <td> <input ng-model="prime" ng-change="update(true,true)" type="number"  class="form-control" ></td>
+           <td> <input ng-model="prime.amount" ng-change="update(true,true)" type="number"  class="form-control" ></td>
 
          </tr>
        </table>
+       </div>
           </div>
       </div>
       <div class="col-md-6">
@@ -264,20 +265,22 @@
             </div>
           </div>
 
-      <div ng-if="refinancing.refMortgage.AssSRD.prime == 'Prime successive'">
+      <div ng-if="refinancing.refMortgage.AssSRD.prime == 'Prime successive' || refinancing.refMortgage.AssSRD.prime == 'Prime annuelle'">
           <div  class="form-group" >
-            <label for="duration">Durée (mois)</label>
+            <label for="duration">Durée (Année)</label>
             <input ng-change="update(true,true)" type="number" class="form-control" id="duration-nb"  ng-model="refinancing.refMortgage.AssSRD.duration"   max="360" step='12'> 
-           <input ng-change="update(true,true)" type="range" min="72" id="duration-nb"  ng-model="refinancing.refMortgage.AssSRD.duration"   max="360" step='12'> 
+           <!-- <input ng-change="update(true,true)" type="range" min="72" id="duration-nb"  ng-model="refinancing.refMortgage.AssSRD.duration"   max="360" step='12'>  -->
           </div>
            <table class="table">
           <TR> 
            <th>Annee</th>
+           <th>Montant</th>
            <th>Prime</th>
          </TR>
          <tr ng-repeat="prime in refinancing.refMortgage.AssSRD.primeTable track by $index ">
            <td>{{$index+1}} </td>
            <td> <input ng-model="prime.amount" ng-change="update(true,true)" type="number"  class="form-control" ></td>
+           <td>{{ prime.realAmount }} </td>
 
          </tr>
        </table>
@@ -286,7 +289,7 @@
       </div>
     </div>
   </div>
-</section>  -->
+</section> 
 
 <section  id="calcbtn" ng-show='!started'>
   <div class="container"><span style="margin-left:463px;" class="btn btn-danger" ng-click='started = true' ><h3 > CALCULER</h3></span></div>
@@ -328,14 +331,19 @@
        <td> {{ refinancing.refMortgage.refInd[0].val }}%</td>
      </tr>
      <tr>
-       <TH>Taux Initial:</TH> 
+       <TH>Taux initial:</TH> 
        <td> {{ refinancing.initMortgage.trueRate }}%</td>
        <td> {{ refinancing.refMortgage.trueRate }}%</td>
      </tr>  
-     <tr ng-if="refinancing.initMortgage.refInd.length > 1">
-       <TH>Taux Actuel:</TH> 
+     <tr ng-if="refinancing.initMortgage.refInd.length > 1 ">
+       <TH>Taux actuel:</TH> 
        <td> {{ refinancing.initMortgage.refInd[refinancing.initPos-1].rate }}%</td>
        <td> {{ refinancing.refMortgage.trueRate }}%</td>
+     </tr>
+      <tr ng-if="refinancing.initMortgage.hasAssSRD || refinancing.refMortgage.hasAssSRD">
+       <TH>Assurance solde restant du:</TH> 
+       <td> {{ refinancing.initMortgage.AssSRD.totAmount }}€</td>
+       <td> {{ refinancing.refMortgage.AssSRD.totAmount }}€</td>
      </tr>
      <tr>
        <TH>Indemnité de remploie</TH> 
@@ -388,6 +396,35 @@
  <label>
    <button class="btn btn-success" ng-click="updateSM(false,false)">Même mensualité</button>
  </label>
+ <table ng-if="refinancing.initMortgage.hasAssSRD || refinancing.refMortgage.hasAssSRD" class="table">
+   <CAPTION>  <h3>Assurance Solde restant du</h3></CAPTION>
+      <TR> 
+       <th></th>
+       <th>Pret Actuel</th>
+       <th>Rachat</th>
+     </TR>
+     <tr>
+       <TH>Taux initial:</TH> 
+       <td> {{ refinancing.initMortgage.trueRate }}%</td>
+       <td> {{ refinancing.refMortgage.trueRate }}%</td>
+     </tr>  
+     <tr ng-if="refinancing.initMortgage.hasAssSRD || refinancing.refMortgage.hasAssSRD">
+       <TH>Taux initial réèl:</TH> 
+       <td> {{ refinancing.initMortgage.AssSRD.rate  }}%</td>
+       <td> {{ refinancing.refMortgage.AssSRD.rate  }}%</td>
+     </tr>
+
+      <tr ng-if="refinancing.initMortgage.hasAssSRD || refinancing.refMortgage.hasAssSRD">
+       <TH>Assurance solde restant du:</TH> 
+       <td> {{ refinancing.initMortgage.AssSRD.totAmount }}€</td>
+       <td> {{ refinancing.refMortgage.AssSRD.totAmount }}€</td>
+     </tr>
+     
+ </table>
+ <p ng-if="refinancing.initMortgage.hasAssSRD || refinancing.refMortgage.hasAssSRD"><strong>Explication taux réèl</strong><br><br></p>
+<p ng-if="refinancing.initMortgage.hasAssSRD "> Le taux réèl du prêt actuel est calculé comme suit: <br> La prime total ({{ refinancing.initMortgage.AssSRD.totAmount  | number:2 }}) est divisé par la durée ({{ refinancing.initMortgage.duration }}). <br>Le montant ({{ refinancing.initMortgage.AssSRD.diffMp  | number:2 }}) obtenu est ajouté à la mensualité ({{ refinancing.initMortgage.monthlyPayment  | number:2 }}). <br>Le taux réel est calculé en fonction de cette nouvelle mensualite ({{ refinancing.initMortgage.AssSRD.newMp  | number:2 }}), du SRD+Frais ({{ refinancing.initMortgage.capital | number:2 }}) et de la durée ({{ refinancing.initMortgage.duration }}) <br><br><br> </p>
+
+<p ng-if="refinancing.refMortgage.hasAssSRD" > Le taux réèl du rachat est calculé comme suit: <br> La prime total ({{ refinancing.refMortgage.AssSRD.totAmount  | number:2 }}) est divisé par la durée ({{ refinancing.refMortgage.duration }}). <br>Le montant ({{ refinancing.refMortgage.AssSRD.diffMp  | number:2 }}) obtenu est ajouté à la mensualité ({{ refinancing.refMortgage.monthlyPayment  | number:2 }}). <br>Le taux réel est calculé en fonction de cette nouvelle mensualite ({{ refinancing.refMortgage.AssSRD.newMp  | number:2 }}), du SRD+Frais ({{ refinancing.refMortgage.capital | number:2 }}) et de la durée ({{ refinancing.refMortgage.duration }}) <br> </p>
 </div>
 
 <div class="col-md-6" >
@@ -478,12 +515,14 @@
                <th>Date</th>
                <th>Indice </th>
                <th>Taux</th>
+               <th ng-if="refinancing.initMortgage.hasAssSRD && 2==3" >Taux réel</th>
                <th>Mensualité</th>
              </TR >
              <tr ng-repeat="indice in refinancing.initMortgage.refInd">
                <td> <select style="wi" ng-change="updateWithIndPers(false,true)" class="form-control" id="finType" ng-model="indice.date" ng-options="option.date for option  in indice.dateList"></select></td>
                <td> <input ng-model="indice.val" ng-change="updateWithIndPersInit(false,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" ></td>
                <td> {{ indice.rate }}%</td>
+              <td ng-if="refinancing.initMortgage.hasAssSRD && 2==3"> {{ indice.realRate }}%</td>
                <td> {{ indice.monthlyPayment | number:2 }}</td>
              </tr>
            </table>
@@ -496,12 +535,14 @@
            <th>Date</th>
            <th>Indice {{story}}</th>
            <th>Taux</th>
+            <th ng-if=" refinancing.refMortgage.hasAssSRD && 2==3">Taux réel</th>
            <th>Mensualité</th>
          </TR>
          <tr ng-repeat="indice in refinancing.refMortgage.refInd">
            <td> <select ng-change="updateWithIndPers(true,true)"  class="form-control" id="finType" ng-model="indice.date" ng-options="option.date for option  in indice.dateList"></select></td>
            <td> <input ng-model="indice.val" ng-change="updateWithIndPersRef(false,true)" type="number" ng-model-options="{ getterSetter: true }" class="form-control" id="rate-nb"  min="-10.0" max="10.0"  step ="0.001" ></td>
            <td> {{ indice.rate }}%</td>
+           <td ng-if="refinancing.refMortgage.hasAssSRD && 2==3"> {{ indice.realRate }}%</td>
            <td> {{ indice.monthlyPayment | number:2 }}</td>
          </tr>
        </table>
@@ -552,6 +593,7 @@
          <TH>Tot. payementl</TH> 
          <TH>Tot. interet</TH> 
          <TH>Solde Restant Du</TH> 
+        <TH ng-if="refinancing.initMortgage.hasAssSRD">ASRD</TH> 
          <TH>Mensualité</TH> 
        </TR> 
        <TR ng-repeat="amort in refinancing.initMortgage.amortizationParYears track by $index"> 
@@ -564,6 +606,7 @@
          <TD> {{ amort.totalPayment | number:2 }}</TD> 
          <TD> {{ amort.totalInterest | number:2 }}</TD> 
          <TD> {{ amort.SRD | number:2 }}</TD> 
+        <TD ng-if="refinancing.initMortgage.hasAssSRD"> {{ amort.ASRD | number:2 }}</TD> 
          <TD> {{ amort.monthlyPayment | number:2 }}</TD> 
 
        </TR> 
@@ -582,6 +625,7 @@
        <TH>Tot. payementl</TH> 
        <TH>Tot. interet</TH> 
        <TH>Solde Restant Du</TH> 
+       <TH ng-if="refinancing.refMortgage.hasAssSRD">ASRD</TH> 
        <TH>Mensualité</TH> 
      </TR> 
      <TR ng-repeat="amort in refinancing.refMortgage.amortizationParYears track by $index"> 
@@ -594,6 +638,7 @@
        <TD> {{ amort.totalPayment | number:2 }}</TD> 
        <TD> {{ amort.totalInterest | number:2 }}</TD> 
        <TD> {{ amort.SRD | number:2 }}</TD> 
+       <TD ng-if="refinancing.refMortgage.hasAssSRD"> {{ amort.ASRD | number:2 }}</TD> 
        <TD> {{ amort.monthlyPayment | number:2 }}</TD> 
 
      </TR> 

@@ -78,6 +78,7 @@ define([
 			 		};
 
 			 	};
+
 			 	this.date = this.initMortgage.date;
 			 	this.newDate = new Date(this.refMortgage.formatDate(this.refMortgage.dateString));
 
@@ -90,7 +91,6 @@ define([
 				 	this.refMortgage.durationLeft = this.refMortgage.duration;
 
 				 	this.validateData(durationFirst);
-
 				 	this.updateStory();
 				 	this.initMortgage.totalPaymentIfRef = this.initMortgage.getTotalFromPeriode(this.durationLeft);
 				 	this.initMortgage.totalCapitalIfRef = this.initMortgage.getTotalCapitalFromPeriode(this.durationLeft);
@@ -604,7 +604,7 @@ define([
 			 	}
 			 	this.checkDuration();
 			 	if (!this.freeRate) {
-			 		this.changeRate();
+			 		this.changeRate(durationFirst);
 			 	};
 				this.refMortgage.sameMonthlyPayement = false;
 				this.refMortgage.update();
@@ -697,7 +697,6 @@ define([
 			 	}
 			 	
 			 	this.refMortgage.rateTable = [];
-			 	console.log(this.rateTable[linePosition]);
 				this.refMortgage.rateTable[0] = this.rateTable[linePosition].rate;
 				this.refMortgage.rateTable = this.refMortgage.rateTable.concat(
 				this.rateTable[linePosition].quotLess.One,
@@ -941,6 +940,7 @@ define([
 			 	};
 
 			 	this.occupied=false;
+
 			},
 
 			getMaxDuration : function  (rate, mp) {
